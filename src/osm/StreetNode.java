@@ -63,6 +63,7 @@ public class StreetNode {
     
     public void removeLink(StreetLink streetLink) {
     	streetLinks.remove(streetLink);
+    	NrOfLinks=streetLinks.size();
     }
 
     /**

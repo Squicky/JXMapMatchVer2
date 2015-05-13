@@ -42,26 +42,29 @@ public class OSMStAXGraphReader {
         // store lon and lat for every node
         double [] lon;
         double [] lat;
+        
+        long [] node_id;
 
         double prevLon;
         double prevLat;
 
         //store nr of edges for every node
-        int[] nodesEdges;
+        int[] nodeEdgeSizes;
 
         // extra information about a link
-        int osmMaxSpeed;
-        int carPermission;
-        int lanes;
-        int highwayType;
-        String name;
-        int length;
-        int betweenDistFromStart;
+        long[] edge_id;
+        int[] osmMaxSpeed;
+        int[] carPermission;
+        int[] lanes;
+        int[] highwayType;
+        String[] name;
+        int[] length;
+        int[][] betweenDistFromStart;
         
         // store target node for every edge
         int[] targetNode;
         //store nr of between nodes for every edge
-        int[] between;
+        int[] betweenSizes;
         
 
         // store edges for every node in this vector
@@ -71,8 +74,11 @@ public class OSMStAXGraphReader {
         // store between node's lon and lat in vectors
         Vector betweenNodesLon = new Vector();
         Vector betweenNodesLat = new Vector();
+        Vector betweenNodesId = new Vector();
+        
         double [] betweenLat;
         double [] betweenLon;
+        long [] betweenId;
 
         //street map
         StreetMap streetMap = null;
@@ -89,13 +95,20 @@ public class OSMStAXGraphReader {
                 FileInputStream fis = new FileInputStream(streetMapFile);
                 DataInputStream dis = new DataInputStream(fis);
 
+                int as = dis.available();
+                
                 large = dis.readInt();                
                 NrOfNodes = dis.readInt();
                 NrOfEdges = dis.readInt();
                 minLat = dis.readDouble();
                 maxLat = dis.readDouble();
                 minLon = dis.readDouble();
+                
+                int s = as - dis.available();
+                
                 maxLon = dis.readDouble();
+                
+                s = as - dis.available();
                 
                 //sum of elements to read (x2 because once for reading, once for adding)
                 //sumElements = (NrOfNodes * 2) + NrOfEdges;
@@ -103,10 +116,12 @@ public class OSMStAXGraphReader {
                 sumElements = NrOfNodes;
 
                 // store nr of edges for every node in array nodesEdges
-                nodesEdges = new int[NrOfNodes];
+                nodeEdgeSizes = new int[NrOfNodes];
                 // store lon and lat for every node
                 lon = new double[NrOfNodes];
                 lat = new double[NrOfNodes];
+                
+                node_id = new long[NrOfNodes];
                 
                 // add number of "between nodes" to number of all nodes
                 NrOfAllNodes = NrOfNodes;
@@ -117,14 +132,19 @@ public class OSMStAXGraphReader {
                 for (i=0;i<NrOfNodes;i++){
                 	
                     //read nodes
-                    lon[i] = dis.readDouble();
+                	s = as - dis.available();
+                	long ll = dis.readLong();
+                	node_id[i] = ll;
+                	s = as - dis.available();
+                	lon[i] = dis.readDouble();
                     lat[i] = dis.readDouble();
-                    nodesEdges[i] = dis.readInt();
+                    nodeEdgeSizes[i] = dis.readInt();
 
                     //use array to store each edge in vector edges
-                    edge = new int[nodesEdges[i]];
+                    System.out.println(nodeEdgeSizes[i]);
+                    edge = new int[nodeEdgeSizes[i]];
                     
-                    for (k=0;k<nodesEdges[i];k++){
+                    for (k=0;k<nodeEdgeSizes[i];k++){
                         edge[k] = dis.readInt();
                     }
                     edges.add(edge);
@@ -140,35 +160,54 @@ public class OSMStAXGraphReader {
                 currentElement = 0;
 
                 // store number of "between links" one edge has
-                between = new int[NrOfEdges];
+                betweenSizes = new int[NrOfEdges];
                 // save every edge's target node
                 targetNode = new int[NrOfEdges];
+                
+                edge_id = new long[NrOfEdges];
+                osmMaxSpeed = new int[NrOfEdges];
+                carPermission = new int[NrOfEdges];
+                lanes = new int[NrOfEdges];
+                highwayType = new int[NrOfEdges];
+                name = new String[NrOfEdges];
+                length = new int[NrOfEdges];
+                
+                betweenDistFromStart = new int[NrOfEdges][1];
+                
                 //read edges
                 for (i=0;i<NrOfEdges;i++){
-                    osmMaxSpeed = dis.readInt();
-                    carPermission = dis.readInt();
-                    lanes = dis.readInt();
-                    highwayType = dis.readInt();
-                    name = dis.readUTF();
+                	edge_id[i] = dis.readLong();
+                	
+                    osmMaxSpeed[i] = dis.readInt();
+                    carPermission[i] = dis.readInt();
+                    lanes[i] = dis.readInt();
+                    highwayType[i] = dis.readInt();
+                    name[i] = dis.readUTF();
                     targetNode[i] = dis.readInt();
-                    length = dis.readInt();
+                    length[i] = dis.readInt();
 
                     if (large == 1){// if graph is large store "between links"
 
-                        between[i] = dis.readInt();
-                        betweenLon = new double[between[i]];
-                        betweenLat = new double[between[i]];
+                        betweenSizes[i] = dis.readInt();
+                        betweenId = new long[betweenSizes[i]];
+                        betweenLon = new double[betweenSizes[i]];
+                        betweenLat = new double[betweenSizes[i]];
 
-                        for (k=0;k<between[i];k++){
+                        betweenDistFromStart[i] = new int[betweenSizes[i]];
+                        
+                        for (k=0;k<betweenSizes[i];k++){
+                        	betweenId[i] = dis.readLong();
+                        	
                             betweenLon[k] = dis.readDouble();
                             betweenLat[k] = dis.readDouble();
-                            betweenDistFromStart = dis.readInt();
+                            betweenDistFromStart[i][k] = dis.readInt();
                             NrOfAllNodes++;
                             NrOfAllEdges++;
                         }
                         // increase nr of all edges by one
                         // (n between nodes means n+1 links)
                         NrOfAllEdges++;
+                        betweenNodesId.add(betweenId);
                         betweenNodesLon.add(betweenLon);
                         betweenNodesLat.add(betweenLat);
                     }
@@ -205,7 +244,7 @@ public class OSMStAXGraphReader {
                     //store edges which belong to current node in array edge
                     edge = (int[])edges.elementAt(k);
 
-                    for (i=0; i < nodesEdges[k];i++){// for each edge
+                    for (i=0; i < nodeEdgeSizes[k];i++){// for each edge
 
                         //add Edge to StreetMap
                         if (large == 1){
@@ -214,7 +253,8 @@ public class OSMStAXGraphReader {
                             prevLat=lat[k];
                             betweenLon = (double[])betweenNodesLon.elementAt(edge[i]);
                             betweenLat = (double[])betweenNodesLat.elementAt(edge[i]);
-                            for (l=0; l < between[edge[i]];l++){
+                            betweenId = (long[])betweenNodesId.elementAt(edge[i]);
+                            for (l=0; l < betweenSizes[edge[i]];l++){
                                 // add edge to StreetMap
                                 streetMap.addLink(
                                         Coordinates.getCartesianX(prevLon, prevLat)
