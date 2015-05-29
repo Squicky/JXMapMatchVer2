@@ -17,6 +17,7 @@ import gps.GPSNode;
 import gps.GPSTrace;
 
 import java.awt.*;
+import java.util.Random;
 import java.util.Vector;
 
 /**
@@ -324,20 +325,45 @@ public class JXMapPainter {
 
         //do the drawing
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        
     	
         // set brush
-        g.setStroke(new BasicStroke(1));
+        g.setStroke(new BasicStroke(3));
         // set color
         g.setColor(color);
 
+    	Random random = new Random();
+
         for(int i=0; i<street.getNrOfLinks();i++){
-            // draw line for every link
-            // devide x,y coordinates by 2^(zoom-1) to fit to current zoom
-            g.drawLine((int)(street.getStartX(i)/zoomFactor),
-                    (int)(street.getStartY(i)/zoomFactor),
-                    (int)(street.getEndX(i)/zoomFactor),
-                    (int)(street.getEndY(i)/zoomFactor));
+        	
+        	int DirectionColor = street.getLink(i).DirectionColor;
+        	
+        	if (DirectionColor == 0) {
+        		color = Color.red;
+        	}
+        	else if (DirectionColor == 1) {
+        		color = Color.orange;
+        	}  
+        	else if (DirectionColor == 2) {
+        		color = Color.yellow;
+        	}
+        	else {
+            	color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
+        	}
+
+    		color = Color.red;
+        	color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
+        	
+        	if (DirectionColor != -1 || true) {
+                g.setColor(color);
+            	
+                // draw line for every link
+                // devide x,y coordinates by 2^(zoom-1) to fit to current zoom
+                g.drawLine((int)(street.getStartX(i)/zoomFactor),
+                        (int)(street.getStartY(i)/zoomFactor),
+                        (int)(street.getEndX(i)/zoomFactor),
+                        (int)(street.getEndY(i)/zoomFactor));        		
+        	}
+
         }
         g.dispose();
     }

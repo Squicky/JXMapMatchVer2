@@ -66,7 +66,43 @@ public class StreetMap {
         streetNodes = new StreetNode[MaxNrOfNodes];
     }
 
-   
+    public void setColorOfLinks() {
+    	
+    	for (int i=0; i<NrOfLinks; i++) {
+    		streetLinks[i].setDirectionColorOfOneWay();
+    	}
+    	
+    	for (int i=0; i<NrOfLinks; i++) {
+    		
+    		for (int j=0; j<i; j++) {
+    			
+    			int a = streetLinks[i].getStartX();
+    			int b = streetLinks[i].getStartY();
+    			int c = streetLinks[i].getEndX();
+    			int d = streetLinks[i].getEndY();
+    			
+    			
+    			if ( a == 8708905 && b == 5605140 && c == 8708900 && d == 5605141) {
+    				a = a++;
+    			}
+    			
+    			
+    			if (streetLinks[i].getStartX() == streetLinks[j].getEndX() &&
+    					streetLinks[i].getStartY() == streetLinks[j].getEndY() &&
+    					streetLinks[i].getEndX() == streetLinks[j].getStartX() &&
+    					streetLinks[i].getEndY() == streetLinks[j].getStartY() ) {
+
+    				streetLinks[j].DirectionColor = 0;
+    				streetLinks[i].DirectionColor = -1;    			
+
+    			}
+    				
+    		}
+    	}
+    	
+    	
+    }
+    
     // methods for links
     /**
      * get Nr Of StreetLinks
@@ -98,6 +134,8 @@ public class StreetMap {
         if ((getNode(x1,y1)!=null)&&(getNode(x2,y2)!=null))
             // if not add Link to StreetMap
             addLink(getNode(x1, y1),getNode(x2,y2));
+        
+        System.out.println(x1 + "," + y1 + " --> " + x2 + "," + y2);
     }
 
     /**
@@ -118,7 +156,7 @@ public class StreetMap {
             }
         }
     }
-
+    
     /**
      * return StreetLink which connects StreetNodes n1 and n2
      * @param n1
@@ -147,12 +185,15 @@ public class StreetMap {
      * @param y2
      * @return StreetLink
      */
-    public StreetLink getLink(int x1, int y1, int x2, int y2){
+	// defekt
+    /*
+     public StreetLink getLink(int x1, int y1, int x2, int y2){
         StreetNode n1 = new StreetNode(x1,y1);
         StreetNode n2 = new StreetNode(x2,y2);
         // return Link(n1,n2) if it exists
         return getLink(n1,n2);
     }
+    */
     
     /**
      * returns all street links through an array
@@ -254,9 +295,13 @@ public class StreetMap {
      * add StreetNode n to StreetMap
      * @param n
      */
+	// defekt
+    /*
     public void addNode(StreetNode n){
         addNode(n.getX(),n.getY());
     }
+    */
+    
     /**
      * add StreetNode located at (x,y) to StreetMap
      * @param x

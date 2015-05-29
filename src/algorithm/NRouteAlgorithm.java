@@ -114,7 +114,7 @@ public class NRouteAlgorithm {
 		TreeSet<NRoute> sortedSetS = new TreeSet<NRoute>();
 		
 		// 1. get GPS Point
-		initNewGPSPoint:
+		//initNewGPSPoint:
 			for (int gpsNodeIndex = 0; gpsNodeIndex  < 1 /*gpsTrace.getNrOfNodes()*/; gpsNodeIndex++)
 			{
 				// 2. initialize sorted set with N nearest path/links
@@ -231,6 +231,9 @@ public class NRouteAlgorithm {
 			
 			// create new path if nearest link was found
 			if (nearestStreetLink != null) {
+				
+				nearestStreetLink.markiert = 1;
+				
 				Logger.println("Found nearest link Nr." + i);
 				
 				// save new current minimum distance

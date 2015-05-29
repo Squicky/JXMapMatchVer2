@@ -7,6 +7,7 @@ package gps;
 import interfaces.StatusUpdate;
 
 import java.io.*;
+import java.sql.Time;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -25,6 +26,8 @@ import algorithm.GPSToLinkMatcher;
 import algorithm.MatchedGPSNode;
 import algorithm.ReorderedMatchedGPSNode;
 import cartesian.Coordinates;
+
+import java.util.*;
 
 /**
  * @author Daniel Sathees Elmo
@@ -164,11 +167,34 @@ public class GPSTraceStreamer {
 			
 			while((line = bReader.readLine()) != null){
 				// read line must confirm to pattern
-				if (gpsPattern.matcher(line).matches()){
+				if (gpsPattern.matcher(line).matches() || line.startsWith("2014-")){
 					gpsData = gpsSplitPattern.split(line);
 					
 					// read time, read latitude/longitude
-					timeStamp = Long.parseLong(gpsData[0]);
+					if (line.startsWith("2014-")) {
+						
+						Calendar c = Calendar.getInstance();
+						
+						String [] sdatetime = line.split(" ");
+						String [] sdate = sdatetime[0].split("-");						
+						String [] stime = sdatetime[1].split(".0000000,");
+						stime = stime[0].split(":");
+						
+						c.set(Integer.parseInt(sdate[0]), 
+								Integer.parseInt(sdate[1]), 
+								Integer.parseInt(sdate[2]), 
+								Integer.parseInt(stime[0]), 
+								Integer.parseInt(stime[1]),
+								Integer.parseInt(stime[2]));
+						
+						timeStamp = c.getTimeInMillis();
+						timeStamp = timeStamp * 1000000L;
+						
+					} 
+					else {
+						timeStamp = Long.parseLong(gpsData[0]);						
+					}
+					
 					latitude = Double.parseDouble(gpsData[1]);
 					longitude = Double.parseDouble(gpsData[2]);
 					

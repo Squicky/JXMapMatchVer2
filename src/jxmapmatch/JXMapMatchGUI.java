@@ -169,6 +169,8 @@ public class JXMapMatchGUI extends JFrame implements JXMapMatchGUIInterface {
 		// call constructor of super class
 		super("JXMapMatch ver2");
 		
+		this.setVisible(true);
+		
 		// remind status update interface
 		this.statusUpdate = statusUpdate;
 		

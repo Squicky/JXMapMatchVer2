@@ -17,6 +17,8 @@ import algorithm.MatchedRange;
  */
 public class StreetLink {
 	
+	public int markiert = 0;
+	
 	private long id;
 	
 	public final static long NO_ID = -1;
@@ -48,6 +50,33 @@ public class StreetLink {
 		this(n1, n2, NO_ID, artificial);
 	}
     
+	public int DirectionColor = -1;
+	
+	public void setDirectionColorOfOneWay() {		
+		double x1 = endNode.getX() - startNode.getX();
+		double y1 = endNode.getY() - startNode.getY();
+		
+		double x2 = 0;
+		double y2 = 1;
+		
+		double skalarprodukt = (x1 * x2) + (y1 * y2);
+
+		double laenge1 = ((x1 * x1) + (y2 - y2));
+		laenge1 = Math.sqrt(laenge1);
+		
+		double laenge2 = 1;
+		
+		double winkel = Math.acos(skalarprodukt / (laenge1 * laenge2) );
+		
+		if (winkel < Math.PI / 2.0D) {
+			DirectionColor = 1;
+		} else {
+			DirectionColor = 2;
+		}
+		
+	}
+	
+	
     /**
      * create StreetLink which connects StreetNodes n1 and n2
      * @param n1 first node

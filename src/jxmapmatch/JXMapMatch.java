@@ -1,6 +1,7 @@
 package jxmapmatch;
 
 import java.awt.EventQueue;
+import java.util.Calendar;
 
 import logging.Logger;
 import dialogelements.JWindowLoading;
@@ -21,6 +22,8 @@ public class JXMapMatch extends Thread{
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		
+					
 		// save arguments
 		arguments = args;
 		

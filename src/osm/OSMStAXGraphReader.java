@@ -63,6 +63,9 @@ public class OSMStAXGraphReader {
         
         // store target node for every edge
         int[] targetNode;
+
+        int[] startNode;
+
         //store nr of between nodes for every edge
         int[] betweenSizes;
         
@@ -127,6 +130,8 @@ public class OSMStAXGraphReader {
                 NrOfAllNodes = NrOfNodes;
                 // do the same with edges
                 NrOfAllEdges = NrOfEdges;
+
+                startNode = new int[NrOfEdges];
                 
                 // open routing graph
                 for (i=0;i<NrOfNodes;i++){
@@ -141,11 +146,11 @@ public class OSMStAXGraphReader {
                     nodeEdgeSizes[i] = dis.readInt();
 
                     //use array to store each edge in vector edges
-                    System.out.println(nodeEdgeSizes[i]);
                     edge = new int[nodeEdgeSizes[i]];
                     
                     for (k=0;k<nodeEdgeSizes[i];k++){
                         edge[k] = dis.readInt();
+                        startNode[edge[k]] = i;
                     }
                     edges.add(edge);
                     
@@ -163,7 +168,8 @@ public class OSMStAXGraphReader {
                 betweenSizes = new int[NrOfEdges];
                 // save every edge's target node
                 targetNode = new int[NrOfEdges];
-                
+
+                                
                 edge_id = new long[NrOfEdges];
                 osmMaxSpeed = new int[NrOfEdges];
                 carPermission = new int[NrOfEdges];
@@ -194,9 +200,9 @@ public class OSMStAXGraphReader {
                         betweenLat = new double[betweenSizes[i]];
 
                         betweenDistFromStart[i] = new int[betweenSizes[i]];
-                        
+                                               
                         for (k=0;k<betweenSizes[i];k++){
-                        	betweenId[i] = dis.readLong();
+                        	betweenId[k] = dis.readLong();
                         	
                             betweenLon[k] = dis.readDouble();
                             betweenLat[k] = dis.readDouble();
@@ -218,6 +224,10 @@ public class OSMStAXGraphReader {
                     statusUpdate.updateStatus("Edge Nr." + i + " read", currentProgressPercent);
                 }
                 
+                for (i=0;i<NrOfEdges;i++){
+                	System.out.println("start: " + startNode[i] + " target: " + targetNode[i]);
+                }
+                
                 /*
                 System.out.println(" Nr of Nodes: " +NrOfNodes);
                 System.out.println(" Nr of All nodes: " +NrOfAllNodes);
@@ -233,7 +243,8 @@ public class OSMStAXGraphReader {
                 streetMap = new StreetMap(NrOfAllEdges,NrOfAllNodes, streetMapFile);
                 
                 //set boundary
-                streetMap.setMinX(Coordinates.getCartesianX(minLon, minLat));
+                int ii = Coordinates.getCartesianX(minLon, minLat);
+                streetMap.setMinX(ii);
                 streetMap.setMinY(Coordinates.getCartesianY(minLon, minLat));
                 streetMap.setMaxX(Coordinates.getCartesianX(maxLon, maxLat));
                 streetMap.setMaxY(Coordinates.getCartesianY(maxLon, maxLat));
@@ -264,6 +275,11 @@ public class OSMStAXGraphReader {
                                        ,Coordinates.getCartesianY(betweenLon[l]
                                                                  ,betweenLat[l])
                                 );
+                                
+//                                System.out.print(prevLon + "," + prevLat + " --> " + betweenLon[l] + "," + betweenLat[l]);
+//                                System.out.println( " ||| " + Coordinates.getCartesianX(prevLon, prevLat) + "," + Coordinates.getCartesianY(prevLon, prevLat) + " --> " + Coordinates.getCartesianX(betweenLon[l],betweenLat[l]) + "," + Coordinates.getCartesianY(betweenLon[l],betweenLat[l]));
+                                
+                                
                                 prevLon=betweenLon[l];
                                 prevLat=betweenLat[l];
 
@@ -271,11 +287,15 @@ public class OSMStAXGraphReader {
                             streetMap.addLink(
                                     Coordinates.getCartesianX(prevLon, prevLat)
                                    ,Coordinates.getCartesianY(prevLon, prevLat)
-                                   ,Coordinates.getCartesianX(lon[targetNode[edge[i]]]
+                                   ,Coordinates.getCartesianX(lon[targetNode[edge[i]]] 
                                                              ,lat[targetNode[edge[i]]])
                                    ,Coordinates.getCartesianY(lon[targetNode[edge[i]]]
                                                              ,lat[targetNode[edge[i]]])
                             );
+                            
+//                            System.out.print(prevLon + "," + prevLat + " --> " + lon[targetNode[edge[i]]] + "," + lat[targetNode[edge[i]]]);
+//                            System.out.println( " ||| " + Coordinates.getCartesianX(prevLon, prevLat) + "," + Coordinates.getCartesianY(prevLon, prevLat) + " --> " + Coordinates.getCartesianX(lon[targetNode[edge[i]]] ,lat[targetNode[edge[i]]]) + "," + Coordinates.getCartesianY(lon[targetNode[edge[i]]],lat[targetNode[edge[i]]]));
+
 
 
                         }else{
@@ -289,6 +309,10 @@ public class OSMStAXGraphReader {
                                    ,Coordinates.getCartesianY(lon[targetNode[edge[i]]]
                                                              ,lat[targetNode[edge[i]]])
                             );
+                            
+//                            System.out.print(lon[k] + "," + lat[k] + " --> " + lon[targetNode[edge[i]]] + "," + lat[targetNode[edge[i]]]);
+//                            System.out.println( " ||| " + Coordinates.getCartesianX(lon[k], lat[k]) + "," + Coordinates.getCartesianY(lon[k], lat[k]) + " --> " + Coordinates.getCartesianX(lon[targetNode[edge[i]]],lat[targetNode[edge[i]]]) + "," + Coordinates.getCartesianY(lon[targetNode[edge[i]]],lat[targetNode[edge[i]]]));
+
                         }
 
                     }
@@ -374,16 +398,16 @@ public class OSMStAXGraphReader {
         int EdgeValue;
         
         int osmMaxSpeed; 
-	int carPermission;
-	int lanes;
-	int highwayType;
-	String name;
-	int targetNode;
-	int length;
+        int carPermission;
+        int lanes;
+        int highwayType;
+        String name;
+        int targetNode;
+        int length;
         int between;
         int betweenDistFromStart;
-	double betweenLat;
-	double betweenLon;
+        double betweenLat;
+        double betweenLon;
 
         File f= new File(path);
         try {

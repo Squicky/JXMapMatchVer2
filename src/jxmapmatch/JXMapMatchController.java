@@ -523,7 +523,11 @@ public class JXMapMatchController implements ActionListener,
 			protected Boolean doInBackground() throws Exception {
 				try {
 					streetMap = OSMStAXGraphReader.convertToStreetMap(streetMapFile.getAbsolutePath(), jxMapMatchGUI);
+					streetMap.setColorOfLinks();
 				} catch (Exception e) {
+					
+					System.out.println(e.toString());
+					
 					return false;
 				}
 				
@@ -603,6 +607,7 @@ public class JXMapMatchController implements ActionListener,
 				try {
 					gpsTrace = GPSTraceStreamer.convertToGPSPath(gpsTraceFile.getAbsolutePath(), jxMapMatchGUI);
 				} catch (Exception e) {
+					System.out.println(e.toString());
 					return false;
 				}
 				
@@ -1297,8 +1302,10 @@ public class JXMapMatchController implements ActionListener,
 				}
 				
 				// draw selected route?
-				if (drawSelectedRoute) jxMapPainter.drawSelectedRoute(g2D, jxMapViewer, gpsToLinkMatcher.getSelectedRoute(),
-																	  SELECTABLE_LINK_COLOR, MULTI_SELECTABLE_LINK_COLOR, SELECTED_LINK_COLOR, NON_MATCHED_LINK_COLOR, zoomFactor);
+				if (drawSelectedRoute) {
+					jxMapPainter.drawSelectedRoute(g2D, jxMapViewer, gpsToLinkMatcher.getSelectedRoute(),
+							  SELECTABLE_LINK_COLOR, MULTI_SELECTABLE_LINK_COLOR, SELECTED_LINK_COLOR, NON_MATCHED_LINK_COLOR, zoomFactor);
+				}
 				 
 				
 				// draw matched GPS to N route nodes/route
