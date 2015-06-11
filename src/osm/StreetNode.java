@@ -17,6 +17,8 @@ public class StreetNode {
     private int posX=0;
     private int posY=0;
     
+    public long myid = -1;
+    
     // store Street links connected to his node
     private Vector<StreetLink> streetLinks = new Vector<>();
     private int NrOfLinks=0;
@@ -26,9 +28,11 @@ public class StreetNode {
      * @param x
      * @param y
      */
-    public StreetNode(int x, int y) {
+    public StreetNode(int x, int y, long id) {
         posX = x;
         posY = y;
+        
+        myid = id;
     }
     
     // methods for links

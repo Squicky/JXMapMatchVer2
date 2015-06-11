@@ -32,11 +32,13 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import logging.Logger;
+import myOSM.myOSMMap;
 
 import org.jdesktop.swingx.JXMapKit;
 import org.jdesktop.swingx.JXMapViewer;
 import org.jdesktop.swingx.painter.Painter;
 
+import cartesian.Coordinates;
 import algorithm.GPSToLinkMatcher;
 import algorithm.MatchGPStoNRouteAlgorithm;
 import algorithm.MatchedGPSNode;
@@ -82,6 +84,8 @@ public class JXMapMatchController implements ActionListener,
 	// street map and GPS trace
 	private GPSTrace gpsTrace;
 	private StreetMap streetMap;
+	public myOSMMap myMap;
+
 	
 	// matching classes
 	private GPSToLinkMatcher gpsToLinkMatcher;
@@ -128,7 +132,7 @@ public class JXMapMatchController implements ActionListener,
 	public static Color MULTI_SELECTABLE_LINK_COLOR = Color.GREEN;
 	public static Color SELECTED_LINK_COLOR = Color.ORANGE;
 	public static Color NON_MATCHED_LINK_COLOR = Color.LIGHT_GRAY;
-	public static Color N_ROUTE_LINK_COLOR = Color.WHITE;
+	public static Color N_ROUTE_LINK_COLOR = new Color(255, 0, 255);
 	public static Color SELECTABLE_N_ROUTE_COLOR = Color.GREEN;
 	public static Color DELETABLE_N_ROUTE_COLOR = Color.ORANGE;
 	public static Color GPS_TO_N_ROUTE_UNMATCHED_LINK_COLOR = Color.WHITE;
@@ -149,7 +153,7 @@ public class JXMapMatchController implements ActionListener,
 	private static final int MAP_FILE_INDEX = 0;
 	private static final int NROUTE_FILE_INDEX = 1;
 	private static final int GPS_TRACE_FILE_INDEX = 1;
-	
+		
 	// store arguments here
 	private String[] arguments;
 	
@@ -190,8 +194,11 @@ public class JXMapMatchController implements ActionListener,
 		initMapPainter(jxMapKit, jxMapPainter);
 		
 		// initialize file dialogs with file extension filters
-		jFileOpenDialogGraph = new JFileDialog((Component) jxMapMatchGUI, "large", "Large routing graph (*.large)");
-		jFileOpenDialogGPS = new JFileDialog((Component) jxMapMatchGUI, gpsFileExtensions , gpsFileDescriptions);
+		String [] s1 = {"osm", "large"};
+		String [] s2 = {"OpenStreetMap (*.osm)", "Large routing graph (*.large)"};
+		//jFileOpenDialogGraph = new JFileDialog((Component) jxMapMatchGUI, "large", "Large routing graph (*.large)");
+		jFileOpenDialogGraph = new JFileDialog((Component) jxMapMatchGUI, s1, s2, "C:\\Users\\user\\Desktop\\Uni\\MA\\eclipse\\eclipse_workspace-luna-SR2-win32-x86_64\\git\\OSMStAXParser");
+		jFileOpenDialogGPS = new JFileDialog((Component) jxMapMatchGUI, gpsFileExtensions , gpsFileDescriptions, "C:\\Users\\user\\Desktop\\Uni\\MA\\TRACES\\TRACES.r59619");
 		jFileOpenNRoute = new JFileDialog((Component) jxMapMatchGUI, "nroute", "N route (*.nroute)");
 		jFileSaveNRoute = new JFileDialog((Component) jxMapMatchGUI, "nroute", "N route (*.nroute)");
 		jFileSaveDialogMatchedGPS = new JFileDialog((Component) jxMapMatchGUI, "txt", "Text based files (*.txt)");
@@ -522,13 +529,37 @@ public class JXMapMatchController implements ActionListener,
 			@Override
 			protected Boolean doInBackground() throws Exception {
 				try {
-					streetMap = OSMStAXGraphReader.convertToStreetMap(streetMapFile.getAbsolutePath(), jxMapMatchGUI);
-					streetMap.setColorOfLinks();
-				} catch (Exception e) {
 					
-					System.out.println(e.toString());
+					if (streetMapFile.getName().endsWith(".osm")) {
+						System.out.println("1");
+						myMap = new myOSMMap(streetMapFile);
+						System.out.println("2");
+						myMap.removeUnusedNotesAndWaysAndSetWayParts();
+						System.out.println("3");						
+		                streetMap = myMap.getSteetMap();
+						System.out.println("4");
+					}
+					else {						
+						streetMap = OSMStAXGraphReader.convertToStreetMap(streetMapFile.getAbsolutePath(), jxMapMatchGUI);
+						streetMap.setColorOfLinks();
+					}
+					
+					if (myMap != null && streetMap != null) {
+						System.out.println("5");
+						myMap.linkToStreetMap(streetMap);						
+						System.out.println("6");
+					}
+					
+				} catch (Exception e) {
+					System.out.println("Error: " + e.toString());
 					
 					return false;
+				}
+				
+				String s = "";
+				
+				for(int i=0; i<streetMap.getNrOfNodes(); i++) {
+					s = s + streetMap.getNode(i).myid + "\n";
 				}
 				
 				// set flag we're not in Selected N Route mode anymore by loading new street map
@@ -1109,6 +1140,7 @@ public class JXMapMatchController implements ActionListener,
 														   jxMapMatchGUI.getNRouteThreshold());
 						
 				} catch (Exception e) { 
+					System.out.println("Error: startNRouteAlgorithm: " + e.toString());
 					return false;
 				}
 				
@@ -1297,7 +1329,7 @@ public class JXMapMatchController implements ActionListener,
 				
 				// draw routing graph?
 				if (drawStreetMap){
-					jxMapPainter.drawStreetMap(g2D, jxMapViewer, streetMap, STREET_MAP_COLOR, zoomFactor);
+					jxMapPainter.drawStreetMap(g2D, jxMapViewer, streetMap, STREET_MAP_COLOR, zoomFactor, myMap);
 					//jxMapPainter.drawStreetNodes(g2D, jxMapViewer, streetMap, Color.RED, zoomFactor);
 				}
 				
@@ -1307,6 +1339,15 @@ public class JXMapMatchController implements ActionListener,
 							  SELECTABLE_LINK_COLOR, MULTI_SELECTABLE_LINK_COLOR, SELECTED_LINK_COLOR, NON_MATCHED_LINK_COLOR, zoomFactor);
 				}
 				 
+				// draw selectable n route
+				if (selectedNRouteMode) {
+					jxMapPainter.drawSelectedNRoute(g2D, jxMapViewer, selectedNRoute, N_ROUTE_LINK_COLOR, SELECTABLE_N_ROUTE_COLOR, DELETABLE_N_ROUTE_COLOR, zoomFactor);;
+				}
+				// draw matched n route?
+				else if (drawNRoute && nRouteAlgorithm != null) {
+					jxMapPainter.drawNRoute(g2D, jxMapViewer, nRouteAlgorithm.getNRoute(jxMapMatchGUI.getSelectedNRoute()), N_ROUTE_LINK_COLOR, zoomFactor);
+				}
+
 				
 				// draw matched GPS to N route nodes/route
 				if (drawMatchedGPStoNRoute) {
@@ -1325,14 +1366,6 @@ public class JXMapMatchController implements ActionListener,
 					}
 				}
 				
-				// draw selectable n route
-				if (selectedNRouteMode) {
-					jxMapPainter.drawSelectedNRoute(g2D, jxMapViewer, selectedNRoute, N_ROUTE_LINK_COLOR, SELECTABLE_N_ROUTE_COLOR, DELETABLE_N_ROUTE_COLOR, zoomFactor);;
-				}
-				// draw matched n route?
-				else if (drawNRoute && nRouteAlgorithm != null) {
-					jxMapPainter.drawNRoute(g2D, jxMapViewer, nRouteAlgorithm.getNRoute(jxMapMatchGUI.getSelectedNRoute()), N_ROUTE_LINK_COLOR, zoomFactor);
-				}
 			}
 		});
 	}

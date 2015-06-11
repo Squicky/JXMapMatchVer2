@@ -117,7 +117,7 @@ public class StreetMap {
      * @param l
      */
     public void addLink(StreetLink l){
-        addLink(l.getStartNode(),l.getEndNode());
+        addLink(l.getStartNode(),l.getEndNode(), l.myid, l.startNodeId, l.endNodeId);
     }
     
     /**
@@ -127,15 +127,15 @@ public class StreetMap {
      * @param x2
      * @param y2
      */
-    public void addLink(int x1, int y1, int x2, int y2){
-        addNode(x1,y1);
-        addNode(x2,y2);
+    public void addLink(int x1, int y1, int x2, int y2, long id, long startNoteId, long endNoteId){
+    	
+        addNode(x1,y1, startNoteId);
+        addNode(x2,y2, endNoteId);
         // check if Node adding was successful and add link
-        if ((getNode(x1,y1)!=null)&&(getNode(x2,y2)!=null))
+        if ( getNode(x1,y1,startNoteId) != null && getNode(x2,y2,endNoteId) != null) {
             // if not add Link to StreetMap
-            addLink(getNode(x1, y1),getNode(x2,y2));
-        
-        System.out.println(x1 + "," + y1 + " --> " + x2 + "," + y2);
+            addLink(getNode(x1, y1,startNoteId),getNode(x2,y2,endNoteId), id, startNoteId, endNoteId);        	
+        }
     }
 
     /**
@@ -143,12 +143,12 @@ public class StreetMap {
      * @param n1
      * @param n2
      */
-    public void addLink(StreetNode n1, StreetNode n2) {
+    public void addLink(StreetNode n1, StreetNode n2, long id, long startNoteId, long endNoteId) {
         // check if link already exists, if not create link
         if (getLink(n1,n2)==null){
             if (NrOfLinks < MaxNrOfLinks){
                 // create new link, increase id
-                streetLinks[NrOfLinks]=new StreetLink(n1,n2, linkIDCounter++);
+                streetLinks[NrOfLinks] = new StreetLink(n1,n2, linkIDCounter++, id, startNoteId, endNoteId);
                 // add link to its nodes
                 n1.addLink(streetLinks[NrOfLinks]);
                 n2.addLink(streetLinks[NrOfLinks]);
@@ -307,12 +307,12 @@ public class StreetMap {
      * @param x
      * @param y
      */
-    public void addNode(int x, int y){
+    public void addNode(int x, int y, long nodeId){
         //check if node already exists
-        if (getNode(x, y)==null){
+        if (getNode(x, y, nodeId) == null){
             if (NrOfNodes < MaxNrOfNodes){
                 // if node does not already exist: create one
-                streetNodes[NrOfNodes]=new StreetNode(x,y);
+                streetNodes[NrOfNodes]=new StreetNode(x, y, nodeId);
                 //System.out.println("add Node "+(NrOfNodes+1)+"/"+MaxNrOfNodes+" Lon: "+x+" Lat: "+y);
                 NrOfNodes++;
             }
@@ -325,15 +325,30 @@ public class StreetMap {
      * @param y
      * @return Streetnode
      */
-    public StreetNode getNode(int x, int y){
+    public StreetNode getNode(int x, int y, long myid){
         int i=0;
         while (i<NrOfNodes){
             // check if node exists and has posotion (x,y)
-            if ((x==streetNodes[i].getX())&&(y==streetNodes[i].getY())) return streetNodes[i];
+            if ( x==streetNodes[i].getX() && y==streetNodes[i].getY() && myid == streetNodes[i].myid) return streetNodes[i];
             i++;
         }
         // node does not yet exist
         return null; 
+    }
+    
+    public int getCountNodeId(long id) {
+    	int z = 0;
+    	
+    	int i = 0;
+    	while (i<NrOfNodes){
+            // check if node exists and has posotion (x,y)
+            if (streetNodes[i].myid == id) {
+            	z++;
+            }
+            i++;
+        }
+    	
+    	return z;
     }
 
     

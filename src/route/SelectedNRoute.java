@@ -227,8 +227,8 @@ public class SelectedNRoute {
 	
 	private void seekSelectableLink() {
 		//save nearest point coordinates on street link
-		int nearestX;
-		int nearestY;
+		double nearestX;
+		double nearestY;
 		
         //start and end position of streetLink
         int ax,ay,bx,by;
@@ -362,8 +362,8 @@ public class SelectedNRoute {
 	
 	private void seekDeletableLink() {
 		//save nearest point coordinates on street link
-		int nearestX;
-		int nearestY;
+		double nearestX;
+		double nearestY;
 		
         //start and end position of streetLink
         int ax,ay,bx,by;

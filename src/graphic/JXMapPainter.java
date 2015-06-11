@@ -4,6 +4,10 @@
 
 package graphic;
 
+import myOSM.myOSMMap;
+import myOSM.myOSMNode;
+import myOSM.myOSMWay;
+
 import org.jdesktop.swingx.*;
 
 import algorithm.MatchedGPSNode;
@@ -157,9 +161,14 @@ public class JXMapPainter {
         g.setStroke(new BasicStroke(1));
         
         //draw every GPS node of trace
-        for(int i=0; i<gpsTrace.getNrOfNodes(); i++){
+        for(int i=gpsTrace.getNrOfNodes()-1; i>=0; i--){
         	//set color
         	g.setColor(gpsColor);
+        	
+        	if (gpsTrace.getNodeStatus(i) == 1) {
+        		g.setColor(Color.RED);
+        	}
+        	
             // draw rect for every GPS Point
             // devide x,y coordinates by 2^(zoom-1) to fit to current zoom
             g.drawRect((int)(gpsTrace.getNodeX(i)/zoomFactor),
@@ -169,6 +178,8 @@ public class JXMapPainter {
         // release graphics
         g.dispose();
     }
+    
+    static int cc = 0;
     
     public void drawNRoute(Graphics2D g, JXMapViewer map, Vector<NRoute> nRoutes, Color nRouteColor, double zoomFactor) {
     	// create graphics
@@ -186,20 +197,41 @@ public class JXMapPainter {
         // set brush
         g.setStroke(new BasicStroke(3));
         
+        g.setColor(Color.black);
+        
 		// draw route for each route
-		for (NRoute nRoute : nRoutes) {
-			
-			for (MatchedLink nRouteLink : nRoute.getNRouteLinks()) {
-				// draw line for every link
-				// devide x,y coordinates by 2^(zoom-1) to fit to current zoom
-				g.drawLine((int) (nRouteLink.getStreetLink().getStartX() / zoomFactor),
-						(int) (nRouteLink.getStreetLink().getStartY() / zoomFactor),
-						(int) (nRouteLink.getStreetLink().getEndX() / zoomFactor),
-						(int) (nRouteLink.getStreetLink().getEndY() / zoomFactor));
-			}
+        for (int i=0; i < nRoutes.size(); i++ ){
+        	
+//        	if (i == cc) 
+        	{
+
+        		NRoute nRoute = nRoutes.get(i);
+        		
+        		System.out.println("printing nRoute.IdOfThisNRoute: " + nRoute.IdOfThisNRoute + " | s: " + nRoute.getScore());
+
+    			for (MatchedLink nRouteLink : nRoute.getNRouteLinks()) {
+    				
+    				System.out.print(nRouteLink.getStreetLink().startNodeId + " - " + nRouteLink.getStreetLink().endNodeId + " | ");
+    				
+    				// draw line for every link
+    				// devide x,y coordinates by 2^(zoom-1) to fit to current zoom
+    				g.drawLine((int) (nRouteLink.getStreetLink().getStartX() / zoomFactor),
+    						(int) (nRouteLink.getStreetLink().getStartY() / zoomFactor),
+    						(int) (nRouteLink.getStreetLink().getEndX() / zoomFactor),
+    						(int) (nRouteLink.getStreetLink().getEndY() / zoomFactor));
+    			}
+    			
+    			System.out.print("\n");
+        		
+        	}
 	
-		}
-       
+        }
+		
+        if (nRoutes.size() > 0) {
+    		cc++;
+    		cc = cc % nRoutes.size();        	
+        }
+
     }
     
     public void drawSelectedNRoute(Graphics2D g, JXMapViewer map, SelectedNRoute selectedNRoute, Color nRouteColor, Color selectableColor, Color deletableColor, double zoomFactor) {
@@ -306,16 +338,18 @@ public class JXMapPainter {
         //release graphics
         g.dispose();
     }
-
+    
+    static int c = 0;
+    
     /**
      * draw StreetLinks of StreetMap street on Graphics g (Color: color)
      * use JXMapView map to get zoom
      * @param g
      * @param map
-     * @param street
+     * @param streetMap
      * @param color
      */
-    public void drawStreetMap(Graphics2D g,JXMapViewer map, StreetMap street, Color color, double zoomFactor){
+    public void drawStreetMap(Graphics2D g,JXMapViewer map, StreetMap streetMap, Color color, double zoomFactor, myOSMMap myMap){
     	
         // create graphics
         g = (Graphics2D) g.create();
@@ -333,40 +367,124 @@ public class JXMapPainter {
 
     	Random random = new Random();
 
-        for(int i=0; i<street.getNrOfLinks();i++){
-        	
-        	int DirectionColor = street.getLink(i).DirectionColor;
-        	
-        	if (DirectionColor == 0) {
-        		color = Color.red;
-        	}
-        	else if (DirectionColor == 1) {
-        		color = Color.orange;
-        	}  
-        	else if (DirectionColor == 2) {
-        		color = Color.yellow;
-        	}
-        	else {
-            	color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
-        	}
-
+    	int a = 0;
+    	int b = 0;
+    	
+    	if (myMap == null ) {
     		color = Color.red;
-        	color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
-        	
-        	if (DirectionColor != -1 || true) {
-                g.setColor(color);
+    		
+            for(int i=0; i<streetMap.getNrOfLinks();i++){
             	
-                // draw line for every link
-                // devide x,y coordinates by 2^(zoom-1) to fit to current zoom
-                g.drawLine((int)(street.getStartX(i)/zoomFactor),
-                        (int)(street.getStartY(i)/zoomFactor),
-                        (int)(street.getEndX(i)/zoomFactor),
-                        (int)(street.getEndY(i)/zoomFactor));        		
-        	}
+            	int DirectionColor = streetMap.getLink(i).DirectionColor;
+            	
+            	StreetLink sl = streetMap.getLink(i);
+            	
+            	/*
 
+            	color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
+            	*/
+            	
+//            	if (256332999 == sl.startNoteId || 256332999 == sl.endNoteId) 
+            	{
+                	if (DirectionColor != -1 || true) {
+                        g.setColor(color);
+                        
+              			if (sl.getStartX() == sl.getEndX()) {
+            				if ( sl.getStartY() <= sl.getEndY()) {
+            					g.setColor(Color.YELLOW);
+            				}
+            				else {
+            					g.setColor(Color.ORANGE);            					
+            				}
+            			} else {
+            				if (sl.getStartX() < sl.getEndX()) {
+            					g.setColor(Color.YELLOW);
+            				} else {
+            					g.setColor(Color.ORANGE);
+            				}
+            			}
+                        
+                        // draw line for every link
+                        // devide x,y coordinates by 2^(zoom-1) to fit to current zoom
+                        g.drawLine((int)(sl.getStartX()/zoomFactor),
+                                (int)(sl.getStartY()/zoomFactor),
+                                (int)(sl.getEndX()/zoomFactor),
+                                (int)(sl.getEndY()/zoomFactor));     
+                        a++;
+                        
+                	}
+            	}
+
+            }
+            g.dispose();
+        } else {
+    		color = Color.BLACK;
+    		g.setColor(color);
+
+    		Color cc = Color.GREEN;
+    		
+    		for (int i=0; i < myMap.ways.size(); i++)
+    		
+//    		c++;
+//    		c = c % myMap.ways.size();
+//    		    		int i = c;
+        	{
+
+				myOSMWay w = myMap.ways.get(i);
+				
+//				System.out.println(w.id + " : " + w.name + " | " + w.WayParts.size());
+
+    			color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
+        		g.setColor(color);
+        		
+//				System.out.println(c + " : "  + w.id + " : " + w.refs.get(0).id + " --> " + w.refs.get(w.refs.size()-1).id + " " + w.onyWay);
+        		
+    			for (int j=0; j < myMap.ways.get(i).WayParts.size(); j++) {
+
+    				myOSMNode n1 = w.WayParts.get(j).startNode;
+    				myOSMNode n2 = w.WayParts.get(j).endNode;
+
+
+					if (myMap.ways.get(i).onyWay == false) {
+        				g.setColor(Color.GREEN);
+        			} 
+            		else {
+            			if (n1.x == n2.x) {
+            				if (n1.y <= n2.y) {
+            					g.setColor(Color.ORANGE);
+            				}
+            				else {
+            					g.setColor(Color.YELLOW);
+            				}
+            			} else {
+            				if (n1.x < n2.x) {
+            					g.setColor(Color.YELLOW);
+            				} else {
+            					g.setColor(Color.ORANGE);
+            				}
+            			}
+            		}
+
+					
+//                	if (i == (abc % myMap.ways.size())) 
+                	{
+        				g.drawLine((int)(n1.x / zoomFactor), (int)(n1.y / zoomFactor), (int)(n2.x / zoomFactor), (int)(n2.y / zoomFactor));
+            			        				
+        				b++;
+                	}
+                	
+                	
+                	
+                	
+    			}
+    			
+    		}
+    		
+    		g.dispose();
         }
-        g.dispose();
     }
+    	
+
     /**
      * draw StreetNodes of StreetMap street on Graphics g (Color: color)
      * use JXMapView map to get zoom

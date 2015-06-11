@@ -173,9 +173,9 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 		// create artificial link which is build of first and last GPS node from matched N link
 		ReorderedMatchedGPSNode gpsNodeStart = reorderedMatchedGPSNodes.get(currentMatchedNLink.getRangeStartIndex());
 		ReorderedMatchedGPSNode gpsNodeEnd = reorderedMatchedGPSNodes.get(currentMatchedNLink.getRangeEndIndex());
-		StreetNode startNode = new StreetNode(gpsNodeStart.getX(), gpsNodeStart.getY());
-		StreetNode endNode = new StreetNode(gpsNodeEnd.getX(), gpsNodeEnd.getY());		
-		StreetLink artLink = new StreetLink(startNode, endNode);
+		StreetNode startNode = new StreetNode(gpsNodeStart.getX(), gpsNodeStart.getY(), -2);
+		StreetNode endNode = new StreetNode(gpsNodeEnd.getX(), gpsNodeEnd.getY(), -2);		
+		StreetLink artLink = new StreetLink(startNode, endNode, -3, startNode.myid, endNode.myid);
 		double artLinkLength = artLink.getLength();
 		Logger.println("artificial Link length: " + artLinkLength);
 		
@@ -186,13 +186,13 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 			ReorderedMatchedGPSNode matchedGPSNode = reorderedMatchedGPSNodes.get(i);
 			
 			// get matched position on artificial link
-			int matchedX = Coordinates.getNearestPointX(matchedGPSNode, artLink);
-			int matchedY = Coordinates.getNearestPointY(matchedGPSNode, artLink);
+			double matchedX = Coordinates.getNearestPointX(matchedGPSNode, artLink);
+			double matchedY = Coordinates.getNearestPointY(matchedGPSNode, artLink);
 			
 			// build share link from artificial link start node until matched position
-			StreetNode shareStartNode = new StreetNode (artLink.getStartX(), artLink.getStartY());
-			StreetNode shareEndNode = new StreetNode (matchedX, matchedY);
-			StreetLink shareLink = new StreetLink(shareStartNode, shareEndNode);
+			StreetNode shareStartNode = new StreetNode (artLink.getStartX(), artLink.getStartY(), artLink.myid);
+			StreetNode shareEndNode = new StreetNode ((int)matchedX, (int)matchedY, -4);
+			StreetLink shareLink = new StreetLink(shareStartNode, shareEndNode, -4, shareStartNode.myid, shareEndNode.myid);
 			
 			// get share, avoid null division
 			double share = (artLinkLength != 0.0f) ? shareLink.getLength() / artLinkLength : 0.0f ;
@@ -292,12 +292,12 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 		Logger.print("matching GPS node: " + nodeIndex + "\n" + "----------------------------------------" + "\n");
 		
 		// get matched position on link
-		int matchedX = Coordinates.getNearestPointX(matchedGPSNode, matchedNLink.getStreetLink());
-		int matchedY = Coordinates.getNearestPointY(matchedGPSNode, matchedNLink.getStreetLink());
+		double matchedX = Coordinates.getNearestPointX(matchedGPSNode, matchedNLink.getStreetLink());
+		double matchedY = Coordinates.getNearestPointY(matchedGPSNode, matchedNLink.getStreetLink());
 		
 		// set matched position to GPS node
-		matchedGPSNode.setMatchedX(matchedX);
-		matchedGPSNode.setMatchedY(matchedY);
+		matchedGPSNode.setMatchedX((int)matchedX);
+		matchedGPSNode.setMatchedY((int)matchedY);
 		matchedGPSNode.setMatched(true);
 		
 		// adjust matching range

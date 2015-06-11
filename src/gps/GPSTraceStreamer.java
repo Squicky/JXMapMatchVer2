@@ -165,7 +165,11 @@ public class GPSTraceStreamer {
 			int currentLineNr = 0;
 			float currentProgress = 0;
 			
+			int count = 0;
+			
 			while((line = bReader.readLine()) != null){
+				count++;
+				
 				// read line must confirm to pattern
 				if (gpsPattern.matcher(line).matches() || line.startsWith("2014-")){
 					gpsData = gpsSplitPattern.split(line);
@@ -201,8 +205,10 @@ public class GPSTraceStreamer {
 				    // check if its time is greater then previous GPS point's time
 					if (timeStamp > prevTime){
 						// add node to GPS Path
-						gpsTrace.addNode(Coordinates.getCartesianX(longitude, latitude),Coordinates.getCartesianY(longitude, latitude), timeStamp);
-						prevTime = timeStamp;
+						if (count % 1 == 0) {
+							gpsTrace.addNode(Coordinates.getCartesianX(longitude, latitude),Coordinates.getCartesianY(longitude, latitude), timeStamp);							
+							prevTime = timeStamp;
+						}
 					}
 				}
 				// ignore comments
@@ -216,6 +222,9 @@ public class GPSTraceStreamer {
 				currentProgress = ((float) currentLineNr / nrOfGPSPoints * 100);
 				statusUpdate.updateStatus("reading line Nr." + currentLineNr + "...", currentProgress);
 			}
+			
+			
+			nrOfGPSPoints = count;
 			
 			// close reader
 			bReader.close();

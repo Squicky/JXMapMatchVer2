@@ -12,6 +12,7 @@ import algorithm.MatchedLink;
 import cartesian.Coordinates;
 import gps.GPSTrace;
 import logging.Logger;
+import myOSM.myOSMWayPart;
 import osm.StreetLink;
 import osm.StreetMap;
 import route.NRoute;
@@ -58,8 +59,8 @@ public class NRouteAlgorithm {
 	public static final String N_ROUTE_RECESSED = "RECESSED";
 	
 	// constants to control N route size 
-	public static final int MIN_N_ROUTE_SIZE = 3;
-	public static final int DEFAULT_N_ROUTE_SIZE = 10;
+	public static final int MIN_N_ROUTE_SIZE = 1;
+	public static final int DEFAULT_N_ROUTE_SIZE = 3;
 	public static final int MAX_N_ROUTE_SIZE = 1000;
 	
 	// constants for minimum, maximum, default intersection reached value
@@ -113,15 +114,33 @@ public class NRouteAlgorithm {
 		// create new sorted set
 		TreeSet<NRoute> sortedSetS = new TreeSet<NRoute>();
 		
+		for (int currentGPSNodeIndex = 0; currentGPSNodeIndex < gpsTrace.getNrOfNodes(); currentGPSNodeIndex++) {
+			gpsTrace.setNodeStatus(currentGPSNodeIndex, 0);
+		}
+		
 		// 1. get GPS Point
 		//initNewGPSPoint:
-			for (int gpsNodeIndex = 0; gpsNodeIndex  < 1 /*gpsTrace.getNrOfNodes()*/; gpsNodeIndex++)
-			{
+		for (int gpsNodeIndex = 0; gpsNodeIndex  < 1 /*gpsTrace.getNrOfNodes()*/; gpsNodeIndex++)
+		{
 				// 2. initialize sorted set with N nearest path/links
 				sortedSetS = getSetOfNPathOfNNearestLinks(gpsNodeIndex);
 				
+//				int in = 0;
+//				for (NRoute nRoute : sortedSetS) {
+//					System.out.println("nRoute: " + in + " | " + nRoute.getNRouteLenght() + " | " + nRoute.getScore());
+//					nRoute.print();
+//					in++;
+//				}
+				
+				// for painting
+				nRouteSet = sortedSetS;
+				
+				gpsTrace.setNodeStatus(gpsNodeIndex, 1);
+				
 				// 3. get next GPS point
 				for (int currentGPSNodeIndex = gpsNodeIndex + 1; currentGPSNodeIndex < gpsTrace.getNrOfNodes(); currentGPSNodeIndex++) {
+
+					gpsTrace.setNodeStatus(currentGPSNodeIndex, 1);
 					
 					// sleep thread and refresh GUI for animation or pause if algorithm was disrupt or 
 					// shut down algorithm 
@@ -143,8 +162,26 @@ public class NRouteAlgorithm {
 						Logger.println("\nAdding GPSNode(" + currentGPSNodeIndex + ") to nRoute Nr." + nRouteIndex);
 						nRoute.addGPSNodeToLastLink(currentGPSNodeIndex);
 						
+						
+						sortedSetV.add(nRoute);
+
+						// for painting
+						nRouteSet = sortedSetV;
+						
+						createChildPathAndAddToSet(nRoute, sortedSetV);
+						
+						// for painting
+						nRouteSet = sortedSetV;
+
+/*						
 						// 4. check for intersection
-						if (hasReachedIntersection(nRoute.getLastMatchedLink())) {
+						if (hasReachedIntersection(nRoute, nRoute.getLastMatchedLink())) {
+
+							sortedSetV.add(nRoute);
+							
+							// for painting
+							nRouteSet = sortedSetV;
+
 							Logger.println("Intersection reached!");
 							
 							// create child path, match last matched GPS node to new
@@ -152,29 +189,77 @@ public class NRouteAlgorithm {
 							// furthermore add child path to new sorted set
 							createChildPathAndAddToSet(nRoute, sortedSetV);
 							
+							// for painting
+							nRouteSet = sortedSetV;
 						}
 						// otherwise add this route to temporary sorted set v
 						else {
 							sortedSetV.add(nRoute);
+
+							// for painting
+							nRouteSet = sortedSetV;
+							
+							createChildPathAndAddToSet(nRoute, sortedSetV);
+							
+							// for painting
+							nRouteSet = sortedSetV;
 						}
+*/
 						
 						// increase n route index
 						nRouteIndex++;
 					}
 					
+//					in = 0;
+//					for (NRoute nRoute : sortedSetV) {
+//						System.out.println("nRoute: " + in + " | " + nRoute.getNRouteLenght() + " | " + nRoute.getScore());
+//						nRoute.print();
+//						in++;
+//					}
+					
 					// extract best n path and set as current sorted set
 					sortedSetS = getBestNPathFromSortedSet(sortedSetV);
+										
+//					in = 0;
+//					for (NRoute nRoute : sortedSetS) {
+//						System.out.println("nRoute: " + nRoute.IdOfThisNRoute + " | " + nRoute.getNRouteLenght() + " | " + nRoute.getScore());
+//						nRoute.print();
+//						in++;
+//					}
 					
 					// for painting
 					nRouteSet = sortedSetS;
 					
+					drawComponent.repaint();
+					
 					printScore(sortedSetS);
 				}
 				
-			}
+		}
 		
 		// add route to container
 		//nRouteSetContainer.add(sortedSet);
+		
+			
+		
+
+		NRoute bestNRoute = null;
+		
+		for (NRoute nRoute : sortedSetS) {
+			if (bestNRoute == null) {
+				bestNRoute = nRoute;
+			} else {
+				if (nRoute.getScore() == bestNRoute.getScore()) {
+					if (nRoute.getLength() < bestNRoute.getLength()) {
+						bestNRoute = nRoute;
+					}
+				}
+			}
+		}
+		
+		sortedSetS.clear();
+		
+		sortedSetS.add(bestNRoute);
 		
 		// set as new route set
 		nRouteSet = sortedSetS;
@@ -214,6 +299,7 @@ public class NRouteAlgorithm {
 			// save minimum distance and street link during search progress 
 			double minDistance = Double.MAX_VALUE;
 			StreetLink nearestStreetLink = null;
+			
 			
 			// search nearest link
 			for (StreetLink streetLink : streetLinks) {
@@ -284,7 +370,7 @@ public class NRouteAlgorithm {
 				// add current outgoing link to child path
 				// match last GPS node on it
 				nRouteChild.addLink(outgoingLink, lastMatchedGPSNodeIndex);
-				
+
 				// add child path to hand over sorted set
 				sortedSet.add(nRouteChild);
 			}
@@ -310,7 +396,8 @@ public class NRouteAlgorithm {
 		
 		// initialize iterator
 		Iterator<NRoute> it = sortedSet.iterator();
-		
+
+		/*
 		// counter variable
 		int i = 0;
 		
@@ -318,6 +405,59 @@ public class NRouteAlgorithm {
 		while (it.hasNext() && i < nRouteSize) {
 			nBestSortedSet.add(it.next());
 			i++; // increase counter
+		}
+		*/
+
+
+		NRoute nRouteAlt = null;
+		NRoute nRouteNeu = null;
+		boolean istGleichGut = false;
+		boolean alteNRouteLinksgleichundScoreBesser = false;
+		while (it.hasNext()) {
+			istGleichGut = false;
+			alteNRouteLinksgleichundScoreBesser = false;
+			
+			nRouteNeu = it.next();
+			
+			Iterator<NRoute> it2 = nBestSortedSet.iterator();
+			
+			while (it2.hasNext()) {
+				nRouteAlt = it2.next();
+
+				
+				if (nRouteNeu.istGleich(nRouteAlt)) {	
+					istGleichGut = true;
+				}
+				
+				
+				if (nRouteNeu.istNRouteLinksGleichUndScoreBesser(nRouteAlt)) {
+					nBestSortedSet.remove(nRouteAlt);
+					it2 = nBestSortedSet.iterator();
+					istGleichGut = false;
+					alteNRouteLinksgleichundScoreBesser = false;
+				} else {
+					if (nRouteAlt.istNRouteLinksGleichUndScoreBesser(nRouteNeu)) {
+						alteNRouteLinksgleichundScoreBesser = true;
+					}
+				}
+				
+				
+				
+			}
+			
+			if (nBestSortedSet.size() == 0) {
+				nBestSortedSet.add(nRouteNeu);
+			} 
+			else if (istGleichGut == false && alteNRouteLinksgleichundScoreBesser == false) {
+				if (nBestSortedSet.size() < nRouteSize) {
+					nBestSortedSet.add(nRouteNeu);					
+				} else {
+					if (nBestSortedSet.last().getScore() == nRouteNeu.getScore()) {
+						nBestSortedSet.add(nRouteNeu);
+					}
+				}
+			}
+			
 		}
 		
 		// return set including best n path
@@ -368,7 +508,37 @@ public class NRouteAlgorithm {
 	 * @param streetLink
 	 * @return
 	 */
-	private boolean hasReachedIntersection(MatchedLink matchedLink) {
+	private boolean hasReachedIntersection(NRoute nRoute, MatchedLink matchedLink) {
+		
+		int px = gpsTrace.getNode(matchedLink.getRangeEndIndex()).getX();
+		int py = gpsTrace.getNode(matchedLink.getRangeEndIndex()).getY();
+		
+		myOSMWayPart wp;
+		
+		Vector<myOSMWayPart> vwp = nRoute.getLastOSMWayPart();
+		
+		int j = 0;
+		for (j=0; j < vwp.size(); j++) {
+			wp = vwp.get(j);
+			
+			int ax = wp.startNode.x;
+			int ay = wp.startNode.y;
+			int bx = wp.endNode.x;
+			int by = wp.endNode.y;
+			
+			double prec = Coordinates.getPercentOfPointInWayPart(px, py, ax, ay, bx, by);
+
+			double right = intersectionReachedTreshold *100.0;
+			
+			if ( right < prec) {
+				return true;
+			}
+		}
+
+		if (0 <= j) {
+			return false;
+		}
+		
 		// get street length
 		double streetLength = Coordinates.getStreetLength(matchedLink.getStreetLink());
 		
@@ -383,7 +553,12 @@ public class NRouteAlgorithm {
 		}
 
 		// check if matched GPS points has reached intersection
-		return  (gpsPointsDistances > (intersectionReachedTreshold * streetLength)) ? true : false;
+		if (gpsPointsDistances > (intersectionReachedTreshold * streetLength)) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 	
 	/**
@@ -395,13 +570,28 @@ public class NRouteAlgorithm {
 	public Vector<NRoute> getNRoute(int selectedNRouteIndex) {
 		// store extracted routes here
 		Vector<NRoute> selectedNRoute = new Vector<NRoute>();
-		
+
 		// initialize iterator
 		Iterator<NRoute> it = nRouteSet.iterator();
-					
+
 		// temporary variables
 		int i = 0;
 		NRoute nRoute = null;
+		
+		while(it.hasNext()) {
+			nRoute = it.next();
+			
+			if (i == selectedNRouteIndex || true) {
+				selectedNRoute.add(nRoute);
+//				return selectedNRoute;
+			}
+			
+			i++;
+		}
+		
+		if (selectedNRouteIndex != -1) {
+			return selectedNRoute;			
+		}
 					
 		// try to get desired n route
 		while(it.hasNext() && i <= selectedNRouteIndex) {

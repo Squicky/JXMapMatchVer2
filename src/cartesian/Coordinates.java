@@ -189,7 +189,7 @@ public class Coordinates {
           * @param y2
           * @return double
           */
-         public static double getDistanceSquared(int x1, int y1, int x2, int y2){
+         public static double getDistanceSquared(int x1, int y1, double x2, double y2){
              return Math.abs(((double)(x2-x1)*(double)(x2-x1))+((double)(y2-y1)*(double)(y2-y1)));
          }
 
@@ -201,7 +201,7 @@ public class Coordinates {
           * @param y2
           * @return double
           */
-         public static double getDistance(int x1, int y1, int x2, int y2){
+         public static double getDistance(int x1, int y1, double x2, double y2){
              return Math.sqrt( getDistanceSquared(x1, y1, x2, y2) );
          }
          
@@ -215,7 +215,12 @@ public class Coordinates {
           * @param by
           * @return X coordinate on line (from (ax,ay) to (bx,by)) with shortest distance to point (px,py)
           */
-         public static int getNearestPointX(int px, int py, int ax, int ay, int bx, int by){
+         public static double getNearestPointX(int px, int py, int ax, int ay, int bx, int by){
+        	 
+        	 if (ax == bx && ay == by) {
+        		 return ax;
+        	 }
+        	 
              // berechne m:
              // m ist Anteil der gesamten Strecke (ax,ay) nach (bx,by), so dass die kürzeste
              // Distanz zu Punkt (px,py) erreicht ist
@@ -227,7 +232,7 @@ public class Coordinates {
                  else return bx;
              }
              // gib nur X koordinate aus
-             return (int)(ax+m*(bx-ax));
+             return (double)(ax+m*(bx-ax));
          }
          /**
           * gets nearest matched GPS point y-position onto street link
@@ -239,7 +244,12 @@ public class Coordinates {
           * @param by
           * @return Y coordinate on line (from (ax,ay) to (bx,by)) with shortest distance to point (px,py)
           */
-         public static int getNearestPointY(int px, int py, int ax, int ay, int bx, int by){
+         public static double getNearestPointY(int px, int py, int ax, int ay, int bx, int by){
+        	 
+        	 if (ax == bx && ay == by) {
+        		 return ay;
+        	 }
+        	 
              // berechne m:
              // m ist Anteil der gesamten Strecke (ax,ay) nach (bx,by), sodass die kürzeste
              // Distanz zu Punkt (px,py) erreicht ist
@@ -252,17 +262,42 @@ public class Coordinates {
                  else return by;
              }
              // gib nur Y koordinate aus
-             return (int)(ay+m*(by-ay));
+             return (double)(ay+m*(by-ay));
          }
         
+         
+         public static double getPercentOfPointInWayPart(int px, int py, int ax, int ay, int bx, int by){
+        	 
+        	 double lenghtWayPart = ((bx - ax) * (bx - ax)) + ((by - ay) * (by - ay));
+        	 lenghtWayPart = Math.sqrt(lenghtWayPart);
+        	 
+        	 int ppx = (int) getNearestPointX(px, py, ax, ay, bx, by);
+        	 int ppy = (int) getNearestPointY(px, py, ax, ay, bx, by);
+        	 
+        	 if (ppx == ax && ppy == ay) {
+        		 return 0;
+        	 }
+        	 
+        	 if (ppx == bx && ppy == by) {
+        		 return 100;
+        	 }
+        	 
+        	 double lenghtStartToPint = ((ppx - ax) * (ppx - ax)) + ((ppy - ay) * (ppy - ay));
+        	 lenghtStartToPint = Math.sqrt(lenghtStartToPint);
+        	 
+        	 double perc = lenghtStartToPint / (lenghtWayPart / 100.0);
+        	 
+        	 return perc;
+         }
+         
          /**
           * gets nearest matched gps point x-position onto street link
           * @param gpsNode
           * @param streetLink
           * @return X coordinate on street link with shortest distance to gps node
           */
-         public static int getNearestPointX(GPSNode gpsNode, StreetLink streetLink){
-       	  //delegate
+         public static double getNearestPointX(GPSNode gpsNode, StreetLink streetLink){
+       	  //delegate 
        	  return getNearestPointX(gpsNode.getX(), gpsNode.getY(), streetLink.getStartX(), streetLink.getStartY(),
        			  		   		  streetLink.getEndX(), streetLink.getEndY());
          }
@@ -273,7 +308,7 @@ public class Coordinates {
          * @param streetLink
          * @return Y coordinate on street link with shortest distance to gps node
          */
-         public static int getNearestPointY(GPSNode gpsNode, StreetLink streetLink){
+         public static double getNearestPointY(GPSNode gpsNode, StreetLink streetLink){
         	 //delegate
         	 return getNearestPointY(gpsNode.getX(), gpsNode.getY(), streetLink.getStartX(), streetLink.getStartY(),
       			  		   		  streetLink.getEndX(), streetLink.getEndY());

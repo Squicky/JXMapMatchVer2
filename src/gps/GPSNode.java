@@ -18,6 +18,8 @@ public class GPSNode {
     private int x = 0;
     private int y = 0;
     
+    public int status = 0;
+    
     /**
      * create new GPSNode at position (x,y) with timestamp t
      * @param x

@@ -9,6 +9,8 @@ import gps.GPSNode;
 import java.util.NoSuchElementException;
 import java.util.Vector;
 
+import route.NRoute;
+import myOSM.myOSMWayPart;
 import algorithm.MatchedRange;
 
 /**
@@ -17,9 +19,15 @@ import algorithm.MatchedRange;
  */
 public class StreetLink {
 	
+	public myOSMWayPart myWayPart = null;
+	public myOSMWayPart myWayPartBackDirection = null;
+	
 	public int markiert = 0;
 	
 	private long id;
+	public long myid = -1;
+	public long startNodeId = -1;
+	public long endNodeId = -1;
 	
 	public final static long NO_ID = -1;
 
@@ -38,16 +46,16 @@ public class StreetLink {
 	public static final int END_NODE = 2;
 	public static final int BOTH_NODE = 3;
 	
-	public StreetLink(StreetNode n1, StreetNode n2) {
-    	this(n1, n2, NO_ID, false);
+	public StreetLink(StreetNode n1, StreetNode n2, long myid, long startNodeId, long endNodeId) {
+    	this(n1, n2, NO_ID, false, myid, startNodeId, endNodeId);
     }
 	
-	public StreetLink(StreetNode n1, StreetNode n2, long id) {
-		this(n1, n2, id, false);
+	public StreetLink(StreetNode n1, StreetNode n2, long id, long myid, long startNodeId, long endNodeId) {
+		this(n1, n2, id, false, myid, startNodeId, endNodeId);
 	}
 	
-	public StreetLink(StreetNode n1, StreetNode n2, boolean artificial) {
-		this(n1, n2, NO_ID, artificial);
+	public StreetLink(StreetNode n1, StreetNode n2, boolean artificial, long myid, long startNodeId, long endNodeId) {
+		this(n1, n2, NO_ID, artificial, myid, startNodeId, endNodeId);
 	}
     
 	public int DirectionColor = -1;
@@ -84,7 +92,7 @@ public class StreetLink {
      * @param id identifier
      * @param artificial is this street link virtual
      */
-    public StreetLink(StreetNode n1, StreetNode n2, long id, boolean artificial) {
+    public StreetLink(StreetNode n1, StreetNode n2, long id, boolean artificial, long myid, long startNodeId, long endNodeId) {
     	// set street nodes
     	startNode = n1;
         endNode = n2;
@@ -92,6 +100,10 @@ public class StreetLink {
         this.artificial = artificial;
         // set id
         this.id = id;
+        this.myid = myid;
+        this.startNodeId = startNodeId;
+        this.endNodeId = endNodeId;
+        
         // set selected counter
         selectedCounter = 0;
         // create vector for storing matched gpsNodes

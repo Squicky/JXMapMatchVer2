@@ -65,6 +65,10 @@ public class JXMapMatchGUI extends JFrame implements JXMapMatchGUIInterface {
 	private JPanelBoxLayout jPanelNRoute; 		// BoxLayout y-axis
 	private JPanelBoxLayout jPanelSelectRoute; 	// BoxLayout y-axis 
 	private JPanel jPanelStatusBar;				// BoxLayout x-axis
+	
+	private JPanelBoxLayout jPanelTest; 	
+	private JTextField jTextFieldTest;
+	
 
     // JScrollPane
     private JScrollPane jScrollPaneRight;
@@ -208,6 +212,8 @@ public class JXMapMatchGUI extends JFrame implements JXMapMatchGUIInterface {
 		// initialize Select Route panel
 		this.statusUpdate.updateStatus("loading route select panel...");
 		initSelectRoutePanel(jPanelRight);
+		
+		initTestPanel(jPanelRight);
 		
 		// initialize status bar
 		this.statusUpdate.updateStatus("loading status bar...");
@@ -496,6 +502,20 @@ public class JXMapMatchGUI extends JFrame implements JXMapMatchGUIInterface {
 		
 		// add to container
 		container.add(jPanelSelectRoute);
+	}
+	
+	private void initTestPanel(Container container) {
+		jPanelTest = new JPanelBoxLayout(BoxLayout.Y_AXIS, 60, 5, "Test");
+		
+		jPanelTest.setMaximumSize(new Dimension(150,150));
+		
+		jTextFieldTest = new JTextField();
+//		jTextFieldTest.setMaximumSize();
+		//		jTextFieldTest.setAlignmentX(CENTER_ALIGNMENT);
+		
+		jPanelTest.add(jTextFieldTest);
+		
+		container.add(jPanelTest);
 	}
 	
 	private void initStatusBar(Container container) {

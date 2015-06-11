@@ -321,7 +321,8 @@ public class SelectedRoute {
 				}
 				
 				// create artificial link and set it as new selectable link
-				StreetLink artificialLink = new StreetLink(startNode, endNode, true);
+				StreetLink artificialLink = new StreetLink(startNode, endNode, true, -2, startNode.myid, endNode.myid);
+				
 				// add link to start and end nodes
 				startNode.addLink(artificialLink);
 				endNode.addLink(artificialLink);
@@ -371,8 +372,8 @@ public class SelectedRoute {
 		StreetLink lastSelectedStreetLink = getLastSelectedLink();
 		
 		//save nearest point coordinates on street link
-		int nearestX;
-		int nearestY;
+		double nearestX;
+		double nearestY;
 		
 		//save distance/current minimal distance to a street link
 		double distance = Double.MAX_VALUE;

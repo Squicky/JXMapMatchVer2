@@ -41,6 +41,21 @@ public class GPSTrace {
         this.refTimeStamp = timestamp;
     }
     
+    public int getNodeStatus(int index) {
+    	return nodes[index].status;
+    }
+
+    public void setNodeStatus(int index, int _status) {
+    	nodes[index].status = _status;
+    }
+    
+    public void resetNodeSatus() {
+        for(int i=0; i<getNrOfNodes(); i++){
+        	nodes[i].status = 0;
+        }
+    }
+
+    
     public long getRefTimeStamp(){
     	return refTimeStamp;
     }

@@ -31,7 +31,7 @@ public class JFileDialog {
 	 */
 	public JFileDialog(Component parentComponent, String fileExtension, String fileDescription) {
 		// call other constructor with converted strings
-		this(parentComponent, convertStringToArray(fileExtension), convertStringToArray(fileDescription));
+		this(parentComponent, convertStringToArray(fileExtension), convertStringToArray(fileDescription), "");
 	}
 		
 	/**
@@ -42,13 +42,17 @@ public class JFileDialog {
 	 * @param fileDescriptions
 	 * @throws Exception
 	 */
-	public JFileDialog(Component parentComponent, final String[] fileExtensions, final String[] fileDescriptions) {
+	public JFileDialog(Component parentComponent, final String[] fileExtensions, final String[] fileDescriptions, String CurrentDirectory) {
 		// save parent component
 		this.parentComponent = parentComponent;
 		
+		if (CurrentDirectory == null || CurrentDirectory.isEmpty()) {
+			CurrentDirectory = "";
+		}
+		
 		// create file chooser instance, overwrite approve selection method in order to avoid
 		// overwritten files by accident
-		jFileChooser = new JFileChooser() {  
+		jFileChooser = new JFileChooser(CurrentDirectory) {  
 			// generated serial version UID
 			private static final long serialVersionUID = 1L;
 			
@@ -110,6 +114,10 @@ public class JFileDialog {
 		catch (IndexOutOfBoundsException e) {
 			System.err.println("Size of file descriptions array is smaller than file extensions array");
 		}
+	}
+	
+	public void setCurrentDirectory(String dir) {
+//		jFileChooser.setCurrentDirectory(arg0);
 	}
 	
 	/**
