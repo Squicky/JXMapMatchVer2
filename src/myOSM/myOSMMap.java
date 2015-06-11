@@ -630,7 +630,11 @@ public class myOSMMap {
   		  			
   		  		}
   		  		else if (lastkey.equals("lanes")){
-  		  			tempWay.lanes = Integer.parseInt( parser.getAttributeValue(i).split(";")[0] );
+  		  			try {
+  	  		  			tempWay.lanes = Integer.parseInt( parser.getAttributeValue(i).split(";")[0] );  		  				
+  		  			} catch (NumberFormatException e) {
+  		  				tempWay.lanes = 1;
+  		  			}
   		  		}
   		  		else if (lastkey.equals("name")){
   		  			tempWay.name = parser.getAttributeValue(i);
