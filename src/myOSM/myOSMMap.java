@@ -23,13 +23,13 @@ public class myOSMMap {
 
 	public int test = 1;
 	
-	//public List<myOSMNode> notes = new LinkedList<myOSMNode>();
-	public Map<Long, myOSMNode> nodes = new HashMap<Long, myOSMNode>();
+	public List<myOSMNode> nodes = new LinkedList<myOSMNode>();
+	//public Map<Long, myOSMNode> nodes = new HashMap<Long, myOSMNode>();
 	public long count_nodes = 0;
 	
 	
-	//public List<myOSMWay> ways = new LinkedList<myOSMWay>();
-	public Map<Long, myOSMWay> ways = new HashMap<Long, myOSMWay>();
+	public List<myOSMWay> ways = new LinkedList<myOSMWay>();
+	//public Map<Long, myOSMWay> ways = new HashMap<Long, myOSMWay>();
 	public long count_ways = 0;
 	
 	public double osmMinLat;
@@ -57,7 +57,8 @@ public class myOSMMap {
 	public myOSMMap(File file) {
 		
 		xmlFile = file;
-		
+
+		/*
 		myOSMNode[] myNodes = null;
 
 		int x = 5000000;
@@ -83,6 +84,7 @@ public class myOSMMap {
 		for(int i = 0; i < x; i++) {
 			myNodes[i] = new myOSMNode();
 		}
+*/
 		
 		try {
 			parser = factory.createXMLStreamReader( new FileInputStream( xmlFile));
@@ -309,16 +311,14 @@ public class myOSMMap {
 			}			
 		}
 
-		/*
+		
 		for (int i = nodes.size() -1; i >= 0; i--) {
 			if (nodes.get(i).countIsEndOfWay == 0 && nodes.get(i).countIsInnerNoteofWay == 0 && nodes.get(i).countIsStartOfWay == 0) {
 				nodes.remove(i);
 			}
 		}
-		*/
 		
-		nodes.clear();
-		
+				
 		for (int i = ways.size() - 1; i >= 0; i--) {
 //			System.out.println(ways.get(i).id + " : " + ways.get(i).meansOfTransport);
 		}
@@ -326,17 +326,18 @@ public class myOSMMap {
 	
 	public myOSMNode getNode(long nodeID) {
 		
+		/*
 		if (nodes.containsValue(nodeID)) {
 			return nodes.get(nodeID);
 		}
+		*/
 		
-		/*
-		for (myOSMNode note : notes) {
+		for (myOSMNode note : nodes) {
 			if (note.id == nodeID) {
 				return note;
 			}
 		}
-		*/
+		
 		
 		return null;
 	}
@@ -491,7 +492,7 @@ public class myOSMMap {
 			note.id--;
 		}
 		
-		//nodes.add(note);
+		nodes.add(note);
 		//nodes.put(note.id, note);
 		count_nodes++;
 	}
@@ -542,7 +543,7 @@ public class myOSMMap {
 	public void addWay()
 	{	
 			
-		//this.ways.add(tempWay);
+		this.ways.add(tempWay);
 		//this.ways.put(tempWay.id, tempWay);
 		count_ways++;
 
