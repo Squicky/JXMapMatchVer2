@@ -4,6 +4,10 @@ import osm.StreetLink;
 
 public class myOSMWayPart {
 
+	private static int runID = 0;
+	
+	public int ObjID = -1;
+	
 	public myOSMNode startNode;
 	public myOSMNode endNode;
 	public myOSMWay parentWay;
@@ -20,6 +24,9 @@ public class myOSMWayPart {
 		parentWay = way;
 		parentWayStepNr = StepNr;
 		isBackDirection = BackDirection;
+		
+		ObjID = runID;
+		runID++;
 		
 		startNode.WayPartsToConnectedNotes.add(this);
 	}

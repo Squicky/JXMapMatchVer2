@@ -6,7 +6,11 @@ package osm;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
+
+import myOSM.myOSMWay;
 
 import org.jdesktop.swingx.mapviewer.GeoPosition;
 
@@ -26,11 +30,15 @@ public class StreetMap {
     
     //store Street links
     private StreetLink [] streetLinks;
+	public Map<Long, Map<Long, Map<Long, StreetLink>>> streetLinksHashMap = new HashMap<Long, Map<Long, Map<Long, StreetLink>>>();
+    
     private int NrOfLinks=0;
     private int MaxNrOfLinks=0;
     
     //store Street nodes
     private StreetNode [] streetNodes;
+	public Map<Long, StreetNode> streetNodesHashMap = new HashMap<Long, StreetNode>();
+	
     private int NrOfNodes=0;
     private int MaxNrOfNodes=0;
 
@@ -127,15 +135,17 @@ public class StreetMap {
      * @param x2
      * @param y2
      */
-    public void addLink(int x1, int y1, int x2, int y2, long id, long startNoteId, long endNoteId){
+    public StreetLink addLink(int x1, int y1, int x2, int y2, long parentId, long startNoteId, long endNoteId){
     	
-        addNode(x1,y1, startNoteId);
-        addNode(x2,y2, endNoteId);
+        StreetNode sn1 = addNode(x1,y1, startNoteId);
+        StreetNode sn2 = addNode(x2,y2, endNoteId);
         // check if Node adding was successful and add link
-        if ( getNode(x1,y1,startNoteId) != null && getNode(x2,y2,endNoteId) != null) {
+        if ( sn1 != null && sn2 != null) {
             // if not add Link to StreetMap
-            addLink(getNode(x1, y1,startNoteId),getNode(x2,y2,endNoteId), id, startNoteId, endNoteId);        	
+            return addLink(sn1, sn2, parentId, startNoteId, endNoteId);        	
         }
+        
+        return null;
     }
 
     /**
@@ -143,18 +153,98 @@ public class StreetMap {
      * @param n1
      * @param n2
      */
-    public void addLink(StreetNode n1, StreetNode n2, long id, long startNoteId, long endNoteId) {
+    public StreetLink addLink(StreetNode n1, StreetNode n2, long parentMyId, long startNoteId, long endNoteId) {
+    	
+    	StreetLink sn = getLink(n1,n2,parentMyId);
+    	
         // check if link already exists, if not create link
-        if (getLink(n1,n2)==null){
+        if ( sn == null ){
             if (NrOfLinks < MaxNrOfLinks){
                 // create new link, increase id
-                streetLinks[NrOfLinks] = new StreetLink(n1,n2, linkIDCounter++, id, startNoteId, endNoteId);
-                // add link to its nodes
+                streetLinks[NrOfLinks] = new StreetLink(n1,n2, linkIDCounter++, parentMyId, startNoteId, endNoteId);
+
                 n1.addLink(streetLinks[NrOfLinks]);
                 n2.addLink(streetLinks[NrOfLinks]);
+                
+                
+                if (n1.myid > n2.myid) {
+                	StreetNode n = n1;
+//                	n1 = n2;
+//                	n2 = n;
+                }
+                
+                Map<Long, Map<Long, StreetLink>> m = streetLinksHashMap.get(n1.myid);
+                Map<Long, StreetLink> n = null;
+                if (m != null) {
+                	
+                	n = m.get(n2.myid);
+                	
+                	if (n != null) {
+                		n.put(parentMyId, streetLinks[NrOfLinks]);
+                	} else {
+                		n = new HashMap<Long, StreetLink>();
+                		n.put(parentMyId, streetLinks[NrOfLinks]);
+                		m.put(n2.myid, n);
+                	}
+                } else {
+                	m = new HashMap<Long, Map<Long, StreetLink>>();
+                	 
+                	n = new HashMap<Long, StreetLink>();
+             		n.put(parentMyId, streetLinks[NrOfLinks]);
+             		m.put(n2.myid, n);
+             		
+                	streetLinksHashMap.put(n1.myid, m);
+                }
+               
+                
+
+                // add link to its nodes
                 NrOfLinks++;
+                
+                return streetLinks[NrOfLinks - 1];
             }
         }
+        
+        return sn;
+    }
+    
+    public StreetLink getStreetLink(long myId1, long myId2, long parentMyId) {
+    	
+    	/*
+    	if (myId1 > myId2) {
+    		long l = myId1;
+//    		myId1 = myId2;
+//    		myId2 = l;    		
+    	}
+    	*/
+    	
+    	StreetLink sl = null;
+    	
+        Map<Long, Map<Long, StreetLink>> m = streetLinksHashMap.get(myId1);
+        if (m != null) {
+        	
+        	Map<Long, StreetLink> n = m.get(myId2);
+        	
+        	if (n != null) {
+            	sl = n.get(parentMyId);        		
+        	}
+        	
+        }
+        
+        if ( sl == null ) {
+        	m = streetLinksHashMap.get(myId2);
+            if (m != null) {
+            	
+            	Map<Long, StreetLink> n = m.get(myId1);
+            	
+            	if (n != null) {
+                	sl = n.get(parentMyId);        		
+            	}
+            	
+            }
+        }
+        
+        return sl;
     }
     
     /**
@@ -163,17 +253,58 @@ public class StreetMap {
      * @param n2
      * @return StreetLink
      */
-    public StreetLink getLink(StreetNode n1, StreetNode n2) {
+    public StreetLink getLink(StreetNode n1, StreetNode n2, long parentMyId) {
+    	
+    	return this.getStreetLink(n1.myid, n2.myid, parentMyId);
+    	
+    	/*
+    	StreetLink sl = null;;
+    	Map<Long, StreetLink> m;
+    	
+//    	if (n1.myid <= n2.myid) {
+    		m = this.streetLinksHashMap.get(n1.myid);
+    		if (m != null) {
+        		sl = m.get(n2.myid);
+    		}
+    		
+    		if (sl == null) {
+        		m = this.streetLinksHashMap.get(n2.myid);
+        		if (m != null) {
+            		sl = m.get(n1.myid);
+        		}
+    		}
+*/
+  
+/*    		
+    	} else {
+    		Map<Long, StreetLink> m = this.streetLinksHashMap.get(n2.myid);
+    		if (m == null) {
+    			return null;
+    		}
+    		sl = m.get(n1.myid);   		
+    	}
+
+    	// check if node already exists
+    	if (sl != null) {
+        	if ( n1 == sl.getStartNode() && n2 == sl.getEndNode() ) {
+        		return sl;
+        	}
+    	}
+*/
+
+    	/*    	
         int i=0;
-        while (i<NrOfLinks){
-            // check if node already exists
+        while ( i < NrOfLinks ) {
+
             if ((n1==streetLinks[i].getStartNode())&&(n2==streetLinks[i].getEndNode())) return streetLinks[i];
+
             //check if node in other direction already exists
             if ((n2==streetLinks[i].getStartNode())&&(n1==streetLinks[i].getEndNode())) return streetLinks[i];
             i++;
         }
+        */
         // Link does not exist
-        return null;
+//        return sl;
     }
 
     /**
@@ -307,16 +438,23 @@ public class StreetMap {
      * @param x
      * @param y
      */
-    public void addNode(int x, int y, long nodeId){
+    public StreetNode addNode(int x, int y, long nodeId){
         //check if node already exists
-        if (getNode(x, y, nodeId) == null){
+    	
+    	StreetNode n = getNode(x, y, nodeId);
+    	
+        if (n == null){
             if (NrOfNodes < MaxNrOfNodes){
                 // if node does not already exist: create one
-                streetNodes[NrOfNodes]=new StreetNode(x, y, nodeId);
-                //System.out.println("add Node "+(NrOfNodes+1)+"/"+MaxNrOfNodes+" Lon: "+x+" Lat: "+y);
+                streetNodes[NrOfNodes] = new StreetNode(x, y, nodeId);
+                streetNodesHashMap.put(streetNodes[NrOfNodes].myid, streetNodes[NrOfNodes]);
                 NrOfNodes++;
+                
+                return streetNodes[NrOfNodes - 1];
             }
         }
+        
+        return n;
     }
 
     /**
@@ -326,14 +464,28 @@ public class StreetMap {
      * @return Streetnode
      */
     public StreetNode getNode(int x, int y, long myid){
-        int i=0;
+
+    	StreetNode sn = null;
+    	
+    	sn = this.streetNodesHashMap.get(myid);
+    	
+    	if (sn != null) {
+    		if ( x==sn.getX() && y==sn.getY() && myid == sn.myid) {
+    			return sn;
+    		}
+    	}
+    	
+    	/*
+    	int i=0;
         while (i<NrOfNodes){
             // check if node exists and has posotion (x,y)
             if ( x==streetNodes[i].getX() && y==streetNodes[i].getY() && myid == streetNodes[i].myid) return streetNodes[i];
             i++;
         }
+        */
         // node does not yet exist
         return null; 
+
     }
     
     public int getCountNodeId(long id) {

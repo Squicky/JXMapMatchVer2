@@ -23,9 +23,12 @@ public class myOSMWay {
 	
 	public long id = -1;
 	
-	public List<myOSMNode> refs = new LinkedList<myOSMNode>();
-
-	public List<myOSMWayPart> WayParts = new LinkedList<myOSMWayPart>();
+//	public List<myOSMNode> refs = new LinkedList<myOSMNode>();
+	public myOSMNode[] refs = null;
+	
+	
+//	public List<myOSMWayPart> WayParts = new LinkedList<myOSMWayPart>();
+	public myOSMWayPart[] WayParts = new myOSMWayPart[0];
 	
 	public String name = "";
 	
@@ -46,33 +49,41 @@ public class myOSMWay {
 	public int carPermission; //0 = notallowed, 1 = restricted, 2 = allowed
 	
 	public void setWayParts() {
-		for (int i = 0; i < (refs.size() - 1); i++) {
-			myOSMWayPart wp = new myOSMWayPart(refs.get(i), refs.get(i+1), this, i, false);
-			WayParts.add(wp);
+		
+		if (onyWay == false) {
+			WayParts = new myOSMWayPart[(refs.length - 1) * 2];
+		} else {
+			WayParts = new myOSMWayPart[(refs.length - 1)];
+		}
+		
+		int k;
+		for (k = 0; k < (refs.length - 1); k++) {
+			WayParts[k] =  new myOSMWayPart(refs[k], refs[k+1], this, k, false);;
 		}
 
 		int j = 0;
 		if (onyWay == false) {
-			for (int i = (refs.size() - 1); i >=1 ; i--) {
-				myOSMWayPart wp = new myOSMWayPart(refs.get(i), refs.get(i-1), this, j, true);
+			for (int i = (refs.length - 1); i >=1 ; i--) {
+				myOSMWayPart wp = new myOSMWayPart(refs[i], refs[i-1], this, j, true);
 				j++;
-				WayParts.add(wp);				
+				WayParts[k] = wp;
+				k++;
 			}
 		}
 	}
 	
 	public void setCountAndXYOfNotes() {
-		if (refs.size() > 0) {
-			refs.get(0).countIsStartOfWay++;
+		if (refs.length > 0) {
+			refs[0].countIsStartOfWay++;
 			
-			refs.get(refs.size() - 1).countIsEndOfWay++;
+			refs[refs.length - 1].countIsEndOfWay++;
 			
-			for (int i = 1; i < (refs.size() - 1); i++) {
-				refs.get(i).countIsInnerNoteofWay++;				
+			for (int i = 1; i < (refs.length - 1); i++) {
+				refs[i].countIsInnerNoteofWay++;				
 			}
 			
-			for (int i = 0; i < refs.size(); i++) {
-				refs.get(i).setXY();
+			for (int i = 0; i < refs.length; i++) {
+				refs[i].setXY();
 			}
 
 		}

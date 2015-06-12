@@ -136,13 +136,7 @@ public class NRoute implements Comparable<NRoute>, Cloneable {
 	 * @param minGPSNodeIndex
 	 * @param maxGPSNodeIndex
 	 */
-	public void addLink(StreetLink streetLink, int minGPSNodeIndex, int maxGPSNodeIndex) {	
-
-		if (178 == IdOfThisNRoute) {
-			IdOfThisNRoute++;
-			IdOfThisNRoute--;
-		}
-		
+	public void addLink(StreetLink streetLink, int minGPSNodeIndex, int maxGPSNodeIndex) {			
 		// create new matched link
 		MatchedLink matchedLink = new MatchedLink(streetLink, minGPSNodeIndex, maxGPSNodeIndex);
 		// add link and range

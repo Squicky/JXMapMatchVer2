@@ -19,6 +19,10 @@ import algorithm.MatchedRange;
  */
 public class StreetLink {
 	
+	private static int runID = 0;
+	
+	public int ObjID = -1;
+	
 	public myOSMWayPart myWayPart = null;
 	public myOSMWayPart myWayPartBackDirection = null;
 	
@@ -110,6 +114,9 @@ public class StreetLink {
         matchedGPSNodes = new Vector<Vector<GPSNode>>();
         // create vector for storing matching ranges
         matchedRanges = new Vector<MatchedRange>();
+        
+        ObjID = runID;
+        runID++;
     }
     
     /**

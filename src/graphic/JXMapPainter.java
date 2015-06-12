@@ -7,6 +7,7 @@ package graphic;
 import myOSM.myOSMMap;
 import myOSM.myOSMNode;
 import myOSM.myOSMWay;
+import myOSM.myOSMWayPart;
 
 import org.jdesktop.swingx.*;
 
@@ -174,7 +175,7 @@ public class JXMapPainter {
             g.drawRect((int)(gpsTrace.getNodeX(i)/zoomFactor),
                        (int)(gpsTrace.getNodeY(i)/zoomFactor), 3, 3);
         }
-        
+      
         // release graphics
         g.dispose();
     }
@@ -349,7 +350,7 @@ public class JXMapPainter {
      * @param streetMap
      * @param color
      */
-    public void drawStreetMap(Graphics2D g,JXMapViewer map, StreetMap streetMap, Color color, double zoomFactor, myOSMMap myMap){
+    public void drawStreetMap(Graphics2D g, JXMapViewer map, StreetMap streetMap, Color color, double zoomFactor, myOSMMap myMap){
     	
         // create graphics
         g = (Graphics2D) g.create();
@@ -366,9 +367,6 @@ public class JXMapPainter {
         g.setColor(color);
 
     	Random random = new Random();
-
-    	int a = 0;
-    	int b = 0;
     	
     	if (myMap == null ) {
     		color = Color.red;
@@ -410,42 +408,31 @@ public class JXMapPainter {
                                 (int)(sl.getStartY()/zoomFactor),
                                 (int)(sl.getEndX()/zoomFactor),
                                 (int)(sl.getEndY()/zoomFactor));     
-                        a++;
-                        
                 	}
             	}
 
             }
             g.dispose();
         } else {
-    		color = Color.BLACK;
-    		g.setColor(color);
-
-    		Color cc = Color.GREEN;
-    		
-    		for (int i=0; i < myMap.ways.size(); i++)
-    		
-//    		c++;
-//    		c = c % myMap.ways.size();
-//    		    		int i = c;
-        	{
+        	
+    		myOSMNode n1;
+    		myOSMNode n2;
+    		myOSMWayPart wp;
+    		for (int i=0; i < myMap.ways.size(); i++) {
+//      		for (int i=19; i < 20 ; i++) {
 
 				myOSMWay w = myMap.ways.get(i);
 				
-//				System.out.println(w.id + " : " + w.name + " | " + w.WayParts.size());
-
     			color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
         		g.setColor(color);
         		
-//				System.out.println(c + " : "  + w.id + " : " + w.refs.get(0).id + " --> " + w.refs.get(w.refs.size()-1).id + " " + w.onyWay);
-        		
-    			for (int j=0; j < myMap.ways.get(i).WayParts.size(); j++) {
+    			for (int j=0; j < w.WayParts.length; j++) {
 
-    				myOSMNode n1 = w.WayParts.get(j).startNode;
-    				myOSMNode n2 = w.WayParts.get(j).endNode;
+    				wp = w.WayParts[j];
+    				n1 = wp.startNode;
+    				n2 = wp.endNode;
 
-
-					if (myMap.ways.get(i).onyWay == false) {
+					if (w.onyWay == false) {
         				g.setColor(Color.GREEN);
         			} 
             		else {
@@ -465,20 +452,12 @@ public class JXMapPainter {
             			}
             		}
 
-					
-//                	if (i == (abc % myMap.ways.size())) 
-                	{
-        				g.drawLine((int)(n1.x / zoomFactor), (int)(n1.y / zoomFactor), (int)(n2.x / zoomFactor), (int)(n2.y / zoomFactor));
-            			        				
-        				b++;
-                	}
-                	
-                	
-                	
+        			g.drawLine((int)(n1.x / zoomFactor), (int)(n1.y / zoomFactor), (int)(n2.x / zoomFactor), (int)(n2.y / zoomFactor));
                 	
     			}
     			
     		}
+
     		
     		g.dispose();
         }

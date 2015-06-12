@@ -531,13 +531,9 @@ public class JXMapMatchController implements ActionListener,
 				try {
 					
 					if (streetMapFile.getName().endsWith(".osm")) {
-						System.out.println("1");
 						myMap = new myOSMMap(streetMapFile);
-						System.out.println("2");
 						myMap.removeUnusedNotesAndWaysAndSetWayParts();
-						System.out.println("3");						
 		                streetMap = myMap.getSteetMap();
-						System.out.println("4");
 					}
 					else {						
 						streetMap = OSMStAXGraphReader.convertToStreetMap(streetMapFile.getAbsolutePath(), jxMapMatchGUI);
@@ -545,21 +541,13 @@ public class JXMapMatchController implements ActionListener,
 					}
 					
 					if (myMap != null && streetMap != null) {
-						System.out.println("5");
 						myMap.linkToStreetMap(streetMap);						
-						System.out.println("6");
 					}
 					
 				} catch (Exception e) {
 					System.out.println("Error: " + e.toString());
 					
 					return false;
-				}
-				
-				String s = "";
-				
-				for(int i=0; i<streetMap.getNrOfNodes(); i++) {
-					s = s + streetMap.getNode(i).myid + "\n";
 				}
 				
 				// set flag we're not in Selected N Route mode anymore by loading new street map
