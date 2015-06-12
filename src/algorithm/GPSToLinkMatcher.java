@@ -9,6 +9,8 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
 
+import myOSM.myOSMMap;
+import myOSM.myOSMWayPart;
 import cartesian.Coordinates;
 import osm.StreetLink;
 import osm.StreetMap;
@@ -25,7 +27,9 @@ import gps.GPSTrace;
 
 public class GPSToLinkMatcher implements MatchingGPSObject {
 	
-	private StreetMap streetMap;						// reference to street map
+//	private StreetMap streetMap;						// reference to street map
+	private myOSMMap myMap;						// reference to street map
+	
 	private long refTimeStamp;							// timestamp where measurement started
 	private Vector<MatchedGPSNode> gpsNodesToMatch;		// reference to wrapped GPS nodes
 	private SelectedRoute selectedRoute;				// reference to user build selected route
@@ -49,14 +53,16 @@ public class GPSToLinkMatcher implements MatchingGPSObject {
 	 * @param gpsTrace
 	 * @param drawComponent
 	 */
-	public GPSToLinkMatcher(StreetMap streetMap, GPSTrace gpsTrace, Component drawComponent) {
+	public GPSToLinkMatcher(StreetMap streetMap, myOSMMap myMap, GPSTrace gpsTrace, Component drawComponent) {
 		// save references, create new selected route
-		this.streetMap = streetMap;
+//		this.streetMap = streetMap;
+		this.myMap = myMap;
 		this.refTimeStamp = gpsTrace.getRefTimeStamp();
 		this.gpsNodesToMatch = wrapGPSTrace(gpsTrace);
 		this.drawComponent = drawComponent;
-		this.selectedRoute = new SelectedRoute(this.streetMap);
-		
+//		this.selectedRoute = new SelectedRoute(this.streetMap);
+		this.selectedRoute = new SelectedRoute(null, this.myMap);
+			
 		// create color gradient between two color with a number of steps
 		colorGradient = getColorGradient(Color.BLUE, Color.CYAN, COLOR_GRADIENT_STEPS);
 		
@@ -234,7 +240,7 @@ public class GPSToLinkMatcher implements MatchingGPSObject {
 	 * return all selected links
 	 * @return Vector<StreetLink>
 	 */
-	public Vector<StreetLink> getSelectedRouteLinks(){
+	public Vector<myOSMWayPart> getSelectedRouteLinks(){
 		return selectedRoute.getSelectedLinks();
 	}
 	
@@ -244,8 +250,8 @@ public class GPSToLinkMatcher implements MatchingGPSObject {
 	 */
 	private boolean matchGPSToLastLinkWorker() {
 		// try to get last and last but one added link 
-		StreetLink lastAddedLink = selectedRoute.getLastSelectedLink();
-		StreetLink lastButOneAddedLink = selectedRoute.getLastButOneSelectedLink();
+		myOSMWayPart lastAddedLink = selectedRoute.getLastSelectedLink();
+		myOSMWayPart lastButOneAddedLink = selectedRoute.getLastButOneSelectedLink();
 		
 		int euclidianStartIndex = 0;							// first index where GPS point can matched vertical to a link
 		
@@ -360,8 +366,8 @@ public class GPSToLinkMatcher implements MatchingGPSObject {
 	}
 	
 	private boolean adjustLastAddedLink() {
-		StreetLink lastAddedLink = selectedRoute.getLastSelectedLink();
-		StreetLink lastButOneAddedLink = selectedRoute.getLastButOneSelectedLink();
+		myOSMWayPart lastAddedLink = selectedRoute.getLastSelectedLink();
+		myOSMWayPart lastButOneAddedLink = selectedRoute.getLastButOneSelectedLink();
 		
 		if (lastAddedLink != null) {
 			if (lastAddedLink.isLastMatched()) {
@@ -429,7 +435,7 @@ public class GPSToLinkMatcher implements MatchingGPSObject {
 		return false;
 	}
 	
-	private void addGPSToLink(int startIndex, int endIndex, StreetLink streetLink) {
+	private void addGPSToLink(int startIndex, int endIndex, myOSMWayPart streetLink) {
 		// adjust matching range
 		streetLink.setLastMatchedRangeEnd(endIndex);
 		streetLink.setLastMatched(true);
@@ -471,7 +477,7 @@ public class GPSToLinkMatcher implements MatchingGPSObject {
 		
 	}
 	
-	private void releaseGPSNodes(int startIndex, int endIndex, StreetLink streetLink) {
+	private void releaseGPSNodes(int startIndex, int endIndex, myOSMWayPart streetLink) {
 			// reset gps points as matched
 			for (int i=startIndex; i<=endIndex; i++) {
 				gpsNodesToMatch.get(i).resetMatched();
@@ -507,7 +513,7 @@ public class GPSToLinkMatcher implements MatchingGPSObject {
 		}
 	}
 	
-	private void matchGPSToLink(int startIndex, int endIndex, StreetLink streetLink){
+	private void matchGPSToLink(int startIndex, int endIndex, myOSMWayPart streetLink){
 		// set range
 		streetLink.addMatchedRange(startIndex, endIndex, true);
 		
@@ -549,7 +555,7 @@ public class GPSToLinkMatcher implements MatchingGPSObject {
 	
 	private void dematchGPSToLink() {
 		// get last added link for dematching
-		StreetLink lastAddedLink = selectedRoute.getLastSelectedLink();
+		myOSMWayPart lastAddedLink = selectedRoute.getLastSelectedLink();
 		
 		if (lastAddedLink != null) {
 			if (lastAddedLink.isLastMatched()) {

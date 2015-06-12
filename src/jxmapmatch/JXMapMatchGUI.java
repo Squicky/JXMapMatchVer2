@@ -19,6 +19,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.EventListener;
 import java.util.Hashtable;
+import java.util.Properties;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -231,6 +232,7 @@ public class JXMapMatchGUI extends JFrame implements JXMapMatchGUIInterface {
 		
 		// notify update status interface, that we're finished loading
 		statusUpdate.finished();	
+		
 	}
 
 
@@ -581,7 +583,9 @@ public class JXMapMatchGUI extends JFrame implements JXMapMatchGUIInterface {
 	        ) {
 	        	@Override
 	        	public String getTileUrl(int x, int y, int z) {
-	        			return this.baseURL + (totalZoom - z) + "/" + x + "/" + y + ".png";
+	        		
+//	        		return "C:\\priv\\uni\\MA\\hintergrund.png";
+	        		return this.baseURL + (totalZoom - z) + "/" + x + "/" + y + ".png";
 	        	}
 	    	};
 	    

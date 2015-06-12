@@ -83,7 +83,7 @@ public class JXMapMatchController implements ActionListener,
 	
 	// street map and GPS trace
 	private GPSTrace gpsTrace;
-	private StreetMap streetMap;
+//	private StreetMap streetMap;
 	public myOSMMap myMap;
 
 	
@@ -533,16 +533,16 @@ public class JXMapMatchController implements ActionListener,
 					if (streetMapFile.getName().endsWith(".osm")) {
 						myMap = new myOSMMap(streetMapFile);
 						myMap.removeUnusedNotesAndWaysAndSetWayParts();
-		                streetMap = myMap.getSteetMap();
+//		                streetMap = myMap.getSteetMap();
 					}
 					else {						
-						streetMap = OSMStAXGraphReader.convertToStreetMap(streetMapFile.getAbsolutePath(), jxMapMatchGUI);
-						streetMap.setColorOfLinks();
+//						streetMap = OSMStAXGraphReader.convertToStreetMap(streetMapFile.getAbsolutePath(), jxMapMatchGUI);
+//						streetMap.setColorOfLinks();
 					}
 					
-					if (myMap != null && streetMap != null) {
-						myMap.linkToStreetMap(streetMap);						
-					}
+//					if (myMap != null && streetMap != null) {
+//						myMap.linkToStreetMap(streetMap);						
+//					}
 					
 				} catch (Exception e) {
 					System.out.println("Error: " + e.toString());
@@ -788,7 +788,7 @@ public class JXMapMatchController implements ActionListener,
 			protected Boolean doInBackground() {
 				
 				try {
-					selectedNRoute = NRouteStreamer.getNRouteFromFile(nRouteFilePath, streetMap, jxMapViewer, jxMapMatchGUI);
+					selectedNRoute = NRouteStreamer.getNRouteFromFile(nRouteFilePath, null, myMap,  jxMapViewer, jxMapMatchGUI);
 				} catch (NRouteFileNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -847,7 +847,7 @@ public class JXMapMatchController implements ActionListener,
 				@Override
 				protected Boolean doInBackground() throws Exception {
 					try {
-						NRouteStreamer.saveSelectedNRouteToFile(selectedNRoute, streetMap, nRouteFile.getAbsolutePath(), jxMapMatchGUI);
+						NRouteStreamer.saveSelectedNRouteToFile(selectedNRoute, null, nRouteFile.getAbsolutePath(), jxMapMatchGUI);
 					} catch (Exception e) { 
 						return false;
 					}
@@ -912,7 +912,7 @@ public class JXMapMatchController implements ActionListener,
 		if (isGPSTraceAndStreetMapLoaded()){
 			
 			// initialize GPS to link matcher
-			gpsToLinkMatcher = new GPSToLinkMatcher(streetMap, gpsTrace, jxMapViewer);
+			gpsToLinkMatcher = new GPSToLinkMatcher(null, this.myMap, gpsTrace, jxMapViewer);
 			// successfully initialized
 			return true;
 		}
@@ -926,7 +926,7 @@ public class JXMapMatchController implements ActionListener,
 		
 		// initialize new Selected N Route if existing one shouldn't be used
 		if (!useExistingSelectedNRoute) {
-			selectedNRoute = new SelectedNRoute(streetMap, nRouteAlgorithm, jxMapViewer);
+			selectedNRoute = new SelectedNRoute(null, myMap, nRouteAlgorithm, jxMapViewer);
 		}
 		selectedNRouteMode = true;
 		allowNRouteLoadGPSTrace = true;
@@ -965,7 +965,7 @@ public class JXMapMatchController implements ActionListener,
 		if (isGPSTraceAndStreetMapLoaded()){
 			
 			// initialize N route algorithm
-			nRouteAlgorithm = new NRouteAlgorithm(streetMap, gpsTrace, jxMapMatchGUI, jxMapViewer);
+			nRouteAlgorithm = new NRouteAlgorithm(null, myMap, gpsTrace, jxMapMatchGUI, jxMapViewer);
 
 			if (!isGPSTraceForSelectedNRoute) {
 				// enable/disable buttons
@@ -1283,7 +1283,8 @@ public class JXMapMatchController implements ActionListener,
 	 * @return
 	 */
 	private boolean isGPSTraceAndStreetMapLoaded() {
-		return ((gpsTrace != null) && (streetMap != null));
+//		return ((gpsTrace != null) && (streetMap != null));
+		return ((gpsTrace != null) && (myMap != null));
 	}
 	
 	/**
@@ -1317,7 +1318,7 @@ public class JXMapMatchController implements ActionListener,
 				
 				// draw routing graph?
 				if (drawStreetMap){
-					jxMapPainter.drawStreetMap(g2D, jxMapViewer, streetMap, STREET_MAP_COLOR, zoomFactor, myMap);
+					jxMapPainter.drawStreetMap(g2D, jxMapViewer, null, STREET_MAP_COLOR, zoomFactor, myMap);
 					//jxMapPainter.drawStreetNodes(g2D, jxMapViewer, streetMap, Color.RED, zoomFactor);
 				}
 				

@@ -1,5 +1,6 @@
 package algorithm;
 
+import myOSM.myOSMWayPart;
 import osm.StreetLink;
 
 /**
@@ -10,7 +11,9 @@ import osm.StreetLink;
 
 public class MatchedLink {
 	
-	private StreetLink matchedStreetLink;	// reference to street link
+//	private StreetLink matchedStreetLink;	// reference to street link
+	private myOSMWayPart matchedWayPart;	// reference to street link
+	
 	private MatchedRange matchedRange;		// reference to matched range
 	
 	/**
@@ -19,9 +22,9 @@ public class MatchedLink {
 	 * @param rangeStartIndex of range
 	 * @param rangeEndIndex of range
 	 */
-	public MatchedLink(StreetLink matchedStreetLink, int rangeStartIndex, int rangeEndIndex) {
+	public MatchedLink(myOSMWayPart matchedWayPart, int rangeStartIndex, int rangeEndIndex) {
 		// street link is matched by default, that's why it's called matched link :)
-		this(matchedStreetLink, new MatchedRange(rangeStartIndex, rangeEndIndex, true));
+		this(matchedWayPart, new MatchedRange(rangeStartIndex, rangeEndIndex, true));
 	}
 	
 	/**
@@ -29,8 +32,8 @@ public class MatchedLink {
 	 * @param streetLink
 	 * @param matchedRange
 	 */
-	public MatchedLink(StreetLink matchedStreetLink, MatchedRange matchedRange) {
-		this.matchedStreetLink = matchedStreetLink;
+	public MatchedLink(myOSMWayPart matchedWayPart, MatchedRange matchedRange) {
+		this.matchedWayPart = matchedWayPart;
 		this.matchedRange = matchedRange;
 		this.matchedRange.setMatched(true); // set matched true!
 	}
@@ -39,16 +42,16 @@ public class MatchedLink {
 	 * set matched street link
 	 * @param matchedStreetLink
 	 */
-	public void setStreetLink(StreetLink matchedStreetLink) {
-		this.matchedStreetLink = matchedStreetLink;
+	public void setStreetLink(myOSMWayPart matchedWayPart) {
+		this.matchedWayPart = matchedWayPart;
 	}
 	
 	/**
 	 * get matched street link
 	 * @return StreetLink
 	 */
-	public StreetLink getStreetLink() {
-		return matchedStreetLink;
+	public myOSMWayPart getStreetLink() {
+		return matchedWayPart;
 	}
 	
 	/**

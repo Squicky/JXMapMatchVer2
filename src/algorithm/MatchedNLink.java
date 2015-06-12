@@ -2,11 +2,12 @@ package algorithm;
 
 import java.awt.Color;
 
+import myOSM.myOSMWayPart;
 import osm.StreetLink;
 
 public class MatchedNLink {
 	
-	private StreetLink streetLink;
+	private myOSMWayPart streetLink;
 	private MatchedRange matchedRange;		// reference to matched range
 	
 	private Color color;
@@ -19,7 +20,7 @@ public class MatchedNLink {
 		this.color = color;
 	}
 
-	public MatchedNLink(StreetLink streetLink, MatchedRange matchedRange, Color color) {
+	public MatchedNLink(myOSMWayPart streetLink, MatchedRange matchedRange, Color color) {
 		super();
 		
 		this.streetLink = streetLink;
@@ -27,15 +28,15 @@ public class MatchedNLink {
 		this.color = color;
 	}
 	
-	public MatchedNLink(StreetLink streetLink, Color color) {
+	public MatchedNLink(myOSMWayPart streetLink, Color color) {
 		this(streetLink, new MatchedRange(0, 0, false), color);
 	}
 
-	public StreetLink getStreetLink() {
+	public myOSMWayPart getStreetLink() {
 		return streetLink;
 	}
 
-	public void setStreetLink(StreetLink streetLink) {
+	public void setStreetLink(myOSMWayPart streetLink) {
 		this.streetLink = streetLink;
 	}
 

@@ -10,6 +10,8 @@ import java.util.Collections;
 import java.util.Vector;
 
 import logging.Logger;
+import myOSM.myOSMNode;
+import myOSM.myOSMWayPart;
 import cartesian.Coordinates;
 
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
@@ -173,9 +175,9 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 		// create artificial link which is build of first and last GPS node from matched N link
 		ReorderedMatchedGPSNode gpsNodeStart = reorderedMatchedGPSNodes.get(currentMatchedNLink.getRangeStartIndex());
 		ReorderedMatchedGPSNode gpsNodeEnd = reorderedMatchedGPSNodes.get(currentMatchedNLink.getRangeEndIndex());
-		StreetNode startNode = new StreetNode(gpsNodeStart.getX(), gpsNodeStart.getY(), -2);
-		StreetNode endNode = new StreetNode(gpsNodeEnd.getX(), gpsNodeEnd.getY(), -2);		
-		StreetLink artLink = new StreetLink(startNode, endNode, -3, startNode.myid, endNode.myid);
+		myOSMNode startNode = new myOSMNode(gpsNodeStart.getX(), gpsNodeStart.getY(), -2);
+		myOSMNode endNode = new myOSMNode(gpsNodeEnd.getX(), gpsNodeEnd.getY(), -2);		
+		myOSMWayPart artLink = new myOSMWayPart(startNode, endNode, -3, startNode.id, endNode.id);
 		double artLinkLength = artLink.getLength();
 		Logger.println("artificial Link length: " + artLinkLength);
 		
@@ -190,9 +192,9 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 			double matchedY = Coordinates.getNearestPointY(matchedGPSNode, artLink);
 			
 			// build share link from artificial link start node until matched position
-			StreetNode shareStartNode = new StreetNode (artLink.getStartX(), artLink.getStartY(), artLink.myid);
-			StreetNode shareEndNode = new StreetNode ((int)matchedX, (int)matchedY, -4);
-			StreetLink shareLink = new StreetLink(shareStartNode, shareEndNode, -4, shareStartNode.myid, shareEndNode.myid);
+			myOSMNode shareStartNode = new myOSMNode (artLink.getStartX(), artLink.getStartY(), artLink.xmyid);
+			myOSMNode shareEndNode = new myOSMNode ((int)matchedX, (int)matchedY, -4);
+			myOSMWayPart shareLink = new myOSMWayPart(shareStartNode, shareEndNode, -4, shareStartNode.id, shareEndNode.id);
 			
 			// get share, avoid null division
 			double share = (artLinkLength != 0.0f) ? shareLink.getLength() / artLinkLength : 0.0f ;
@@ -231,7 +233,7 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 		if (useProject) {
 			
 			// get matched link as link
-			StreetLink curLink = currentMatchedNLink.getStreetLink();
+			myOSMWayPart curLink = currentMatchedNLink.getStreetLink();
 			int curLinkStartX = (startingNode == StreetLink.START_NODE) ? curLink.getStartX() : curLink.getEndX();
 			int curLinkStartY = (startingNode == StreetLink.START_NODE) ? curLink.getStartY() : curLink.getEndY();
 			int curLinkEndX = (startingNode == StreetLink.START_NODE) ? curLink.getEndX() : curLink.getStartX();
@@ -373,7 +375,7 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 		
 		Vector<MatchedNLink> matchedNLinks = new Vector<>();
 		
-		for (StreetLink streetLink : selectedNRoute.getNRouteLinksStart()) {
+		for (myOSMWayPart streetLink : selectedNRoute.getNRouteLinksStart()) {
 			
 			// create wrapped class
 			MatchedNLink matchedNLink = new MatchedNLink(streetLink, unmatchedLinkColor);

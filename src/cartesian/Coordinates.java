@@ -8,6 +8,9 @@
 
 package cartesian;
 
+import myOSM.myOSMNode;
+import myOSM.myOSMWayPart;
+
 import org.jdesktop.swingx.*;
 import org.jdesktop.swingx.mapviewer.*;
 
@@ -296,10 +299,10 @@ public class Coordinates {
           * @param streetLink
           * @return X coordinate on street link with shortest distance to gps node
           */
-         public static double getNearestPointX(GPSNode gpsNode, StreetLink streetLink){
+         public static double getNearestPointX(GPSNode gpsNode, myOSMWayPart myWayPart){
        	  //delegate 
-       	  return getNearestPointX(gpsNode.getX(), gpsNode.getY(), streetLink.getStartX(), streetLink.getStartY(),
-       			  		   		  streetLink.getEndX(), streetLink.getEndY());
+       	  return getNearestPointX(gpsNode.getX(), gpsNode.getY(), myWayPart.startNode.x , myWayPart.startNode.y,
+       			  myWayPart.endNode.x , myWayPart.endNode.y);
          }
          
          /**
@@ -308,10 +311,10 @@ public class Coordinates {
          * @param streetLink
          * @return Y coordinate on street link with shortest distance to gps node
          */
-         public static double getNearestPointY(GPSNode gpsNode, StreetLink streetLink){
+         public static double getNearestPointY(GPSNode gpsNode, myOSMWayPart myWayPart){
         	 //delegate
-        	 return getNearestPointY(gpsNode.getX(), gpsNode.getY(), streetLink.getStartX(), streetLink.getStartY(),
-      			  		   		  streetLink.getEndX(), streetLink.getEndY());
+        	 return getNearestPointY(gpsNode.getX(), gpsNode.getY(), myWayPart.startNode.x , myWayPart.startNode.y,
+        			 myWayPart.endNode.x , myWayPart.endNode.y);
          }
       
          /**
@@ -375,6 +378,12 @@ public class Coordinates {
        			  		   		  streetLink.getEndX(), streetLink.getEndY());
          }
          
+         public static MatchedPoint getNearestEuclidianPoint(GPSNode gpsNode, myOSMWayPart streetLink){
+          	  //delegate
+          	  return getNearestEuclidianPoint(gpsNode.getX(), gpsNode.getY(), streetLink.getStartX(), streetLink.getStartY(),
+          			  		   		  streetLink.getEndX(), streetLink.getEndY());
+            }
+         
          /**
           * get distance between GPS node and street node
           * @param gpsNode
@@ -394,6 +403,27 @@ public class Coordinates {
          public static double getDistance(GPSNode gpsNode, StreetNode streetNode) {
         	 return getDistance(gpsNode.getX(), gpsNode.getY(), streetNode.getX(), streetNode.getY());
          }
+         
+         /**
+          * get radical distance between GPS node and street node
+          * @param gpsNode
+          * @param streetNode
+          * @return double
+          */
+         public static double getDistance(GPSNode gpsNode, myOSMNode myNode) {
+        	 return getDistance(gpsNode.getX(), gpsNode.getY(), myNode.x, myNode.y);
+         }
+         
+         /**
+          * get radical distance between GPS node and street node
+          * @param gpsNode
+          * @param streetNode
+          * @return double
+          */
+         public static double getDistance(myOSMNode myNode1, myOSMNode myNode2) {
+        	 return getDistance(myNode1.x, myNode1.y, myNode2.x, myNode2.y);
+         }
+
 
          /**
           * gets distance between two GPS nodes
@@ -421,9 +451,9 @@ public class Coordinates {
           * @param streetLink
           * @return int distance gps node to street link
           */
-         public static double getDistanceSquared(GPSNode gpsNode, StreetLink streetLink){
-        	 return getDistanceSquared(gpsNode.getX(), gpsNode.getY(), getNearestPointX(gpsNode, streetLink),
-        			 				   getNearestPointY(gpsNode, streetLink));
+         public static double getDistanceSquared(GPSNode gpsNode, myOSMWayPart myWayPart){
+        	 return getDistanceSquared(gpsNode.getX(), gpsNode.getY(), getNearestPointX(gpsNode, myWayPart),
+        			 				   getNearestPointY(gpsNode, myWayPart));
          }
          
          /**
@@ -432,9 +462,9 @@ public class Coordinates {
           * @param streetLink
           * @return int distance gps node to street link
           */
-         public static double getDistance(GPSNode gpsNode, StreetLink streetLink){
-        	 return getDistance(gpsNode.getX(), gpsNode.getY(), getNearestPointX(gpsNode, streetLink),
-        			 				   getNearestPointY(gpsNode, streetLink));
+         public static double getDistance(GPSNode gpsNode, myOSMWayPart myWayPart){
+        	 return getDistance(gpsNode.getX(), gpsNode.getY(), getNearestPointX(gpsNode, myWayPart),
+        			 				   getNearestPointY(gpsNode, myWayPart));
          }
          
          /**
@@ -462,8 +492,8 @@ public class Coordinates {
           * @param streetLink
           * @return
           */
-         public static double getStreetLength(StreetLink streetLink) {
-        	return getDistance(streetLink.getStartNode(), streetLink.getEndNode()); 
+         public static double getStreetLength(myOSMWayPart myWayPart) {
+        	return getDistance(myWayPart.startNode, myWayPart.endNode); 
          }
          
          /**

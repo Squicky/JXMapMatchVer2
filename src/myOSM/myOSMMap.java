@@ -1,12 +1,15 @@
 package myOSM;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 import java.util.Map.Entry;
 
 import javax.xml.stream.XMLInputFactory;
@@ -742,5 +745,33 @@ public class myOSMMap {
   	  System.out.println("OSM-file boundary min(Lat/Lon),max(Lat/Lon) : ("+
   			  			  osmMinLat+", "+osmMinLon+"),("+osmMaxLat+", "+osmMaxLon+")");
 	}
+	
+    public Vector<myOSMWayPart> getStreetLinksVector() {
+    	// save street link inside this vector
+    	Vector<myOSMWayPart> streetLinksVector = new Vector<myOSMWayPart>();
+    	
+    	// convert street links array to vector and resize it to real size
+		for (int i=0; i < ways.size(); i++) {
+
+			myOSMWay w = ways.get(i);
+			
+	    	Collections.addAll(streetLinksVector, w.WayParts);
+	    	streetLinksVector.setSize(this.getNrOfAllWayParts());
+    		
+		}
+    	
+    	// return converted street links as vector
+    	return streetLinksVector;
+    }
+    
+    public myOSMWayPart getLink(int i){
+        if (i<0) i=0;
+        if (i<this.getNrOfAllWayParts()) return getStreetLinksVector().get(i);
+        return null;
+    }
+    
+    public myOSMWayPart getLink(long i){
+    	return getLink((int) i);
+    }
 }
 

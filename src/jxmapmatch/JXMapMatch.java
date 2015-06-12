@@ -2,6 +2,7 @@ package jxmapmatch;
 
 import java.awt.EventQueue;
 import java.util.Calendar;
+import java.util.Properties;
 
 import logging.Logger;
 import dialogelements.JWindowLoading;
@@ -23,7 +24,15 @@ public class JXMapMatch extends Thread{
 	 */
 	public static void main(String[] args) {
 		
-					
+		System.setProperty("java.net.useSystemProxies","true");
+
+		/*
+		Properties systemSettings = System.getProperties();
+		systemSettings.put("http.proxyHost", "172.20.150.211");
+		systemSettings.put("http.proxyPort", "8080");
+		System.setProperties(systemSettings);
+		*/
+		
 		// save arguments
 		arguments = args;
 		
@@ -33,7 +42,7 @@ public class JXMapMatch extends Thread{
 		// start program
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				try {
+				try {			
 					// create loading window
 					jWindowLoading = JWindowLoading.createLoadingWindow();
 					// start JXMapMatch on new thread

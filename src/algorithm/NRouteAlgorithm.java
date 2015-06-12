@@ -3,6 +3,7 @@ package algorithm;
 import interfaces.StatusUpdate;
 
 import java.util.Collections;
+import java.awt.Color;
 import java.awt.Component;
 import java.util.Iterator;
 import java.util.TreeSet;
@@ -12,6 +13,9 @@ import algorithm.MatchedLink;
 import cartesian.Coordinates;
 import gps.GPSTrace;
 import logging.Logger;
+import myOSM.myOSMMap;
+import myOSM.myOSMNode;
+import myOSM.myOSMWay;
 import myOSM.myOSMWayPart;
 import osm.StreetLink;
 import osm.StreetMap;
@@ -34,8 +38,10 @@ public class NRouteAlgorithm {
 	// private Vector<TreeSet<NRoute>> nRouteSetContainer;
 	
 	// save reference to street map and GPS trace
-	private StreetMap streetMap;				// reference to street map
-	private Vector<StreetLink> streetLinks;		// reference to street links inside street map
+	private myOSMMap myMap;
+	private Vector< myOSMWayPart> myWaypart;
+//	private StreetMap streetMap;				// reference to street map
+//	private Vector<StreetLink> streetLinks;		// reference to street links inside street map
 	private GPSTrace gpsTrace;					// reference to GPS trace
 	
 	// reference to container size
@@ -80,10 +86,11 @@ public class NRouteAlgorithm {
 	 * @param gpsTrace
 	 * @param drawComponent
 	 */
-	public NRouteAlgorithm(StreetMap streetMap, GPSTrace gpsTrace, StatusUpdate statusUpdate, Component drawComponent) {
+	public NRouteAlgorithm(StreetMap streetMap, myOSMMap myMap, GPSTrace gpsTrace, StatusUpdate statusUpdate, Component drawComponent) {
 		// save references
-		this.streetMap = streetMap;
-		this.streetLinks = this.streetMap.getStreetLinksVector();
+//		this.streetMap = streetMap;
+		this.myMap = myMap;
+//		this.streetLinks = streetMap.getStreetLinksVector();
 		this.gpsTrace = gpsTrace;
 		this.statusUpdate = statusUpdate;
 		this.drawComponent = drawComponent;
@@ -291,6 +298,61 @@ public class NRouteAlgorithm {
 		// current minimum found distance
 		double currentMinDistance = 0;
 		
+		nRouteSize = nRouteSize *2;
+		
+		double arMinDis[] = new double[nRouteSize];
+		myOSMWayPart arMinWp[] = new myOSMWayPart[nRouteSize];
+
+		for (int i=0; i < nRouteSize; i++) {
+			arMinDis[i] = Double.MAX_VALUE;
+		}
+		
+		int count = 0;
+		// search nearest link
+		myOSMWay w;
+		myOSMWayPart wp;
+		for (int wi=0; wi < myMap.ways.size(); wi++) {
+			
+			w = myMap.ways.get(wi);
+			        		
+			for (int wpi=0; wpi < w.WayParts.length; wpi++) {
+
+				wp = w.WayParts[wpi];
+				
+				double distance = Coordinates.getDistance(gpsTrace.getNode(GPSNodeIndex), wp);
+				
+				if (distance < arMinDis[nRouteSize-1]) {
+					count++;
+					
+					arMinDis[nRouteSize-1] = distance;
+					arMinWp[nRouteSize-1] = wp;
+					
+					for (int i = nRouteSize - 1; i >= 1 ; i--) {
+
+						if (arMinDis[i] < arMinDis[i-1]) {
+							double d = arMinDis[i];
+							arMinDis[i] = arMinDis[i-1];
+							arMinDis[i-1] = d;
+							
+							myOSMWayPart wpx = arMinWp[i];
+							arMinWp[i] = arMinWp[i-1];
+							arMinWp[i-1] = wpx;
+						}
+
+					}
+				}
+			}
+		}
+		
+		for (int i=0; i<count && i<nRouteSize;i++) {
+			NRoute nRoute = new NRoute(gpsTrace);
+			nRoute.addLink(arMinWp[i], GPSNodeIndex);
+			
+			nRouteSet.add(nRoute);
+		}
+		
+		
+		/*
 		// get n nearest links
 		for (int i = 1; i <= nRouteSize; i++) {
 			
@@ -298,10 +360,37 @@ public class NRouteAlgorithm {
 			
 			// save minimum distance and street link during search progress 
 			double minDistance = Double.MAX_VALUE;
-			StreetLink nearestStreetLink = null;
+//			StreetLink nearestStreetLink = null;
+			myOSMWayPart nearestWayPart = null;
 			
 			
 			// search nearest link
+			myOSMWay w;
+    		myOSMWayPart wp;
+    		for (int wi=0; wi < myMap.ways.size(); wi++) {
+    			
+				w = myMap.ways.get(wi);
+				        		
+    			for (int wpi=0; wpi < w.WayParts.length; wpi++) {
+
+    				wp = w.WayParts[wpi];
+    				
+    				// get distance to street link
+    				double distance = Coordinates.getDistance(gpsTrace.getNode(GPSNodeIndex), wp);
+    				
+    				// check if link is in the run
+    				if ((distance < minDistance) && (distance > currentMinDistance)) 
+        			{
+        				// save distance and street link
+        				minDistance = distance;
+        				nearestWayPart = wp;
+    				}
+    			}
+    		}
+			
+			*/
+			
+    		/*
 			for (StreetLink streetLink : streetLinks) {
 				
 				// get distance to street link
@@ -314,11 +403,11 @@ public class NRouteAlgorithm {
 					nearestStreetLink = streetLink;
 				}
 			}
+			*/
 			
+		/*
 			// create new path if nearest link was found
-			if (nearestStreetLink != null) {
-				
-				nearestStreetLink.markiert = 1;
+			if (nearestWayPart != null) {
 				
 				Logger.println("Found nearest link Nr." + i);
 				
@@ -327,7 +416,7 @@ public class NRouteAlgorithm {
 			
 				// create new path through adding nearest street link to new n route container
 				NRoute nRoute = new NRoute(gpsTrace);
-				nRoute.addLink(nearestStreetLink, GPSNodeIndex);
+				nRoute.addLink(nearestWayPart, GPSNodeIndex);
 			
 				// add to tree set, gets automatically ordered by score
 				nRouteSet.add(nRoute);
@@ -335,6 +424,8 @@ public class NRouteAlgorithm {
 				Logger.println("No nearest link nr. " + i + " found!");
 			}
 		}
+		*/
+		
 		
 		// return tree set
 		return nRouteSet;
@@ -350,7 +441,7 @@ public class NRouteAlgorithm {
 	 */
 	private boolean createChildPathAndAddToSet(NRoute nRoute, TreeSet<NRoute> sortedSet){
 		// try to get outgoing links for last link in n route
-		Vector<StreetLink> outgoingLinks = nRoute.getOutgoingLinksForLastLink();
+		Vector<myOSMWayPart> outgoingLinks = nRoute.getOutgoingLinksForLastLink();
 		
 		// build child path if we could get outgoing link(s)
 		if (outgoingLinks != null) {
@@ -358,7 +449,7 @@ public class NRouteAlgorithm {
 			Logger.println("Found outgoing links for NRoute Nr." + nRouteIndex);
 			
 			// create child path for every outgoing link
-			for (StreetLink outgoingLink : outgoingLinks) {
+			for (myOSMWayPart outgoingLink : outgoingLinks) {
 				
 				// copy given n route
 				NRoute nRouteChild = nRoute.clone();

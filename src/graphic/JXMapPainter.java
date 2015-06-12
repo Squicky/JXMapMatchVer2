@@ -203,7 +203,7 @@ public class JXMapPainter {
 		// draw route for each route
         for (int i=0; i < nRoutes.size(); i++ ){
         	
-//        	if (i == cc) 
+        	if (i == cc) 
         	{
 
         		NRoute nRoute = nRoutes.get(i);
@@ -212,14 +212,14 @@ public class JXMapPainter {
 
     			for (MatchedLink nRouteLink : nRoute.getNRouteLinks()) {
     				
-    				System.out.print(nRouteLink.getStreetLink().startNodeId + " - " + nRouteLink.getStreetLink().endNodeId + " | ");
+    				System.out.print(nRouteLink.getStreetLink().startNode.id + " - " + nRouteLink.getStreetLink().endNode.id + " | ");
     				
     				// draw line for every link
     				// devide x,y coordinates by 2^(zoom-1) to fit to current zoom
-    				g.drawLine((int) (nRouteLink.getStreetLink().getStartX() / zoomFactor),
-    						(int) (nRouteLink.getStreetLink().getStartY() / zoomFactor),
-    						(int) (nRouteLink.getStreetLink().getEndX() / zoomFactor),
-    						(int) (nRouteLink.getStreetLink().getEndY() / zoomFactor));
+    				g.drawLine((int) (nRouteLink.getStreetLink().startNode.x / zoomFactor),
+    						(int) (nRouteLink.getStreetLink().startNode.y / zoomFactor),
+    						(int) (nRouteLink.getStreetLink().endNode.x / zoomFactor),
+    						(int) (nRouteLink.getStreetLink().endNode.y / zoomFactor));
     			}
     			
     			System.out.print("\n");
@@ -252,7 +252,7 @@ public class JXMapPainter {
         g.setColor(nRouteColor);
         
         //draw selected N route (Start)
-		for (StreetLink nRouteLink : selectedNRoute.getNRouteLinksStart()) {
+		for (myOSMWayPart nRouteLink : selectedNRoute.getNRouteLinksStart()) {
 			// draw line for every link
 			// devide x,y coordinates by 2^(zoom-1) to fit to current zoom
 			g.drawLine((int) (nRouteLink.getStartX() / zoomFactor),
@@ -262,7 +262,7 @@ public class JXMapPainter {
 		}
 		
 		//draw selected N route (End)
-		for (StreetLink nRouteLink : selectedNRoute.getNRouteLinksEnd()) {
+		for (myOSMWayPart nRouteLink : selectedNRoute.getNRouteLinksEnd()) {
 			// draw line for every link
 			// devide x,y coordinates by 2^(zoom-1) to fit to current zoom
 			g.drawLine((int) (nRouteLink.getStartX() / zoomFactor),
@@ -274,7 +274,7 @@ public class JXMapPainter {
 		// draw selectable street link 
 		g.setColor(selectableColor);
 		
-		StreetLink selectableLink = selectedNRoute.getSelectableLink();
+		myOSMWayPart selectableLink = selectedNRoute.getSelectableLink();
 		
 		if (selectableLink != null) {
 			g.drawLine((int) (selectableLink.getStartX() / zoomFactor),
@@ -284,16 +284,18 @@ public class JXMapPainter {
 		}
 		
 		// draw selectable street link 
-		g.setColor(deletableColor);
-		
-		StreetLink deletableLink = selectedNRoute.getDeletableLink();
-		
-		if (deletableLink != null) {
-			g.drawLine((int) (deletableLink.getStartX() / zoomFactor),
-					   (int) (deletableLink.getStartY() / zoomFactor),
-					   (int) (deletableLink.getEndX() / zoomFactor),
-					   (int) (deletableLink.getEndY() / zoomFactor));
-		}
+		g.setColor(Color.RED);
+				
+		myOSMWayPart nearestStreetLink = selectedNRoute.nearestStreetLink;
+				
+		if (nearestStreetLink != null) {
+/*			g.drawLine((int) (nearestStreetLink.getStartX() / zoomFactor),
+					   (int) (nearestStreetLink.getStartY() / zoomFactor),
+					   (int) (nearestStreetLink.getEndX() / zoomFactor),
+					   (int) (nearestStreetLink.getEndY() / zoomFactor));
+*/		}
+				
+				
 
     }
     
@@ -313,7 +315,7 @@ public class JXMapPainter {
         //draw selected route
         if (!selectedRoute.isEmpty()){
         	//get selected street links, draw them
-        	for(StreetLink selectedStreetLink : selectedRoute.getSelectedLinks()){
+        	for(myOSMWayPart selectedStreetLink : selectedRoute.getSelectedLinks()){
                 // set color
                 g.setColor((selectedStreetLink.isLastMatched() ? selectedColor : nonMatchedColor));                
         		// draw line for every link

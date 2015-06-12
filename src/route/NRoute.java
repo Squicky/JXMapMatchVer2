@@ -85,7 +85,7 @@ public class NRoute implements Comparable<NRoute>, Cloneable {
 		
 		for (int i=0; i < nRouteLinks.size(); i++) {
 			
-			l = l + Coordinates.getDistance(nRouteLinks.get(i).getStreetLink().getStartNode(), nRouteLinks.get(i).getStreetLink().getEndNode());
+			l = l + Coordinates.getDistance(nRouteLinks.get(i).getStreetLink().startNode, nRouteLinks.get(i).getStreetLink().endNode);
 			
 		}
 		
@@ -136,9 +136,9 @@ public class NRoute implements Comparable<NRoute>, Cloneable {
 	 * @param minGPSNodeIndex
 	 * @param maxGPSNodeIndex
 	 */
-	public void addLink(StreetLink streetLink, int minGPSNodeIndex, int maxGPSNodeIndex) {			
+	public void addLink(myOSMWayPart myWayPart, int minGPSNodeIndex, int maxGPSNodeIndex) {			
 		// create new matched link
-		MatchedLink matchedLink = new MatchedLink(streetLink, minGPSNodeIndex, maxGPSNodeIndex);
+		MatchedLink matchedLink = new MatchedLink(myWayPart, minGPSNodeIndex, maxGPSNodeIndex);
 		// add link and range
 		nRouteLinks.add(matchedLink);
 		// update score
@@ -170,10 +170,10 @@ public class NRoute implements Comparable<NRoute>, Cloneable {
 	
 	/**
 	 * add link to n route container, set matched range, and set as matched
-	 * @param streetLink
+	 * @param myWayPart
 	 * @param gpsNodeIndex
 	 */
-	public void addLink(StreetLink streetLink, int gpsNodeIndex) {
+	public void addLink(myOSMWayPart myWayPart, int gpsNodeIndex) {
 		// we assume that given GPS node should be matched to previous link due to better score
 		matchToPreviousLink = true;
 		
@@ -182,12 +182,14 @@ public class NRoute implements Comparable<NRoute>, Cloneable {
 			
 			// get previous matched link and new GPS node
 			previousMatchedLink = nRouteLinks.lastElement();
-			StreetLink previousStreetLink = previousMatchedLink.getStreetLink();
+//			StreetLink previousStreetLink = previousMatchedLink.getStreetLink();
+			myOSMWayPart previousWayPart = previousMatchedLink.getStreetLink();
+			
 			GPSNode gpsNode = gpsTrace.getNode(gpsNodeIndex);
 			
 			// calculate distance to previous and new link
-			double distanceToLastMatchedLink = Coordinates.getDistance(gpsNode, previousStreetLink);
-			double distanceToNewStreetLink = Coordinates.getDistance(gpsNode, streetLink);
+			double distanceToLastMatchedLink = Coordinates.getDistance(gpsNode, previousWayPart);
+			double distanceToNewStreetLink = Coordinates.getDistance(gpsNode, myWayPart);
 			
 			// if distance to previous link less...
 			if (distanceToLastMatchedLink < distanceToNewStreetLink) {
@@ -195,7 +197,7 @@ public class NRoute implements Comparable<NRoute>, Cloneable {
 				addGPSNodeToLastLink(gpsNodeIndex);
 				
 				// create "unmatched" link for new link and add it to n route link vector
-				MatchedLink matchedLink = new MatchedLink(streetLink, -1, -1);
+				MatchedLink matchedLink = new MatchedLink(myWayPart, -1, -1);
 				nRouteLinks.add(matchedLink);
 				
 				// done
@@ -205,7 +207,7 @@ public class NRoute implements Comparable<NRoute>, Cloneable {
 		}
 		
 		// if distance to new link is shorter or n route link vector is empty, create/match to new link
-		addLink(streetLink, gpsNodeIndex, gpsNodeIndex);
+		addLink(myWayPart, gpsNodeIndex, gpsNodeIndex);
 		matchToPreviousLink = false;
 	}
 	
@@ -226,13 +228,16 @@ public class NRoute implements Comparable<NRoute>, Cloneable {
 			if (matchToPreviousLink) {
 				
 				// get last link, previous matched link and new GPS node
-				StreetLink lastStreetLink = lastAddedMatchedLink.getStreetLink();
-				StreetLink previousStreetLink = previousMatchedLink.getStreetLink();
+//				StreetLink lastStreetLink = lastAddedMatchedLink.getStreetLink();
+				myOSMWayPart lastWaypart = lastAddedMatchedLink.getStreetLink();
+//				StreetLink previousStreetLink = previousMatchedLink.getStreetLink();
+				myOSMWayPart previousWaypartk = previousMatchedLink.getStreetLink();
+				
 				GPSNode gpsNode = gpsTrace.getNode(GPSNodeIndex);
 				
 				// calculate distance to previous matched and last added link
-				double distanceToPreviousMatchedLink = Coordinates.getDistance(gpsNode, previousStreetLink);
-				double distanceToLastAddedLink = Coordinates.getDistance(gpsNode, lastStreetLink);
+				double distanceToPreviousMatchedLink = Coordinates.getDistance(gpsNode, previousWaypartk);
+				double distanceToLastAddedLink = Coordinates.getDistance(gpsNode, lastWaypart);
 				
 				// if distance to previous link less...
 				if (distanceToLastAddedLink < distanceToPreviousMatchedLink) {
@@ -452,12 +457,12 @@ public class NRoute implements Comparable<NRoute>, Cloneable {
 		return null;
 	}
 	
-	public Vector<StreetLink> getOutgoingLinksForLastLink() {
+	public Vector<myOSMWayPart> getOutgoingLinksForLastLink() {
 		
 		// check if vector is not empty
 		if (!nRouteLinks.isEmpty()) {
 			
-			Vector<StreetLink> vsl = new Vector<StreetLink>();
+			Vector<myOSMWayPart> vsl = new Vector<myOSMWayPart>();
 			
 			Vector<myOSMWayPart> vwp = getNextOSMWayPart();
 			
@@ -465,9 +470,11 @@ public class NRoute implements Comparable<NRoute>, Cloneable {
 				
 				myOSMWayPart wp = vwp.get(i);
 				
-				StreetLink sl = wp.streetLink;
+				//StreetLink sl = wp.streetLink;
 				
-				vsl.add(sl);
+				//vsl.add(sl);
+				
+				vsl.add(wp);
 			}
 			
 			return vsl;
@@ -541,12 +548,16 @@ public class NRoute implements Comparable<NRoute>, Cloneable {
 	
 	public static Vector<myOSMNode> getLastOSMNode(NRoute nRoute) {
 		
-		 Vector<myOSMNode> vn = new  Vector<myOSMNode>();
+		Vector<myOSMNode> vn = new  Vector<myOSMNode>();
 
-		 StreetLink lastSL = nRoute.getNRouteLinks().lastElement().getStreetLink();
-						
+//		StreetLink lastSL = nRoute.getNRouteLinks().lastElement().getStreetLink();
+		myOSMWayPart lastWP = nRoute.getNRouteLinks().lastElement().getStreetLink();
+		
+		vn.add(lastWP.endNode);
+		
+		/*
 		if (nRoute.getNRouteLinks().size() == 1) {
-			if (lastSL.myWayPart != null) {
+			if (lastWP.myWayPart != null) {
 				vn.add(lastSL.myWayPart.startNode);
 				vn.add(lastSL.myWayPart.endNode);
 
@@ -630,17 +641,26 @@ public class NRoute implements Comparable<NRoute>, Cloneable {
 			}
 			
 		} 
-		 
-		 
-		 return vn;
+		*/ 
+		
+		return vn;
 	}
 	
 	public static Vector<myOSMWayPart> getNextOSMWayPart(NRoute nRoute) {
 		
-		StreetLink lastSL = nRoute.getNRouteLinks().lastElement().getStreetLink();
+//		StreetLink lastSL = nRoute.getNRouteLinks().lastElement().getStreetLink();
+		myOSMWayPart lastWP = nRoute.getNRouteLinks().lastElement().getStreetLink();
 		
 		Vector<myOSMWayPart> vwp = new Vector<myOSMWayPart>();
 		
+		for (int i = 0; i < lastWP.endNode.WayPartsToConnectedNotes.size(); i++ ) {
+			myOSMWayPart wp = lastWP.endNode.WayPartsToConnectedNotes.get(i);
+			if (wp.endNode != lastWP.startNode) {
+				vwp.add(wp);
+			}
+		}
+		
+		/*
 		if (nRoute.getNRouteLinks().size() == 1) {
 			if (lastSL.myWayPart != null) {
 				for (int i = 0; i < lastSL.myWayPart.endNode.WayPartsToConnectedNotes.size(); i++ ) {
@@ -858,8 +878,8 @@ public class NRoute implements Comparable<NRoute>, Cloneable {
 
 				}
 			}
-			
 		} 
+		*/
 		
 		return vwp;
 	}
@@ -870,10 +890,13 @@ public class NRoute implements Comparable<NRoute>, Cloneable {
 	
 	public static Vector<myOSMWayPart> getLastOSMWayPart(NRoute nRoute) {
 		
-		StreetLink lastSL = nRoute.getNRouteLinks().lastElement().getStreetLink();
-		
 		Vector<myOSMWayPart> vwp = new Vector<myOSMWayPart>();
+
+		vwp.add(nRoute.getLastMatchedLink().getStreetLink());
 		
+		/*		
+		StreetLink lastSL = nRoute.getNRouteLinks().lastElement().getStreetLink();
+				
 		if (nRoute.getNRouteLinks().size() == 1) {
 			
 			if (lastSL.myWayPart != null) {
@@ -935,9 +958,8 @@ public class NRoute implements Comparable<NRoute>, Cloneable {
 				}
 				
 			}
-
-			
 		}
+		*/
 		
 		return vwp;
 	}
@@ -972,11 +994,9 @@ public class NRoute implements Comparable<NRoute>, Cloneable {
 	
 	public void print() {
 		
-		Vector<myOSMWayPart> vwp = getLastOSMWayPart();
-		
 		for (MatchedLink matchedLink : nRouteLinks) {
 			
-			System.out.println(matchedLink.getStreetLink().myWayPart.startNode.id + "-" + matchedLink.getStreetLink().myWayPart.endNode.id);
+			System.out.println(matchedLink.getStreetLink().startNode.id + "-" + matchedLink.getStreetLink().endNode.id);
 			
 		}
 		

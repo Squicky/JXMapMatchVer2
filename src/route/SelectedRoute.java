@@ -1,11 +1,12 @@
 package route;
 
 import java.util.NoSuchElementException;
-
 import java.util.Vector;
 
+import myOSM.myOSMMap;
+import myOSM.myOSMNode;
+import myOSM.myOSMWayPart;
 import cartesian.Coordinates;
-
 import osm.StreetLink;
 import osm.StreetMap;
 import osm.StreetNode;
@@ -22,11 +23,12 @@ import static osm.StreetLink.*;
 
 public class SelectedRoute {
 	
-	private StreetMap streetMap;							// reference to street map
+//	private StreetMap streetMap;							// reference to street map
+	private myOSMMap myMap;							// reference to street map
 
-	private StreetLink selectableStreetLink;				// current street link which can be selected
-	private Vector<StreetLink> selectableStreetLinksPool;	// pool of all selectable street links
-	private Vector<StreetLink> selectedRoute;				// current selected Route
+	private myOSMWayPart selectableStreetLink;				// current street link which can be selected
+	private Vector<myOSMWayPart> selectableStreetLinksPool;	// pool of all selectable street links
+	private Vector<myOSMWayPart> selectedRoute;				// current selected Route
 
 	private boolean noSelectableLinkLeft;					// should all links be selectable, cause there isn't any selectable link left
 	private boolean allLinksSelectableMode;					// user wants to select all links
@@ -38,12 +40,14 @@ public class SelectedRoute {
 	 * constructor initializes with street map
 	 * @param streetMap
 	 */
-	public SelectedRoute(StreetMap streetMap) {
+	public SelectedRoute(StreetMap streetMap, myOSMMap myMap) {
 		// save reference to street map, initialize new vectors, at the begin
 		// set boolean variables false by default, save last known position with 0,0
-		this.streetMap = streetMap;
-		selectedRoute = new Vector<StreetLink>();
-		selectableStreetLinksPool = new Vector<StreetLink>();
+//		this.streetMap = streetMap;
+		this.myMap = myMap;
+		
+		selectedRoute = new Vector<myOSMWayPart>();
+		selectableStreetLinksPool = new Vector<myOSMWayPart>();
 		noSelectableLinkLeft = false;
 		allLinksSelectableMode = false;
 		saveLastKnownPosition(0, 0);
@@ -95,8 +99,8 @@ public class SelectedRoute {
 			//allLinksSelectable = false;
 			
 			// get last added street link and last but one
-			StreetLink lastAddedSelectedLink = getLastSelectedLink();
-			StreetLink lastButOneAddedSelectedLink = getLastButOneSelectedLink();
+			myOSMWayPart lastAddedSelectedLink = getLastSelectedLink();
+			myOSMWayPart lastButOneAddedSelectedLink = getLastButOneSelectedLink();
 			
 			// check connection between links
 			int streetLinkConnection = lastAddedSelectedLink.isConnectedTo(lastButOneAddedSelectedLink);
@@ -114,7 +118,7 @@ public class SelectedRoute {
 	
 	private void addAllStreetLinksToPool() {
 		// get all street links of map as vector
-		selectableStreetLinksPool = streetMap.getStreetLinksVector();
+		selectableStreetLinksPool = myMap.getStreetLinksVector();
 		
 		/*
 		// clear pool, all links are now choosable
@@ -180,7 +184,7 @@ public class SelectedRoute {
 		if (!selectedRoute.isEmpty()){
 			// decrease select counter of last added link, remove just last element,  
 			// therefore we use index instead of object reference
-			StreetLink lastAddedStreetLink = selectedRoute.lastElement();
+			myOSMWayPart lastAddedStreetLink = selectedRoute.lastElement();
 			lastAddedStreetLink.decreaseSelectCounter();
 			removeLastSelectedLink();
 			
@@ -208,7 +212,7 @@ public class SelectedRoute {
 	 * @param index
 	 * @return
 	 */
-	public StreetLink getSelectedLink(int index){
+	public myOSMWayPart getSelectedLink(int index){
 		if ( (index >= 0) && (index < selectedRoute.size()) )
 				return selectedRoute.get(index);
 		// otherwise return null;
@@ -219,7 +223,7 @@ public class SelectedRoute {
 	 * get current selectable link
 	 * @return
 	 */
-	public StreetLink getSelectableLink(){
+	public myOSMWayPart getSelectableLink(){
 		return selectableStreetLink;
 	}
 	
@@ -235,7 +239,7 @@ public class SelectedRoute {
 	 * get vector of selected links
 	 * @return
 	 */
-	public Vector<StreetLink> getSelectedLinks(){
+	public Vector<myOSMWayPart> getSelectedLinks(){
 		return selectedRoute;
 	}
 	
@@ -243,7 +247,7 @@ public class SelectedRoute {
 	 * get last selected link
 	 * @return
 	 */
-	public StreetLink getLastSelectedLink(){
+	public myOSMWayPart getLastSelectedLink(){
 		try{ return selectedRoute.lastElement(); } 
 		catch (NoSuchElementException e){ return null; }
 	}
@@ -252,7 +256,7 @@ public class SelectedRoute {
 	 * get last but one added link
 	 * @return
 	 */
-	public StreetLink getLastButOneSelectedLink(){
+	public myOSMWayPart getLastButOneSelectedLink(){
 		try{ return selectedRoute.get(selectedRoute.size()-2);}
 		catch (IndexOutOfBoundsException e){ return null;}
 	}
@@ -275,16 +279,16 @@ public class SelectedRoute {
 		// if we had already at least one added link
 		if (!selectedRoute.isEmpty() && selectableStreetLink != null) {
 			
-			StreetLink lastSelectedLink = getLastSelectedLink();
+			myOSMWayPart lastSelectedLink = getLastSelectedLink();
 						
 			// check if's connected to new link
 			if (lastSelectedLink.isConnectedTo(selectableStreetLink) == NO_CONNECTION) {
 				
 				// prepare node vectors for distance comparison
-				Vector<StreetNode> nodesOfLastLink = new Vector<>();
-				Vector<StreetNode> nodesOfNewLink = new Vector<>();
+				Vector<myOSMNode> nodesOfLastLink = new Vector<>();
+				Vector<myOSMNode> nodesOfNewLink = new Vector<>();
 				
-				StreetLink lastButOneSelectedLink = getLastButOneSelectedLink();
+				myOSMWayPart lastButOneSelectedLink = getLastButOneSelectedLink();
 				
 				// 1.) prepare first vector, find out connection type 
 				// between last two selected links, and add free nodes to vector
@@ -303,12 +307,12 @@ public class SelectedRoute {
 				
 				double distance = 0;
 				double minDistance = Double.MAX_VALUE;
-				StreetNode startNode = null;
-				StreetNode endNode = null;
+				myOSMNode startNode = null;
+				myOSMNode endNode = null;
 				
 				// seek nodes of last and new link which have the shortest distance
-				for (StreetNode nodeOfLastLink : nodesOfLastLink) {
-					for (StreetNode nodeOfNewLink : nodesOfNewLink) {
+				for (myOSMNode nodeOfLastLink : nodesOfLastLink) {
+					for (myOSMNode nodeOfNewLink : nodesOfNewLink) {
 						distance = Coordinates.getDistance(nodeOfLastLink, nodeOfNewLink);
 						if (distance < minDistance) {
 							// set start and end node of artificial connection link
@@ -321,7 +325,7 @@ public class SelectedRoute {
 				}
 				
 				// create artificial link and set it as new selectable link
-				StreetLink artificialLink = new StreetLink(startNode, endNode, true, -2, startNode.myid, endNode.myid);
+				myOSMWayPart artificialLink = new myOSMWayPart(startNode, endNode, true, -2, startNode.id, endNode.id);
 				
 				// add link to start and end nodes
 				startNode.addLink(artificialLink);
@@ -346,7 +350,7 @@ public class SelectedRoute {
 	 */
 	private boolean removeLastSelectedLink() {
 		if (!selectedRoute.isEmpty()){
-			StreetLink lastSelectedLink = selectedRoute.lastElement();
+			myOSMWayPart lastSelectedLink = selectedRoute.lastElement();
 			
 			// remove last link completely if its artificial and its select counter equals zero
 			// therefore delete v
@@ -365,11 +369,11 @@ public class SelectedRoute {
 		return false;
 	}
 	
-	private StreetLink getNearestLink(int x, int y) {
+	private myOSMWayPart getNearestLink(int x, int y) {
 		//nearest street link
-		StreetLink nearestStreetLink = null;
+		myOSMWayPart nearestStreetLink = null;
 		//last selected street link
-		StreetLink lastSelectedStreetLink = getLastSelectedLink();
+		myOSMWayPart lastSelectedStreetLink = getLastSelectedLink();
 		
 		//save nearest point coordinates on street link
 		double nearestX;
@@ -382,7 +386,7 @@ public class SelectedRoute {
         //start and end position of streetLink
         int ax,ay,bx,by;
 
-        for (StreetLink streetLink : selectableStreetLinksPool){
+        for (myOSMWayPart streetLink : selectableStreetLinksPool){
         	//street link mustn't be already selected
         	if ((streetLink != lastSelectedStreetLink) || noSelectableLinkLeft || allLinksSelectableMode){
         		//get StartNode and EndNode of Link i
@@ -420,7 +424,7 @@ public class SelectedRoute {
 	protected void finalize(){
 		System.out.println("Finalize" + this.getClass());
 		//set street links as not 
-		for (StreetLink streetLink : selectedRoute){
+		for (myOSMWayPart streetLink : selectedRoute){
 			streetLink.resetSelectCounter();
 		}
 	}

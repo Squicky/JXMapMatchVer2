@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
+import myOSM.myOSMMap;
+import myOSM.myOSMWayPart;
 import hash.Hash;
 import interfaces.StatusUpdate;
 import osm.StreetLink;
@@ -119,7 +121,7 @@ public class NRouteStreamer {
 		return mapFilePath;
 	}
 	
-	public static SelectedNRoute getNRouteFromFile(String nRouteFilePath, StreetMap streetMap, Component drawComponent, StatusUpdate statusUpdate) throws NRouteFileNotFoundException,
+	public static SelectedNRoute getNRouteFromFile(String nRouteFilePath, StreetMap streetMap, myOSMMap myMap, Component drawComponent, StatusUpdate statusUpdate) throws NRouteFileNotFoundException,
 																												   					   IOException{
 		// check if n route file exists
 		File nRouteFile = new File(nRouteFilePath);
@@ -138,7 +140,7 @@ public class NRouteStreamer {
 		dis.readUTF();
 		dis.readUTF();
 		
-		SelectedNRoute selectedNRoute = new SelectedNRoute(streetMap, drawComponent);
+		SelectedNRoute selectedNRoute = new SelectedNRoute(null, myMap, drawComponent);
 		
 		// 2.) read length of start links
 		/** status update **/ statusUpdate.updateStatus("Reading start links size...", 15);
@@ -161,7 +163,8 @@ public class NRouteStreamer {
 			long id = dis.readLong();
 			System.out.print(id + ",");
 			
-			selectedNRoute.addStartLink(streetMap.getLink(id));
+//			selectedNRoute.addStartLink(streetMap.getLink(id));
+			selectedNRoute.addStartLink(myMap.getLink(id));
 			
 			double progress = i * (80.0f / sumLinks) + 20;
 			/** status update **/ statusUpdate.updateStatus("reading street link (start links) nr. " + i, (int) progress);
@@ -175,7 +178,7 @@ public class NRouteStreamer {
 			long id = dis.readLong();
 			System.out.print(id + ",");
 			
-			selectedNRoute.addEndLink(streetMap.getLink(id));
+			selectedNRoute.addEndLink(myMap.getLink(id));
 			
 			double progress = (startLinksSize + i) * (80.0f / sumLinks) + 20;
 			/** status update **/ statusUpdate.updateStatus("reading street link (end links) nr. " + i, (int) progress);
@@ -203,8 +206,8 @@ public class NRouteStreamer {
 			String sha256Checksum = Hash.getSHA256FileChecksumString(streetMapFile, statusUpdate, 0, 20);
 			
 			// get selected N route parts
-			ArrayList<StreetLink> startLinks = selectedNRoute.getNRouteLinksStart();
-			ArrayList<StreetLink> endLinks = selectedNRoute.getNRouteLinksEnd();
+			ArrayList<myOSMWayPart> startLinks = selectedNRoute.getNRouteLinksStart();
+			ArrayList<myOSMWayPart> endLinks = selectedNRoute.getNRouteLinksEnd();
 
 			int startLinksSize = startLinks.size();
 			int endLinksSize = endLinks.size();
@@ -240,7 +243,7 @@ public class NRouteStreamer {
 				
 				// 4.) store id's of start links
 				int it = 0;
-				for (StreetLink link : startLinks) {
+				for (myOSMWayPart link : startLinks) {
 					dos.writeLong(link.getID());
 					it++;
 					
@@ -255,7 +258,7 @@ public class NRouteStreamer {
 				System.out.print("EndLinks: ");
 				
 				// 5.) store id's of end links
-				for (StreetLink link : endLinks) {
+				for (myOSMWayPart link : endLinks) {
 					dos.writeLong(link.getID());
 					it++;
 					
