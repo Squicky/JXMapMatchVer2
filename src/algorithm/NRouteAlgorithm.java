@@ -1,23 +1,17 @@
 package algorithm;
 
 import interfaces.StatusUpdate;
-
 import java.util.Collections;
-import java.awt.Color;
 import java.awt.Component;
 import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.Vector;
-
-import algorithm.MatchedLink;
 import cartesian.Coordinates;
 import gps.GPSTrace;
 import logging.Logger;
 import myOSM.myOSMMap;
-import myOSM.myOSMNode;
 import myOSM.myOSMWay;
 import myOSM.myOSMWayPart;
-import osm.StreetLink;
 import osm.StreetMap;
 import route.NRoute;
 
@@ -39,7 +33,7 @@ public class NRouteAlgorithm {
 	
 	// save reference to street map and GPS trace
 	private myOSMMap myMap;
-	private Vector< myOSMWayPart> myWaypart;
+//	private Vector< myOSMWayPart> myWaypart;
 //	private StreetMap streetMap;				// reference to street map
 //	private Vector<StreetLink> streetLinks;		// reference to street links inside street map
 	private GPSTrace gpsTrace;					// reference to GPS trace
@@ -296,7 +290,7 @@ public class NRouteAlgorithm {
 		TreeSet<NRoute> nRouteSet = new TreeSet<NRoute>();
 		
 		// current minimum found distance
-		double currentMinDistance = 0;
+		//double currentMinDistance = 0;
 		
 		nRouteSize = nRouteSize *2;
 		
@@ -599,6 +593,7 @@ public class NRouteAlgorithm {
 	 * @param streetLink
 	 * @return
 	 */
+	/*
 	private boolean hasReachedIntersection(NRoute nRoute, MatchedLink matchedLink) {
 		
 		int px = gpsTrace.getNode(matchedLink.getRangeEndIndex()).getX();
@@ -651,6 +646,7 @@ public class NRouteAlgorithm {
 			return false;
 		}
 	}
+	*/
 	
 	/**
 	 * get vector which includes n routes which belong to desired path index (if exists)

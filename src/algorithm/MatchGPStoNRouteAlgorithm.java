@@ -5,7 +5,6 @@ import interfaces.StatusUpdate;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Vector;
 
@@ -13,12 +12,7 @@ import logging.Logger;
 import myOSM.myOSMNode;
 import myOSM.myOSMWayPart;
 import cartesian.Coordinates;
-
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
-import com.sun.xml.internal.ws.api.pipe.NextAction;
-
 import osm.StreetLink;
-import osm.StreetNode;
 import gps.GPSNode;
 import gps.GPSTrace;
 import route.SelectedNRoute;
@@ -44,20 +38,20 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 	private Color gpsNodeColorGradient[];						// store different colors which create an color gradient
 	private Color nLinkColorGradient[];							// store different colors which create an color gradient 
 	
-	private SelectedNRoute selectedNRoute;
-	private GPSTrace gpsTrace;
+//	private SelectedNRoute selectedNRoute;
+//	private GPSTrace gpsTrace;
 	private long refTimeStamp;									// timestamp where measurement started
 	
 	Vector<ReorderedMatchedGPSNode> reorderedMatchedGPSNodes = new Vector<>();
 	Vector<MatchedNLink> matchedNLinks = new Vector<>();
 	
 	private Color unmatchedLinkColor;
-	private Color matchedLinkColor;
+//	private Color matchedLinkColor;
 	private Color unmatchedNodeColor;
-	private Color matchedNodeColor;
+//	private Color matchedNodeColor;
 	
 	private Component drawComponent;
-	private StatusUpdate statusUpdate;
+//	private StatusUpdate statusUpdate;
 	
 	// save current algorithm state here
 	private String matchGPStoNRouteAlgorithmState;
@@ -67,17 +61,17 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 		super();
 		
 		// save references
-		this.selectedNRoute = selectedNRoute;
-		this.gpsTrace = gpsTrace;
+//		this.selectedNRoute = selectedNRoute;
+//		this.gpsTrace = gpsTrace;
 		this.refTimeStamp = gpsTrace.getRefTimeStamp();
 		
 		this.unmatchedLinkColor = unmatchedLinkColor;
-		this.matchedLinkColor = matchedLinkColor;
+//		this.matchedLinkColor = matchedLinkColor;
 		this.unmatchedNodeColor = unmatchedNodeColor;
-		this.matchedNodeColor = matchedNodeColor;
+//		this.matchedNodeColor = matchedNodeColor;
 		
 		this.drawComponent = drawComponent;
-		this.statusUpdate = statusUpdate;
+//		this.statusUpdate = statusUpdate;
 		
 		// wrap selected n route & GPS trace for matching/drawing
 		this.matchedNLinks = wrapSelectedNRoute(selectedNRoute);
@@ -246,7 +240,7 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 			int nodeIndex = currentMatchedNLink.getRangeStartIndex();
 			for (ShareIndex sI : shareIndexList) {
 				
-				double shareIndex = (shareIndexList.size() == 1) ? 0.5f : sI.getShare();
+				//double shareIndex = (shareIndexList.size() == 1) ? 0.5f : sI.getShare();
 				
 				// get matched position
 				int matchedX = (int) (curLinkStartX + sI.getShare() * curLinkVecX);
@@ -485,10 +479,11 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 		}
 
 
-
+		/*
 		public void setMatchedX(int matchedX) {
 			this.matchedX = matchedX;
 		}
+		*/
 
 
 
@@ -497,10 +492,11 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 		}
 
 
-
+		/*
 		public void setMatchedY(int matchedY) {
 			this.matchedY = matchedY;
 		}
+		*/
 
 
 
@@ -508,17 +504,21 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 			return share;
 		}
 
+		/*
 		public void setShare(double share) {
 			this.share = share;
 		}
+		*/
 
 		public int getIndex() {
 			return index;
 		}
 
+		/*
 		public void setIndex(int index) {
 			this.index = index;
 		}
+		*/
 
 		@Override
 		public int compareTo(ShareIndex o) {

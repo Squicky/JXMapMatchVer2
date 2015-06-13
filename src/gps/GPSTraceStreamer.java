@@ -7,22 +7,17 @@ package gps;
 import interfaces.StatusUpdate;
 
 import java.io.*;
-import java.sql.Time;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Date;
 import java.util.Vector;
 import java.util.regex.Pattern;
-
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-
 import org.jdesktop.swingx.mapviewer.GeoPosition;
-
-import algorithm.GPSToLinkMatcher;
 import algorithm.MatchedGPSNode;
 import algorithm.ReorderedMatchedGPSNode;
 import cartesian.Coordinates;

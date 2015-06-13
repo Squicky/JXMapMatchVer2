@@ -1,9 +1,7 @@
 package algorithm;
 
 import java.awt.Color;
-
 import myOSM.myOSMWayPart;
-import osm.StreetLink;
 
 public class MatchedNLink {
 	

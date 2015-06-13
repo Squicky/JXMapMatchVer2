@@ -3,8 +3,6 @@ package myOSM;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
-
-import osm.StreetLink;
 import cartesian.Coordinates;
 
 public class myOSMNode {
@@ -24,7 +22,9 @@ public class myOSMNode {
 	
 	public int countIsInnerNoteofWay = 0;
 	
-	public List<myOSMWayPart> WayPartsToConnectedNotes = new LinkedList<myOSMWayPart>();
+	private List<myOSMWayPart> WayPartsOutgoing = new LinkedList<myOSMWayPart>();
+
+	private List<myOSMWayPart> WayPartsIncoming = new LinkedList<myOSMWayPart>();
 	
 	public myOSMNode() {}
 	
@@ -42,12 +42,79 @@ public class myOSMNode {
 		}
 	}
 	
-    public Vector<myOSMWayPart> getLinksExcept(myOSMWayPart excludedLink) {
+	public void WayPartsOutgoing_add(myOSMWayPart wp) {
+		WayPartsOutgoing.add(wp);
+		
+		wp.endNode.WayPartsIncoming.add(wp);
+	}
+
+	public int WayPartsOutgoing_size() {
+		 return WayPartsOutgoing.size();
+	}
+
+	public myOSMWayPart WayPartsOutgoing_get(int index) {
+		 return WayPartsOutgoing.get(index);
+	}
+	
+	public boolean WayPartsOutgoing_contains(myOSMWayPart wp) {
+		 return WayPartsOutgoing.contains(wp);
+	}
+
+	public boolean WayPartsIncoming_contains(myOSMWayPart wp) {
+		 return this.WayPartsIncoming.contains(wp);
+	}
+
+    public Vector<myOSMWayPart> getOutgoingWayPartExceptNotTo(myOSMNode excludedNode) {
     	// container for street links
     	Vector<myOSMWayPart> linkContainer = new Vector<>();
     	
     	// add all outgoing links except given one
-    	for (myOSMWayPart link : this.WayPartsToConnectedNotes) {
+    	for (myOSMWayPart link : this.WayPartsOutgoing) {
+    		if (link.endNode != excludedNode) {
+    			linkContainer.add(link);
+    		}
+    	}
+    	
+    	// return extracted outgoing links
+    	return linkContainer;
+    }
+
+    public Vector<myOSMWayPart> getIncomingWayPartExceptNotFrom(myOSMNode excludedNode) {
+    	// container for street links
+    	Vector<myOSMWayPart> linkContainer = new Vector<>();
+    	
+    	// add all outgoing links except given one
+    	for (myOSMWayPart link : this.WayPartsIncoming) {
+    		if (link.startNode != excludedNode) {
+    			linkContainer.add(link);
+    		}
+    	}
+    	
+    	// return extracted outgoing links
+    	return linkContainer;
+    }
+
+    public Vector<myOSMWayPart> getIncomingWayPartExceptNotTo(myOSMNode excludedNode) {
+    	// container for street links
+    	Vector<myOSMWayPart> linkContainer = new Vector<>();
+    	
+    	// add all outgoing links except given one
+    	for (myOSMWayPart link : this.WayPartsIncoming) {
+    		if (link.endNode != excludedNode) {
+    			linkContainer.add(link);
+    		}
+    	}
+    	
+    	// return extracted outgoing links
+    	return linkContainer;
+    }
+	
+    public Vector<myOSMWayPart> getOutgoingWayPartExcept(myOSMWayPart excludedLink) {
+    	// container for street links
+    	Vector<myOSMWayPart> linkContainer = new Vector<>();
+    	
+    	// add all outgoing links except given one
+    	for (myOSMWayPart link : this.WayPartsOutgoing) {
     		if (link != excludedLink) {
     			linkContainer.add(link);
     		}
@@ -59,12 +126,12 @@ public class myOSMNode {
     
     public List<myOSMWayPart> getLinks(){
     	//return all links belongs to this node
-    	return this.WayPartsToConnectedNotes;
+    	return this.WayPartsOutgoing;
     }
     
     public void addLink(myOSMWayPart link){
     	
-    	this.WayPartsToConnectedNotes.add(link);
+    	this.WayPartsOutgoing.add(link);
     	
     	System.out.println("Error: myOSMNode: addLink(myOSMWayPart link)");
     	
@@ -72,7 +139,7 @@ public class myOSMNode {
     
     public void removeLink(myOSMWayPart streetLink) {
     	
-    	WayPartsToConnectedNotes.remove(streetLink);
+    	WayPartsOutgoing.remove(streetLink);
     	
     	System.out.println("Error: myOSMNode: removeLink(myOSMWayPart link)");
     }

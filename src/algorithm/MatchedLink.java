@@ -1,7 +1,6 @@
 package algorithm;
 
 import myOSM.myOSMWayPart;
-import osm.StreetLink;
 
 /**
  * @author Daniel Sathees Elmo

@@ -1,13 +1,9 @@
 package myOSM;
 
-import gps.GPSNode;
-
 import java.util.NoSuchElementException;
 import java.util.Vector;
-
 import algorithm.MatchedRange;
 import osm.StreetLink;
-import osm.StreetNode;
 
 public class myOSMWayPart {
 
@@ -54,7 +50,7 @@ public class myOSMWayPart {
 		
 		selectedCounter= 0;
 		
-		startNode.WayPartsToConnectedNotes.add(this);
+		startNode.WayPartsOutgoing_add(this);
 	}
 	
     public myOSMWayPart(myOSMNode n1, myOSMNode n2, long id, boolean artificial, long myid, long startNodeId, long endNodeId) {

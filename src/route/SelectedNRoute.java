@@ -2,7 +2,6 @@ package route;
 
 import java.awt.Component;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.Vector;
 
 import logging.Logger;
@@ -15,16 +14,14 @@ import org.jdesktop.swingx.mapviewer.GeoPosition;
 import algorithm.MatchedLink;
 import algorithm.NRouteAlgorithm;
 import cartesian.Coordinates;
-import osm.StreetLink;
 import osm.StreetMap;
-import osm.StreetNode;
 
 public class SelectedNRoute {
 
 //	private StreetMap streetMap;
-	private myOSMMap myMap;
+//	private myOSMMap myMap;
 	
-	private Component drawComponent;
+//	private Component drawComponent;
 	
 	private int lastKnownPosX;						// saves last known x-position
 	private int lastKnownPosY;						// saves last known y-position
@@ -42,9 +39,7 @@ public class SelectedNRoute {
 	private myOSMWayPart deletableLink;
 	
 	private boolean isNRouteSplitted = false;
-	
-    public myOSMWayPart nearestStreetLink = null;
-	
+		
 	public SelectedNRoute(StreetMap streetMap, myOSMMap myMap, NRouteAlgorithm nRouteAlgorithm, Component drawComponent) {
 		// call other constructor
 		this(streetMap, myMap, drawComponent);
@@ -56,8 +51,8 @@ public class SelectedNRoute {
 	public SelectedNRoute(StreetMap streetMap, myOSMMap myMap, Component drawComponent) {
 		// save references
 //		this.streetMap = streetMap;
-		this.myMap = myMap;
-		this.drawComponent = drawComponent;
+//		this.myMap = myMap;
+//		this.drawComponent = drawComponent;
 		
 		// initialize array lists 
 		streetLinksStart = new ArrayList<>();
@@ -133,10 +128,14 @@ public class SelectedNRoute {
 			
 //			if (streetLink.getStartNode().getLinks().contains(selectableLink) ||
 //					streetLink.getEndNode().getLinks().contains(selectableLink)) {
-			if (streetLink.startNode.WayPartsToConnectedNotes.contains(selectableLink) ||
-					streetLink.endNode.WayPartsToConnectedNotes.contains(selectableLink)) {			
+			if (streetLink.startNode.WayPartsIncoming_contains(selectableLink) ||
+					streetLink.endNode.WayPartsIncoming_contains(selectableLink)) {	
+				
 				streetLinksStart.add(0, selectableLink);
-				if (canNRoutesBeMerged()) mergeNRoutes();
+				System.out.println("streetLinksStart.add: " + selectableLink.parentWay.id + " | " +  selectableLink.startNode.id + " -> " + selectableLink.endNode.id);
+				if (canNRoutesBeMerged()) {
+					mergeNRoutes();
+				}
 				setEditableLinks(lastKnownPosX, lastKnownPosY);
 				return;
 			}
@@ -147,10 +146,13 @@ public class SelectedNRoute {
 				
 				streetLink = streetLinksStart.get(streetLinkStartSize - 1);
 				
-				if (streetLink.startNode.WayPartsToConnectedNotes.contains(selectableLink) ||
-						streetLink.endNode.WayPartsToConnectedNotes.contains(selectableLink)) {
+				if (streetLink.startNode.WayPartsOutgoing_contains(selectableLink) ||
+							streetLink.endNode.WayPartsOutgoing_contains(selectableLink)) {
+					
 						streetLinksStart.add(selectableLink);
-						if (canNRoutesBeMerged()) mergeNRoutes();
+						if (canNRoutesBeMerged()) {
+							mergeNRoutes();
+						}
 						setEditableLinks(lastKnownPosX, lastKnownPosY);
 						return;
 				}
@@ -163,8 +165,8 @@ public class SelectedNRoute {
 //			StreetLink streetLink = streetLinksEnd.get(0);
 			myOSMWayPart streetLink = streetLinksEnd.get(0);
 					
-			if (streetLink.startNode.WayPartsToConnectedNotes.contains(selectableLink) ||
-				streetLink.endNode.WayPartsToConnectedNotes.contains(selectableLink)) {
+			if (streetLink.startNode.WayPartsOutgoing_contains(selectableLink) ||
+				streetLink.endNode.WayPartsOutgoing_contains(selectableLink)) {
 				streetLinksEnd.add(0, selectableLink);
 				if (canNRoutesBeMerged()) mergeNRoutes();
 				setEditableLinks(lastKnownPosX, lastKnownPosY);
@@ -177,8 +179,8 @@ public class SelectedNRoute {
 				
 				streetLink = streetLinksEnd.get(streetLinkStartSize - 1);
 				
-				if (streetLink.startNode.WayPartsToConnectedNotes.contains(selectableLink) ||
-						streetLink.endNode.WayPartsToConnectedNotes.contains(selectableLink)) {
+				if (streetLink.startNode.WayPartsOutgoing_contains(selectableLink) ||
+						streetLink.endNode.WayPartsOutgoing_contains(selectableLink)) {
 						streetLinksEnd.add(selectableLink);
 						if (canNRoutesBeMerged()) mergeNRoutes();
 						setEditableLinks(lastKnownPosX, lastKnownPosY);
@@ -278,7 +280,7 @@ public class SelectedNRoute {
     		ax = streetLink.startNode.x;
     		ay = streetLink.startNode.y;
     		bx = streetLink.endNode.x;
-    		by = streetLink.endNode.x;
+    		by = streetLink.endNode.y;
     		
     		//get distance
     		nearestX=Coordinates.getNearestPointX(lastKnownPosX,lastKnownPosY,ax,ay,bx,by);
@@ -291,12 +293,32 @@ public class SelectedNRoute {
     			nearestStreetLink=streetLink;
     		}
 		}
+				
+		boolean isFirstStreetLink = false;
+		if (streetLinksStart.size() > 0) {
+			if ( nearestStreetLink == streetLinksStart.get(0) ) {
+				isFirstStreetLink = true;
+			}
+		}
+		if (streetLinksEnd.size() > 0) {
+			if ( nearestStreetLink == streetLinksEnd.get(0) ) {
+				isFirstStreetLink = true;
+			}
+		}
 		
-		this.nearestStreetLink = nearestStreetLink;
-		
+			
+			
 		// get right node
-		myOSMNode n = getOutgoingStreetNode(nearestStreetLink);
-		Vector<myOSMWayPart> adjustableLinks = n.getLinksExcept(nearestStreetLink);
+		myOSMNode n = getOutgoingStreetNode(nearestStreetLink, isFirstStreetLink);
+		
+		//Vector<myOSMWayPart> adjustableLinks = n.getLinksExcept(nearestStreetLink);
+		Vector<myOSMWayPart> adjustableLinks;
+		if (isFirstStreetLink) {
+			adjustableLinks = n.getIncomingWayPartExceptNotFrom(nearestStreetLink.endNode);
+		} else {
+			adjustableLinks = n.getOutgoingWayPartExceptNotTo(nearestStreetLink.startNode);			
+		}
+
 		
 		// reset values
 		distance = Double.MAX_VALUE;
@@ -327,7 +349,17 @@ public class SelectedNRoute {
 		selectableLink = nearestStreetLink;
 	}
 	
-	private myOSMNode getOutgoingStreetNode(myOSMWayPart streetLink) {
+	private myOSMNode getOutgoingStreetNode(myOSMWayPart streetLink, boolean isFirstStreetLink) {
+		
+		if (streetLink != null) {
+			if (isFirstStreetLink) {
+				return streetLink.startNode;			
+			} else {
+				return streetLink.endNode;							
+			}
+		}
+
+		/*
 		myOSMNode startNode = streetLink.startNode;
 		myOSMNode endNode = streetLink.endNode;
 		
@@ -345,6 +377,7 @@ public class SelectedNRoute {
 				return startNode;
 			}
 		}
+		*/
 		
 		return null;
 	}
@@ -353,8 +386,8 @@ public class SelectedNRoute {
 		if (isNRouteSplitted && !streetLinksStart.isEmpty() && !streetLinksEnd.isEmpty()) {
 			myOSMWayPart streetLinkStartLast = streetLinksStart.get(streetLinksStart.size()-1);
 			
-			Vector<myOSMWayPart> startLinks = streetLinkStartLast.getStartNode().getLinksExcept(streetLinkStartLast);
-			Vector<myOSMWayPart> endLinks = streetLinkStartLast.getEndNode().getLinksExcept(streetLinkStartLast);
+			Vector<myOSMWayPart> startLinks = streetLinkStartLast.getStartNode().getOutgoingWayPartExcept(streetLinkStartLast);
+			Vector<myOSMWayPart> endLinks = streetLinkStartLast.getEndNode().getOutgoingWayPartExcept(streetLinkStartLast);
 			
 			myOSMWayPart streetLinkEndFirst = streetLinksEnd.get(0);
 			

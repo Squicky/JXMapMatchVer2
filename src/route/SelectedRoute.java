@@ -7,9 +7,7 @@ import myOSM.myOSMMap;
 import myOSM.myOSMNode;
 import myOSM.myOSMWayPart;
 import cartesian.Coordinates;
-import osm.StreetLink;
 import osm.StreetMap;
-import osm.StreetNode;
 
 
 import static osm.StreetLink.*;

@@ -9,11 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
-
-import myOSM.myOSMWay;
-
 import org.jdesktop.swingx.mapviewer.GeoPosition;
-
 import cartesian.Coordinates;
 
 /**
@@ -165,14 +161,7 @@ public class StreetMap {
 
                 n1.addLink(streetLinks[NrOfLinks]);
                 n2.addLink(streetLinks[NrOfLinks]);
-                
-                
-                if (n1.myid > n2.myid) {
-                	StreetNode n = n1;
-//                	n1 = n2;
-//                	n2 = n;
-                }
-                
+                                
                 Map<Long, Map<Long, StreetLink>> m = streetLinksHashMap.get(n1.myid);
                 Map<Long, StreetLink> n = null;
                 if (m != null) {
@@ -196,8 +185,6 @@ public class StreetMap {
                 	streetLinksHashMap.put(n1.myid, m);
                 }
                
-                
-
                 // add link to its nodes
                 NrOfLinks++;
                 

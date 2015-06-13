@@ -1,6 +1,5 @@
 package gps;
 
-import java.awt.Color;
 
 /**
  * @author Daniel Sathees Elmo

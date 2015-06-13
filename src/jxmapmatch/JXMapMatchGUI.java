@@ -2,7 +2,6 @@ package jxmapmatch;
 
 import interfaces.JXMapMatchGUIInterface;
 import interfaces.StatusUpdate;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
@@ -19,23 +18,18 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.EventListener;
 import java.util.Hashtable;
-import java.util.Properties;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeListener;
-
 import org.jdesktop.swingx.JXMapKit;
 import org.jdesktop.swingx.JXMapViewer;
 import org.jdesktop.swingx.mapviewer.DefaultTileFactory;
 import org.jdesktop.swingx.mapviewer.TileFactoryInfo;
-
 import tools.Tools;
 import dialogelements.JPanelBoxLayout;
-import logging.*;
 import static algorithm.NRouteAlgorithm.*;
 import static algorithm.MatchGPStoNRouteAlgorithm.*;
-import static jxmapmatch.JXMapMatchController.*;
+
 
 /**
  * @author Daniel Sathees Elmo

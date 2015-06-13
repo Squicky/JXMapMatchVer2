@@ -1,18 +1,12 @@
 package route;
 
-import java.lang.instrument.Instrumentation;
 import java.util.Vector;
-
 import algorithm.MatchedLink;
-import logging.Logger;
 import myOSM.myOSMNode;
 import myOSM.myOSMWayPart;
 import cartesian.Coordinates;
 import gps.GPSNode;
 import gps.GPSTrace;
-import osm.StreetLink;
-import osm.StreetNode;
-import static osm.StreetLink.*;
 
 /**
  * @author Daniel Sathees Elmo
@@ -653,8 +647,8 @@ public class NRoute implements Comparable<NRoute>, Cloneable {
 		
 		Vector<myOSMWayPart> vwp = new Vector<myOSMWayPart>();
 		
-		for (int i = 0; i < lastWP.endNode.WayPartsToConnectedNotes.size(); i++ ) {
-			myOSMWayPart wp = lastWP.endNode.WayPartsToConnectedNotes.get(i);
+		for (int i = 0; i < lastWP.endNode.WayPartsOutgoing_size(); i++ ) {
+			myOSMWayPart wp = lastWP.endNode.WayPartsOutgoing_get(i);
 			if (wp.endNode != lastWP.startNode) {
 				vwp.add(wp);
 			}

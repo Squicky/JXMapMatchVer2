@@ -18,7 +18,7 @@ public class SelectableStreetLink {
 	private int selectedCounter;
 	    
  	// is this link artificial (not part of parsed street map)
-    private boolean artificial;	
+//    private boolean artificial;	
     
     private Vector<Vector<GPSNode>> matchedGPSNodes;
     private Vector<MatchedRange> matchedRanges;

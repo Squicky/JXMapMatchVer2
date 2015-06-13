@@ -231,8 +231,12 @@ public class Coordinates {
              // Wenn m außerhalb der Strecke liegt
              // pruefe, welcher Endpunkt (ax,ay) oder (bx,by) naeher an Punkt (px,py) liegt
              if ((m>1)||(m<0)){
-                 if (getDistanceSquared(px,py,ax,ay)<getDistanceSquared(px,py,bx,by)) return ax;
-                 else return bx;
+                 if (getDistanceSquared(px,py,ax,ay)<getDistanceSquared(px,py,bx,by)) {
+                	 return ax;
+                 }
+                 else {
+                	 return bx;
+                 }
              }
              // gib nur X koordinate aus
              return (double)(ax+m*(bx-ax));

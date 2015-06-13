@@ -1,8 +1,5 @@
 package myOSM;
 
-import java.util.LinkedList;
-import java.util.List;
-
 public class myOSMWay {
 
 	//means of transport constants

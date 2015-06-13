@@ -12,7 +12,6 @@ import javax.swing.SwingWorker;
 import myOSM.myOSMMap;
 import myOSM.myOSMWayPart;
 import cartesian.Coordinates;
-import osm.StreetLink;
 import osm.StreetMap;
 import route.SelectedRoute;
 import gps.GPSNode;

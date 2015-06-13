@@ -1,17 +1,12 @@
 package myOSM;
 
-import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-import java.util.Map.Entry;
-
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;

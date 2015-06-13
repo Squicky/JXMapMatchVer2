@@ -10,17 +10,13 @@ import myOSM.myOSMWay;
 import myOSM.myOSMWayPart;
 
 import org.jdesktop.swingx.*;
-
 import algorithm.MatchedGPSNode;
 import algorithm.MatchedLink;
 import algorithm.MatchedNLink;
 import algorithm.ReorderedMatchedGPSNode;
-import osm.StreetLink;
 import osm.StreetMap;
 import route.*;
-import gps.GPSNode;
 import gps.GPSTrace;
-
 import java.awt.*;
 import java.util.Random;
 import java.util.Vector;
@@ -255,6 +251,7 @@ public class JXMapPainter {
 		for (myOSMWayPart nRouteLink : selectedNRoute.getNRouteLinksStart()) {
 			// draw line for every link
 			// devide x,y coordinates by 2^(zoom-1) to fit to current zoom
+
 			g.drawLine((int) (nRouteLink.getStartX() / zoomFactor),
 					   (int) (nRouteLink.getStartY() / zoomFactor),
 					   (int) (nRouteLink.getEndX() / zoomFactor),
@@ -286,14 +283,14 @@ public class JXMapPainter {
 		// draw selectable street link 
 		g.setColor(Color.RED);
 				
-		myOSMWayPart nearestStreetLink = selectedNRoute.nearestStreetLink;
+		myOSMWayPart deletableStreetLink = selectedNRoute.getDeletableLink();
 				
-		if (nearestStreetLink != null) {
-/*			g.drawLine((int) (nearestStreetLink.getStartX() / zoomFactor),
-					   (int) (nearestStreetLink.getStartY() / zoomFactor),
-					   (int) (nearestStreetLink.getEndX() / zoomFactor),
-					   (int) (nearestStreetLink.getEndY() / zoomFactor));
-*/		}
+		if (deletableStreetLink != null) {
+			g.drawLine((int) (deletableStreetLink.getStartX() / zoomFactor),
+					   (int) (deletableStreetLink.getStartY() / zoomFactor),
+					   (int) (deletableStreetLink.getEndX() / zoomFactor),
+					   (int) (deletableStreetLink.getEndY() / zoomFactor));
+		}
 				
 				
 
@@ -370,52 +367,7 @@ public class JXMapPainter {
 
     	Random random = new Random();
     	
-    	if (myMap == null ) {
-    		color = Color.red;
-    		
-            for(int i=0; i<streetMap.getNrOfLinks();i++){
-            	
-            	int DirectionColor = streetMap.getLink(i).DirectionColor;
-            	
-            	StreetLink sl = streetMap.getLink(i);
-            	
-            	/*
-
-            	color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
-            	*/
-            	
-//            	if (256332999 == sl.startNoteId || 256332999 == sl.endNoteId) 
-            	{
-                	if (DirectionColor != -1 || true) {
-                        g.setColor(color);
-                        
-              			if (sl.getStartX() == sl.getEndX()) {
-            				if ( sl.getStartY() <= sl.getEndY()) {
-            					g.setColor(Color.YELLOW);
-            				}
-            				else {
-            					g.setColor(Color.ORANGE);            					
-            				}
-            			} else {
-            				if (sl.getStartX() < sl.getEndX()) {
-            					g.setColor(Color.YELLOW);
-            				} else {
-            					g.setColor(Color.ORANGE);
-            				}
-            			}
-                        
-                        // draw line for every link
-                        // devide x,y coordinates by 2^(zoom-1) to fit to current zoom
-                        g.drawLine((int)(sl.getStartX()/zoomFactor),
-                                (int)(sl.getStartY()/zoomFactor),
-                                (int)(sl.getEndX()/zoomFactor),
-                                (int)(sl.getEndY()/zoomFactor));     
-                	}
-            	}
-
-            }
-            g.dispose();
-        } else {
+    	if (myMap != null ) {
         	
     		myOSMNode n1;
     		myOSMNode n2;
@@ -434,8 +386,11 @@ public class JXMapPainter {
     				n1 = wp.startNode;
     				n2 = wp.endNode;
 
+    				g.setColor(new Color(150,150,255));
+    				
+    				/*
 					if (w.onyWay == false) {
-        				g.setColor(Color.GREEN);
+        				g.setColor(Color.BLUE);
         			} 
             		else {
             			if (n1.x == n2.x) {
@@ -453,6 +408,7 @@ public class JXMapPainter {
             				}
             			}
             		}
+            		*/
 
         			g.drawLine((int)(n1.x / zoomFactor), (int)(n1.y / zoomFactor), (int)(n2.x / zoomFactor), (int)(n2.y / zoomFactor));
                 	
@@ -465,7 +421,6 @@ public class JXMapPainter {
         }
     }
     	
-
     /**
      * draw StreetNodes of StreetMap street on Graphics g (Color: color)
      * use JXMapView map to get zoom

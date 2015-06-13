@@ -1,9 +1,6 @@
 package jxmapmatch;
 
 import java.awt.EventQueue;
-import java.util.Calendar;
-import java.util.Properties;
-
 import logging.Logger;
 import dialogelements.JWindowLoading;
 

@@ -6,7 +6,6 @@ import graphic.JXMapPainter;
 import interfaces.JXMapMatchGUIInterface;
 import interfaces.MatchingGPSObject;
 import interfaces.StatusUpdate;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics2D;
@@ -24,27 +23,19 @@ import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ExecutionException;
-
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.SwingWorker;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-
 import logging.Logger;
 import myOSM.myOSMMap;
-
 import org.jdesktop.swingx.JXMapKit;
 import org.jdesktop.swingx.JXMapViewer;
 import org.jdesktop.swingx.painter.Painter;
-
-import cartesian.Coordinates;
 import algorithm.GPSToLinkMatcher;
 import algorithm.MatchGPStoNRouteAlgorithm;
-import algorithm.MatchedGPSNode;
 import algorithm.NRouteAlgorithm;
-import osm.OSMStAXGraphReader;
-import osm.StreetMap;
 import route.NRouteStreamer;
 import route.NRouteStreamer.MapFileNotFoundException;
 import route.NRouteStreamer.NRouteFileNotFoundException;
@@ -132,7 +123,7 @@ public class JXMapMatchController implements ActionListener,
 	public static Color MULTI_SELECTABLE_LINK_COLOR = Color.GREEN;
 	public static Color SELECTED_LINK_COLOR = Color.ORANGE;
 	public static Color NON_MATCHED_LINK_COLOR = Color.LIGHT_GRAY;
-	public static Color N_ROUTE_LINK_COLOR = new Color(255, 0, 255);
+	public static Color N_ROUTE_LINK_COLOR = new Color(0, 0, 255);
 	public static Color SELECTABLE_N_ROUTE_COLOR = Color.GREEN;
 	public static Color DELETABLE_N_ROUTE_COLOR = Color.ORANGE;
 	public static Color GPS_TO_N_ROUTE_UNMATCHED_LINK_COLOR = Color.WHITE;
@@ -946,6 +937,7 @@ public class JXMapMatchController implements ActionListener,
 	 * 
 	 * @return reference is not null and could be deleted
 	 */
+	/*
 	private boolean finalizeGPSToLinkMatcher(){
 		if (gpsToLinkMatcher != null) {
 			// set null
@@ -956,6 +948,7 @@ public class JXMapMatchController implements ActionListener,
 		// reference was already null
 		return false;
 	}
+	*/
 	
 	/**
 	 * initialize N route algorithm
@@ -1160,7 +1153,13 @@ public class JXMapMatchController implements ActionListener,
 					// set proper N Route Algorithm mode
 					setNRouteAlogrithmMode();
 					
-				} catch (InterruptedException | ExecutionException e) { e.printStackTrace(); }
+				} catch (InterruptedException | ExecutionException e) {
+					e.printStackTrace(); 
+					System.out.println("Error: startNRouteAlgorithm: done: \n" + e.toString());
+				}catch ( Exception e) {
+					e.printStackTrace(); 
+					System.out.println("Error: startNRouteAlgorithm: done: \n" + e.toString());
+				}
 			}
 		};
 		

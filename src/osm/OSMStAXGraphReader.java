@@ -73,17 +73,17 @@ public class OSMStAXGraphReader {
         
 
         // store edges for every node in this vector
-        Vector edges = new Vector();
+        Vector<int[]> edges = new Vector<int[]>();
         int[] edge;
         
         // store between node's lon and lat in vectors
-        Vector betweenNodesLon = new Vector();
-        Vector betweenNodesLat = new Vector();
-        Vector betweenNodesId = new Vector();
+        Vector<double[]> betweenNodesLon = new Vector<double[]>();
+        Vector<double[]> betweenNodesLat = new Vector<double[]>();
+        Vector<long[]> betweenNodesId = new Vector<long[]>();
         
-        double [] betweenLat;
-        double [] betweenLon;
-        long [] betweenId;
+        double[] betweenLat;
+        double[] betweenLon;
+        long[] betweenId;
 
         //street map
         StreetMap streetMap = null;
@@ -99,8 +99,6 @@ public class OSMStAXGraphReader {
             if (streetMapFile.exists()){
                 FileInputStream fis = new FileInputStream(streetMapFile);
                 DataInputStream dis = new DataInputStream(fis);
-
-                int as = dis.available();
                 
                 large = dis.readInt();                
                 NrOfNodes = dis.readInt();

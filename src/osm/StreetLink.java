@@ -5,11 +5,8 @@
 package osm;
 
 import gps.GPSNode;
-
 import java.util.NoSuchElementException;
 import java.util.Vector;
-
-import route.NRoute;
 import myOSM.myOSMWayPart;
 import algorithm.MatchedRange;
 

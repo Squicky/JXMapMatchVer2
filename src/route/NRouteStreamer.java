@@ -17,7 +17,6 @@ import myOSM.myOSMMap;
 import myOSM.myOSMWayPart;
 import hash.Hash;
 import interfaces.StatusUpdate;
-import osm.StreetLink;
 import osm.StreetMap;
 
 public class NRouteStreamer {
@@ -28,6 +27,11 @@ public class NRouteStreamer {
 	 */
 	public static class SHA256CheckSumException extends Exception {
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public SHA256CheckSumException() {
 			super();
 		}
@@ -40,6 +44,11 @@ public class NRouteStreamer {
 	
 	public static class NRouteFileNotFoundException extends FileNotFoundException {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public NRouteFileNotFoundException() {
 			super();
 		}
@@ -50,6 +59,11 @@ public class NRouteStreamer {
 	}
 	
 	public static class MapFileNotFoundException extends FileNotFoundException {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
 		public MapFileNotFoundException() {
 			super();
@@ -104,6 +118,7 @@ public class NRouteStreamer {
 		/** status update **/ statusUpdate.updateStatus("Checking map file...", 20);
 		File mapFile = new File(mapFilePath);
 		if (!mapFile.exists()) {
+			dis.close();
 			throw new MapFileNotFoundException();
 		}
 			
@@ -113,8 +128,11 @@ public class NRouteStreamer {
 		// 4.) compare SHA-256 checksums
 		/** status update **/ statusUpdate.updateStatus("Comparing SHA-256 checksum...", 100);
 		if (!sha256Checksum.equalsIgnoreCase(calcSHA256Checksum)) {
+			dis.close();
 			throw new SHA256CheckSumException();
 		}
+		
+		dis.close();
 		
 		// everything's fine
 		/** status update **/ statusUpdate.finished("Map info valid!");
