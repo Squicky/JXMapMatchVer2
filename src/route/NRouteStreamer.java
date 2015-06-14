@@ -12,7 +12,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-
 import myOSM.myOSMMap;
 import myOSM.myOSMWayPart;
 import hash.Hash;
@@ -158,7 +157,7 @@ public class NRouteStreamer {
 		dis.readUTF();
 		dis.readUTF();
 		
-		SelectedNRoute selectedNRoute = new SelectedNRoute(null, myMap, drawComponent);
+		SelectedNRoute selectedNRoute = new SelectedNRoute(myMap, drawComponent);
 		
 		// 2.) read length of start links
 		/** status update **/ statusUpdate.updateStatus("Reading start links size...", 15);

@@ -176,7 +176,7 @@ public class NRoute implements Comparable<NRoute>, Cloneable {
 			
 			// get previous matched link and new GPS node
 			previousMatchedLink = nRouteLinks.lastElement();
-//			StreetLink previousStreetLink = previousMatchedLink.getStreetLink();
+
 			myOSMWayPart previousWayPart = previousMatchedLink.getStreetLink();
 			
 			GPSNode gpsNode = gpsTrace.getNode(gpsNodeIndex);
@@ -222,15 +222,15 @@ public class NRoute implements Comparable<NRoute>, Cloneable {
 			if (matchToPreviousLink) {
 				
 				// get last link, previous matched link and new GPS node
-//				StreetLink lastStreetLink = lastAddedMatchedLink.getStreetLink();
+
 				myOSMWayPart lastWaypart = lastAddedMatchedLink.getStreetLink();
-//				StreetLink previousStreetLink = previousMatchedLink.getStreetLink();
-				myOSMWayPart previousWaypartk = previousMatchedLink.getStreetLink();
+
+				myOSMWayPart previousWayPart = previousMatchedLink.getStreetLink();
 				
 				GPSNode gpsNode = gpsTrace.getNode(GPSNodeIndex);
 				
 				// calculate distance to previous matched and last added link
-				double distanceToPreviousMatchedLink = Coordinates.getDistance(gpsNode, previousWaypartk);
+				double distanceToPreviousMatchedLink = Coordinates.getDistance(gpsNode, previousWayPart);
 				double distanceToLastAddedLink = Coordinates.getDistance(gpsNode, lastWaypart);
 				
 				// if distance to previous link less...
@@ -423,7 +423,7 @@ public class NRoute implements Comparable<NRoute>, Cloneable {
 		// calculate score for link to its GPS nodes
 		for (int i = minGPSNodeIndex; i <= maxGPSNodeIndex; i++) {
 			linkScore += Coordinates.getDistance(gpsTrace.getNode(i), matchedLink.getStreetLink());
-		}		
+		}
 		
 		// return score
 		return linkScore;

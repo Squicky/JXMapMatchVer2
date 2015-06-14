@@ -122,6 +122,18 @@ public class JXMapPainter {
         // set brush
         g.setStroke(new BasicStroke(1));
         
+    	Rectangle Rectangle_getViewportBounds = map.getViewportBounds();
+    	int x_min = (int) Rectangle_getViewportBounds.getMinX();
+    	int y_min = (int) Rectangle_getViewportBounds.getMinY();
+    	int x_max = (int) Rectangle_getViewportBounds.getMaxX();
+    	int y_max = (int) Rectangle_getViewportBounds.getMaxY();
+    	
+    	x_min = (x_min + 1) * (int) zoomFactor;
+    	y_min = (y_min + 1) * (int) zoomFactor;
+    	x_max = (x_max + 1) * (int) zoomFactor;
+    	y_max = (y_max + 1) * (int) zoomFactor;
+        
+        
         //draw every GPS node of trace
         for(MatchedGPSNode matchedGPSNode : gpsNodesToMatch){
         	//set color
@@ -157,19 +169,39 @@ public class JXMapPainter {
         // set brush
         g.setStroke(new BasicStroke(1));
         
+    	Rectangle Rectangle_getViewportBounds = map.getViewportBounds();
+    	int x_min = (int) Rectangle_getViewportBounds.getMinX();
+    	int y_min = (int) Rectangle_getViewportBounds.getMinY();
+    	int x_max = (int) Rectangle_getViewportBounds.getMaxX();
+    	int y_max = (int) Rectangle_getViewportBounds.getMaxY();
+    	
+    	x_min = (x_min + 1) * (int) zoomFactor;
+    	y_min = (y_min + 1) * (int) zoomFactor;
+    	x_max = (x_max + 1) * (int) zoomFactor;
+    	y_max = (y_max + 1) * (int) zoomFactor;
+        
+    	int x;
+    	int y;
+    	
         //draw every GPS node of trace
         for(int i=gpsTrace.getNrOfNodes()-1; i>=0; i--){
-        	//set color
-        	g.setColor(gpsColor);
         	
-        	if (gpsTrace.getNodeStatus(i) == 1) {
-        		g.setColor(Color.RED);
+			x = gpsTrace.getNodeX(i);
+			y = gpsTrace.getNodeY(i);
+        	if ( (x_min <= x && x <= x_max && y_min <= y && y <= y_max) ) {
+    					
+				//set color
+            	if (gpsTrace.getNodeStatus(i) == 1) {
+            		g.setColor(Color.RED);
+            	} else {
+            		g.setColor(gpsColor);
+            	}
+            	
+                // draw rect for every GPS Point
+                // devide x,y coordinates by 2^(zoom-1) to fit to current zoom
+                g.drawRect((int) (x/zoomFactor), (int)(y/zoomFactor), 3, 3);
         	}
-        	
-            // draw rect for every GPS Point
-            // devide x,y coordinates by 2^(zoom-1) to fit to current zoom
-            g.drawRect((int)(gpsTrace.getNodeX(i)/zoomFactor),
-                       (int)(gpsTrace.getNodeY(i)/zoomFactor), 3, 3);
+
         }
       
         // release graphics
@@ -367,56 +399,78 @@ public class JXMapPainter {
 
     	Random random = new Random();
     	
+    	Rectangle Rectangle_getViewportBounds = map.getViewportBounds();
+    	int x_min = (int) Rectangle_getViewportBounds.getMinX();
+    	int y_min = (int) Rectangle_getViewportBounds.getMinY();
+    	int x_max = (int) Rectangle_getViewportBounds.getMaxX();
+    	int y_max = (int) Rectangle_getViewportBounds.getMaxY();
+    	
+    	x_min = (x_min + 1) * (int) zoomFactor;
+    	y_min = (y_min + 1) * (int) zoomFactor;
+    	x_max = (x_max + 1) * (int) zoomFactor;
+    	y_max = (y_max + 1) * (int) zoomFactor;
+    	
     	if (myMap != null ) {
         	
     		myOSMNode n1;
     		myOSMNode n2;
     		myOSMWayPart wp;
+
     		for (int i=0; i < myMap.ways.size(); i++) {
-//      		for (int i=19; i < 20 ; i++) {
 
 				myOSMWay w = myMap.ways.get(i);
 				
-    			color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
-        		g.setColor(color);
-        		
-    			for (int j=0; j < w.WayParts.length; j++) {
+//				if ( (x_min <= w.minX && w.minX <= x_max && y_min <= w.minY && w.minY <= y_max) 
+//    					|| (x_min <= w.maxX && w.maxX <= x_max && y_min <= w.maxY && w.maxY <= y_max)
+//    					) {
+					
+					color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
+	        		g.setColor(color);
+	        		
+	    			for (int j=0; j < w.WayParts.length; j++) {
 
-    				wp = w.WayParts[j];
-    				n1 = wp.startNode;
-    				n2 = wp.endNode;
+	    				wp = w.WayParts[j];
+	    				n1 = wp.startNode;
+	    				n2 = wp.endNode;
 
-    				g.setColor(new Color(150,150,255));
-    				
-    				/*
-					if (w.onyWay == false) {
-        				g.setColor(Color.BLUE);
-        			} 
-            		else {
-            			if (n1.x == n2.x) {
-            				if (n1.y <= n2.y) {
-            					g.setColor(Color.ORANGE);
-            				}
-            				else {
-            					g.setColor(Color.YELLOW);
-            				}
-            			} else {
-            				if (n1.x < n2.x) {
-            					g.setColor(Color.YELLOW);
-            				} else {
-            					g.setColor(Color.ORANGE);
-            				}
-            			}
-            		}
-            		*/
+	    				if ( (x_min <= n1.x && n1.x <= x_max && y_min <= n1.y && n1.y <= y_max) 
+	    					|| (x_min <= n2.x && n2.x <= x_max && y_min <= n2.y && n2.y <= y_max)
+	    					) {
+	    					
+	        				g.setColor(new Color(150,150,255));
+	        				
+	        				
+	    					if (w.onyWay == false) {
+	            				g.setColor(Color.GREEN);
+	            			} 
+	                		else {
+	                			if (n1.x == n2.x) {
+	                				if (n1.y <= n2.y) {
+	                					g.setColor(Color.ORANGE);
+	                				}
+	                				else {
+	                					g.setColor(Color.YELLOW);
+	                				}
+	                			} else {
+	                				if (n1.x < n2.x) {
+	                					g.setColor(Color.YELLOW);
+	                				} else {
+	                					g.setColor(Color.ORANGE);
+	                				}
+	                			}
+	                		}
+	                		
 
-        			g.drawLine((int)(n1.x / zoomFactor), (int)(n1.y / zoomFactor), (int)(n2.x / zoomFactor), (int)(n2.y / zoomFactor));
-                	
-    			}
-    			
+	            			g.drawLine((int)(n1.x / zoomFactor), (int)(n1.y / zoomFactor), (int)(n2.x / zoomFactor), (int)(n2.y / zoomFactor));
+
+	    				}
+
+	    			}	
+
+//				}
+
     		}
 
-    		
     		g.dispose();
         }
     }
@@ -470,8 +524,21 @@ public class JXMapPainter {
         // set brush
         g.setStroke(new BasicStroke(4));
         
+    	Rectangle Rectangle_getViewportBounds = map.getViewportBounds();
+    	int x_min = (int) Rectangle_getViewportBounds.getMinX();
+    	int y_min = (int) Rectangle_getViewportBounds.getMinY();
+    	int x_max = (int) Rectangle_getViewportBounds.getMaxX();
+    	int y_max = (int) Rectangle_getViewportBounds.getMaxY();
+    	
+    	x_min = (x_min + 1) * (int) zoomFactor;
+    	y_min = (y_min + 1) * (int) zoomFactor;
+    	x_max = (x_max + 1) * (int) zoomFactor;
+    	y_max = (y_max + 1) * (int) zoomFactor;
+        
         //draw selected N route (Start)
 		for (MatchedNLink matchedNLink : matchedNLinks) {
+			
+			
 			
 			// set Color
 			g.setColor(matchedNLink.getColor());

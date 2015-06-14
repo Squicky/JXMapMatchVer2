@@ -3,18 +3,14 @@ package route;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Vector;
-
 import logging.Logger;
 import myOSM.myOSMMap;
 import myOSM.myOSMNode;
 import myOSM.myOSMWayPart;
-
 import org.jdesktop.swingx.mapviewer.GeoPosition;
-
 import algorithm.MatchedLink;
 import algorithm.NRouteAlgorithm;
 import cartesian.Coordinates;
-import osm.StreetMap;
 
 public class SelectedNRoute {
 
@@ -40,15 +36,15 @@ public class SelectedNRoute {
 	
 	private boolean isNRouteSplitted = false;
 		
-	public SelectedNRoute(StreetMap streetMap, myOSMMap myMap, NRouteAlgorithm nRouteAlgorithm, Component drawComponent) {
+	public SelectedNRoute(myOSMMap myMap, NRouteAlgorithm nRouteAlgorithm, Component drawComponent) {
 		// call other constructor
-		this(streetMap, myMap, drawComponent);
+		this( myMap, drawComponent);
 		
 		// initialize start array list, convert best route to array list
 		streetLinksStart = convertNRouteToArrayList(nRouteAlgorithm.getNRoute(0));
 	}
 	
-	public SelectedNRoute(StreetMap streetMap, myOSMMap myMap, Component drawComponent) {
+	public SelectedNRoute(myOSMMap myMap, Component drawComponent) {
 		// save references
 //		this.streetMap = streetMap;
 //		this.myMap = myMap;
@@ -126,10 +122,9 @@ public class SelectedNRoute {
 			//StreetLink streetLink = streetLinksStart.get(0);
 			myOSMWayPart streetLink = streetLinksStart.get(0);
 			
-//			if (streetLink.getStartNode().getLinks().contains(selectableLink) ||
-//					streetLink.getEndNode().getLinks().contains(selectableLink)) {
-			if (streetLink.startNode.WayPartsIncoming_contains(selectableLink) ||
-					streetLink.endNode.WayPartsIncoming_contains(selectableLink)) {	
+			if (streetLink.startNode.WayPartsIncoming_contains(selectableLink) 
+//					|| streetLink.endNode.WayPartsIncoming_contains(selectableLink)
+					) {
 				
 				streetLinksStart.add(0, selectableLink);
 				System.out.println("streetLinksStart.add: " + selectableLink.parentWay.id + " | " +  selectableLink.startNode.id + " -> " + selectableLink.endNode.id);
@@ -146,7 +141,8 @@ public class SelectedNRoute {
 				
 				streetLink = streetLinksStart.get(streetLinkStartSize - 1);
 				
-				if (streetLink.startNode.WayPartsOutgoing_contains(selectableLink) ||
+				if (
+//						streetLink.startNode.WayPartsOutgoing_contains(selectableLink) ||
 							streetLink.endNode.WayPartsOutgoing_contains(selectableLink)) {
 					
 						streetLinksStart.add(selectableLink);
@@ -165,8 +161,9 @@ public class SelectedNRoute {
 //			StreetLink streetLink = streetLinksEnd.get(0);
 			myOSMWayPart streetLink = streetLinksEnd.get(0);
 					
-			if (streetLink.startNode.WayPartsOutgoing_contains(selectableLink) ||
-				streetLink.endNode.WayPartsOutgoing_contains(selectableLink)) {
+			if (streetLink.startNode.WayPartsIncoming_contains(selectableLink)
+//					|| streetLink.endNode.WayPartsIncoming_contains(selectableLink)
+					) {
 				streetLinksEnd.add(0, selectableLink);
 				if (canNRoutesBeMerged()) mergeNRoutes();
 				setEditableLinks(lastKnownPosX, lastKnownPosY);
@@ -179,7 +176,8 @@ public class SelectedNRoute {
 				
 				streetLink = streetLinksEnd.get(streetLinkStartSize - 1);
 				
-				if (streetLink.startNode.WayPartsOutgoing_contains(selectableLink) ||
+				if (
+//						streetLink.startNode.WayPartsOutgoing_contains(selectableLink) ||
 						streetLink.endNode.WayPartsOutgoing_contains(selectableLink)) {
 						streetLinksEnd.add(selectableLink);
 						if (canNRoutesBeMerged()) mergeNRoutes();
@@ -195,10 +193,21 @@ public class SelectedNRoute {
 		
 		if (isNRouteSplitted) {
 			// start part
-			if (streetLinksStart.contains(deletableLink)) streetLinksStart.remove(deletableLink);
+			if (streetLinksStart.contains(deletableLink)) {
+				streetLinksStart.remove(deletableLink);
+			}
 			
 			// end part
-			if (streetLinksEnd.contains(deletableLink)) streetLinksEnd.remove(deletableLink);
+			if (streetLinksEnd.contains(deletableLink)) {
+				streetLinksEnd.remove(deletableLink);
+			}
+			
+			if (streetLinksStart.isEmpty() && (streetLinksEnd.isEmpty() == false)) {
+				streetLinksStart.addAll(streetLinksEnd) ;
+				streetLinksEnd.clear();
+
+				isNRouteSplitted = false;
+			}
 			
 		} else {
 			

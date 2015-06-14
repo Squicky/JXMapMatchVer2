@@ -917,7 +917,7 @@ public class JXMapMatchController implements ActionListener,
 		
 		// initialize new Selected N Route if existing one shouldn't be used
 		if (!useExistingSelectedNRoute) {
-			selectedNRoute = new SelectedNRoute(null, myMap, nRouteAlgorithm, jxMapViewer);
+			selectedNRoute = new SelectedNRoute(myMap, nRouteAlgorithm, jxMapViewer);
 		}
 		selectedNRouteMode = true;
 		allowNRouteLoadGPSTrace = true;

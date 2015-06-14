@@ -2,6 +2,7 @@ package jxmapmatch;
 
 import interfaces.JXMapMatchGUIInterface;
 import interfaces.StatusUpdate;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
@@ -18,13 +19,16 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.EventListener;
 import java.util.Hashtable;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeListener;
+
 import org.jdesktop.swingx.JXMapKit;
 import org.jdesktop.swingx.JXMapViewer;
 import org.jdesktop.swingx.mapviewer.DefaultTileFactory;
 import org.jdesktop.swingx.mapviewer.TileFactoryInfo;
+
 import tools.Tools;
 import dialogelements.JPanelBoxLayout;
 import static algorithm.NRouteAlgorithm.*;
@@ -60,9 +64,6 @@ public class JXMapMatchGUI extends JFrame implements JXMapMatchGUIInterface {
 	private JPanelBoxLayout jPanelNRoute; 		// BoxLayout y-axis
 	private JPanelBoxLayout jPanelSelectRoute; 	// BoxLayout y-axis 
 	private JPanel jPanelStatusBar;				// BoxLayout x-axis
-	
-	private JPanelBoxLayout jPanelTest; 	
-	private JTextField jTextFieldTest;
 	
 
     // JScrollPane
@@ -208,8 +209,6 @@ public class JXMapMatchGUI extends JFrame implements JXMapMatchGUIInterface {
 		this.statusUpdate.updateStatus("loading route select panel...");
 		initSelectRoutePanel(jPanelRight);
 		
-		initTestPanel(jPanelRight);
-		
 		// initialize status bar
 		this.statusUpdate.updateStatus("loading status bar...");
 		initStatusBar(contentPane);
@@ -259,10 +258,14 @@ public class JXMapMatchGUI extends JFrame implements JXMapMatchGUIInterface {
 		jPanelRight.setLayout(new BoxLayout(jPanelRight, BoxLayout.Y_AXIS));
         jScrollPaneRight = new JScrollPane(jPanelRight, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                                                         ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        
+        
         // minimum and preferred size needs to be applied to the scroll pane
         // otherwise scroll bars won't show/work
-        jScrollPaneRight.setMinimumSize(new Dimension(180,0));
-        jScrollPaneRight.setPreferredSize(new Dimension(180,0));
+        jScrollPaneRight.setMinimumSize(new Dimension(175,0));
+        jScrollPaneRight.setPreferredSize(new Dimension(175,0));
+        jScrollPaneRight.setMaximumSize(new Dimension(175, this.getHeight()));
+        
         
 		// add panels to container
 		contentPane.add(mainPanel, BorderLayout.CENTER);
@@ -289,10 +292,13 @@ public class JXMapMatchGUI extends JFrame implements JXMapMatchGUIInterface {
 		// create choose graph label
 		jLabelChooseGraph = new JLabel("Routing Graph:");
 		jLabelChooseGraph.setAlignmentX(CENTER_ALIGNMENT);
+		
 		// create choose graph button
 		jButtonOpenStreetMap = new JButton("...");
 		jButtonOpenStreetMap.setActionCommand("Open routing graph file");
 		jButtonOpenStreetMap.setAlignmentX(CENTER_ALIGNMENT);
+		jButtonOpenStreetMap.setMaximumSize(new Dimension(125, 25));
+		
 		// create choose GPS track label 
 		jLabelChooseGPSTrack = new JLabel("GPS Track:");
 		jLabelChooseGPSTrack.setAlignmentX(CENTER_ALIGNMENT);
@@ -300,6 +306,7 @@ public class JXMapMatchGUI extends JFrame implements JXMapMatchGUIInterface {
 		jButtonOpenGPSTrace = new JButton("...");
 		jButtonOpenGPSTrace.setActionCommand("Open GPS trace file");
 		jButtonOpenGPSTrace.setAlignmentX(CENTER_ALIGNMENT);
+		jButtonOpenGPSTrace.setMaximumSize(new Dimension(125, 25));
 		
 		// add components to source panel
 		jPanelSource.add(jLabelChooseGraph);
@@ -498,20 +505,6 @@ public class JXMapMatchGUI extends JFrame implements JXMapMatchGUIInterface {
 		
 		// add to container
 		container.add(jPanelSelectRoute);
-	}
-	
-	private void initTestPanel(Container container) {
-		jPanelTest = new JPanelBoxLayout(BoxLayout.Y_AXIS, 60, 5, "Test");
-		
-		jPanelTest.setMaximumSize(new Dimension(150,150));
-		
-		jTextFieldTest = new JTextField();
-//		jTextFieldTest.setMaximumSize();
-		//		jTextFieldTest.setAlignmentX(CENTER_ALIGNMENT);
-		
-		jPanelTest.add(jTextFieldTest);
-		
-		container.add(jPanelTest);
 	}
 	
 	private void initStatusBar(Container container) {

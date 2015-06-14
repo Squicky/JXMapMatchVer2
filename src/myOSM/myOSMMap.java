@@ -602,7 +602,36 @@ public class myOSMMap {
 			
 			if (tempWay.getMeansOfTransportPermission(myOSMWay.CAR)) {
 
+				if (this.parseXML_status == 0) {
+					for (int i = 0; i < nodeIdsOfWay.size(); i++) {
+						long l = nodeIdsOfWay.get(i);
+						this.neededNodesIds.put(l,l);
+					}
+				} else if (this.parseXML_status == 1) {
+					
+					tempWay.refs = new myOSMNode[nodeIdsOfWay.size()];
+
+					for (int i = 0; i < nodeIdsOfWay.size(); i++) {
+						long l = nodeIdsOfWay.get(i);
+						
+						myOSMNode n = this.nodes.get(l);
+						
+						if (n == null) {
+							System.out.println("Error: n == null: addWay");
+							System.exit(-1);
+						} else {
+							tempWay.refs[i] = n;
+						}
+					}
+					
+					tempWay.setWayParts();
+					this.ways.put(this.ways.size(), tempWay);
+					//this.ways.add(tempWay);
+					//this.ways.put(tempWay.id, tempWay);
+				}
+
 				
+				/*
 				if (this.parseXML_status == 0) {
 					for (int i = 0; i < nodeIdsOfWay.size(); i++) {
 						long l = nodeIdsOfWay.get(i);
@@ -630,6 +659,7 @@ public class myOSMMap {
 					//this.ways.add(tempWay);
 					//this.ways.put(tempWay.id, tempWay);
 				}
+				*/
 			}
 		}
 		

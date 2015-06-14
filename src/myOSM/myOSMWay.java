@@ -45,6 +45,11 @@ public class myOSMWay {
 
 	public int carPermission; //0 = notallowed, 1 = restricted, 2 = allowed
 	
+	public int minX = Integer.MAX_VALUE;
+	public int minY = Integer.MAX_VALUE;
+	public int maxX = Integer.MIN_VALUE;
+	public int maxY = Integer.MIN_VALUE;
+	
 	public void setWayParts() {
 		
 		if (onyWay == false) {
@@ -55,9 +60,40 @@ public class myOSMWay {
 		
 		int k;
 		for (k = 0; k < (refs.length - 1); k++) {
-			WayParts[k] =  new myOSMWayPart(refs[k], refs[k+1], this, k, false);;
+			WayParts[k] =  new myOSMWayPart(refs[k], refs[k+1], this, k, false);
+			
+			if (WayParts[k].startNode.x < minX) {
+				minX = WayParts[k].startNode.x;
+			} else if (maxX < WayParts[k].startNode.x) {
+				maxX = WayParts[k].startNode.x;
+			}
+			
+			if (WayParts[k].startNode.y < minY) {
+				minY = WayParts[k].startNode.y;
+			} else if (maxY < WayParts[k].startNode.y) {
+				maxY = WayParts[k].startNode.y;
+			}
 		}
 
+		if (k > 0) {
+			k--;
+
+			if (WayParts[k].endNode.x < minX) {
+				minX = WayParts[k].endNode.x;
+			} else if (maxX < WayParts[k].endNode.x) {
+				maxX = WayParts[k].endNode.x;
+			}
+			
+			if (WayParts[k].endNode.y < minY) {
+				minY = WayParts[k].endNode.y;
+			} else if (maxY < WayParts[k].endNode.y) {
+				maxY = WayParts[k].endNode.y;
+			}
+
+			k++;
+		}
+
+		
 		int j = 0;
 		if (onyWay == false) {
 			for (int i = (refs.length - 1); i >=1 ; i--) {
@@ -67,6 +103,8 @@ public class myOSMWay {
 				k++;
 			}
 		}
+		
+		
 	}
 	
 	public void setCountAndXYOfNotes() {
