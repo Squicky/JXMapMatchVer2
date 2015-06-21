@@ -228,6 +228,17 @@ public class JXMapPainter {
         
         g.setColor(Color.black);
         
+    	Rectangle Rectangle_getViewportBounds = map.getViewportBounds();
+    	int x_min = (int) Rectangle_getViewportBounds.getMinX();
+    	int y_min = (int) Rectangle_getViewportBounds.getMinY();
+    	int x_max = (int) Rectangle_getViewportBounds.getMaxX();
+    	int y_max = (int) Rectangle_getViewportBounds.getMaxY();
+    	
+    	x_min = (x_min + 1) * (int) zoomFactor;
+    	y_min = (y_min + 1) * (int) zoomFactor;
+    	x_max = (x_max + 1) * (int) zoomFactor;
+    	y_max = (y_max + 1) * (int) zoomFactor;
+        
 		// draw route for each route
         for (int i=0; i < nRoutes.size(); i++ ){
         	
@@ -236,12 +247,8 @@ public class JXMapPainter {
 
         		NRoute nRoute = nRoutes.get(i);
         		
-        		System.out.println("printing nRoute.IdOfThisNRoute: " + nRoute.IdOfThisNRoute + " | s: " + nRoute.getScore());
-
     			for (MatchedLink nRouteLink : nRoute.getNRouteLinks()) {
-    				
-    				System.out.print(nRouteLink.getStreetLink().startNode.id + " - " + nRouteLink.getStreetLink().endNode.id + " | ");
-    				
+    				    				
     				// draw line for every link
     				// devide x,y coordinates by 2^(zoom-1) to fit to current zoom
     				g.drawLine((int) (nRouteLink.getStreetLink().startNode.x / zoomFactor),
@@ -278,6 +285,17 @@ public class JXMapPainter {
         
         // set color for normal n route links
         g.setColor(nRouteColor);
+        
+    	Rectangle Rectangle_getViewportBounds = map.getViewportBounds();
+    	int x_min = (int) Rectangle_getViewportBounds.getMinX();
+    	int y_min = (int) Rectangle_getViewportBounds.getMinY();
+    	int x_max = (int) Rectangle_getViewportBounds.getMaxX();
+    	int y_max = (int) Rectangle_getViewportBounds.getMaxY();
+    	
+    	x_min = (x_min + 1) * (int) zoomFactor;
+    	y_min = (y_min + 1) * (int) zoomFactor;
+    	x_max = (x_max + 1) * (int) zoomFactor;
+    	y_max = (y_max + 1) * (int) zoomFactor;
         
         //draw selected N route (Start)
 		for (myOSMWayPart nRouteLink : selectedNRoute.getNRouteLinksStart()) {
@@ -341,6 +359,17 @@ public class JXMapPainter {
         // set brush
         g.setStroke(new BasicStroke(4));
 
+    	Rectangle Rectangle_getViewportBounds = map.getViewportBounds();
+    	int x_min = (int) Rectangle_getViewportBounds.getMinX();
+    	int y_min = (int) Rectangle_getViewportBounds.getMinY();
+    	int x_max = (int) Rectangle_getViewportBounds.getMaxX();
+    	int y_max = (int) Rectangle_getViewportBounds.getMaxY();
+    	
+    	x_min = (x_min - 1) * (int) zoomFactor;
+    	y_min = (y_min - 1) * (int) zoomFactor;
+    	x_max = (x_max + 1) * (int) zoomFactor;
+    	y_max = (y_max + 1) * (int) zoomFactor;
+        
         //draw selected route
         if (!selectedRoute.isEmpty()){
         	//get selected street links, draw them
@@ -382,7 +411,9 @@ public class JXMapPainter {
      * @param color
      */
     public void drawStreetMap(Graphics2D g, JXMapViewer map, StreetMap streetMap, Color color, double zoomFactor, myOSMMap myMap){
-    	
+		c++;
+		c = c % myMap.ways.size();
+		
         // create graphics
         g = (Graphics2D) g.create();
         //convert from viewport to world bitmap
@@ -427,6 +458,7 @@ public class JXMapPainter {
 					color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
 	        		g.setColor(color);
 	        		
+	        		
 	    			for (int j=0; j < w.WayParts.length; j++) {
 
 	    				wp = w.WayParts[j];
@@ -439,7 +471,7 @@ public class JXMapPainter {
 	    					
 	        				g.setColor(new Color(150,150,255));
 	        				
-	        				
+	        				/*
 	    					if (w.onyWay == false) {
 	            				g.setColor(Color.GREEN);
 	            			} 
@@ -459,13 +491,18 @@ public class JXMapPainter {
 	                				}
 	                			}
 	                		}
-	                		
+	                		*/
 
-	            			g.drawLine((int)(n1.x / zoomFactor), (int)(n1.y / zoomFactor), (int)(n2.x / zoomFactor), (int)(n2.y / zoomFactor));
-
+//	        				if (c == i) 
+	        				{
+		            			g.drawLine((int)(n1.x / zoomFactor), (int)(n1.y / zoomFactor), (int)(n2.x / zoomFactor), (int)(n2.y / zoomFactor));	        					
+//		        				System.out.println(w.id);
+	        				}
+	        				
+	        				
 	    				}
 
-	    			}	
+	    			}
 
 //				}
 

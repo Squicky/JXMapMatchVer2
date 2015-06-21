@@ -167,7 +167,11 @@ public class myOSMWay {
 				return 2;
 			else if (motorcar.equals("private") || motorcar.equals("permissive") || motorcar.equals("unknown") ||
 					motorcar.equals("restricted") || motorcar.equals("destination") || motorcar.equals("customer") ||
-					motorcar.equals("delivery") || motorcar.equals("agricultural") || motorcar.equals("forestry")){
+					motorcar.equals("delivery") || motorcar.equals("agricultural") || motorcar.equals("forestry") || 
+					motorcar.equals("destination; no") || motorcar.equals("agricultural;forestry") || motorcar.equals("access") || 
+					motorcar.equals("delivery;destination") 	)
+					{
+
 				return 1;
 			}
 			else if (motorcar.equals("no"))

@@ -55,6 +55,11 @@ public class myOSMMap {
 	private Map<Long, Long> neededNodesIds = new HashMap<Long, Long>();
 	private boolean isBuildingWay = false;
 	
+	int anzahl_ways = 0;
+	int anzahl_ways_Building = 0;
+	int anzahl_ways_Car = 0;
+	
+	
 	public myOSMMap(File _xmlFile) {
 		
 		xmlFile = _xmlFile;
@@ -77,6 +82,9 @@ public class myOSMMap {
 		nodeIdsOfWay.clear();
 		isBuildingWay = false;
 		parseXML();
+
+		
+		
 	}
 	
 	public StreetMap getSteetMap() {
@@ -405,10 +413,16 @@ public class myOSMMap {
 	 * @return
 	 */
 	private boolean parseXML(){		
+		anzahl_ways = 0;
+		anzahl_ways_Building = 0;
+		anzahl_ways_Car = 0;
+		
+
+		long abc = 0;
+		
 		//start reading xml data via "stream"
 		try {
 
-			long abc = 0;
 			  
 			parser_loop:
 
@@ -423,7 +437,7 @@ public class myOSMMap {
 
 
 				/*
-				if (abc > 45002536) {
+				if (abc > 450946) {
 					if ((abc % 1) == 0) {
 						System.out.print((new GregorianCalendar()).getTime().toString() + " | " + abc );
 						System.out.println(" |n: " + count_nodes + " | w: " + count_ways);
@@ -513,6 +527,7 @@ public class myOSMMap {
 				default: 
 					break; 
 				} 
+
 				parser.next(); 
 			}
 		} catch (Exception e) {
@@ -555,6 +570,7 @@ public class myOSMMap {
   	  	
 		tempWay = new myOSMWay();
 		nodeIdsOfWay.clear();
+		this.isBuildingWay = false;
 		
   	  	//now we check all Attributes of the way element
   	  	for ( int i = 0; i < parser.getAttributeCount(); i++ ) {
@@ -596,11 +612,21 @@ public class myOSMMap {
 	 */
 	public void addWay()
 	{	
-		if (this.isBuildingWay == false) {
+		
 
+		
+		anzahl_ways++;
+		if (this.isBuildingWay == true) {
+
+			anzahl_ways_Building++;
+			
+		} else {
+			
 			tempWay.set_meansOfTransport();
 			
 			if (tempWay.getMeansOfTransportPermission(myOSMWay.CAR)) {
+				
+				anzahl_ways_Car++;
 
 				if (this.parseXML_status == 0) {
 					for (int i = 0; i < nodeIdsOfWay.size(); i++) {

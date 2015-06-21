@@ -1315,6 +1315,8 @@ public class JXMapMatchController implements ActionListener,
 				// calculate zoom factor (2 ^ (zoom - 1)), e.g. for zoom = 1 (no zoom) => 2^0 = 1 => no change)
 				double zoomFactor = Math.pow(2, jxMapViewer.getZoom()-1);
 				
+				
+				
 				// draw routing graph?
 				if (drawStreetMap){
 					jxMapPainter.drawStreetMap(g2D, jxMapViewer, null, STREET_MAP_COLOR, zoomFactor, myMap);

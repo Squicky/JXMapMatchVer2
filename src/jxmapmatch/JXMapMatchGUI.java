@@ -59,7 +59,7 @@ public class JXMapMatchGUI extends JFrame implements JXMapMatchGUIInterface {
 	private JPanel jPanelLeft; 					// BoxLayout y-axis
 	private JPanel jPanelRight; 				// BoxLayout y-axis
 	private JPanelBoxLayout jPanelSource; 		// BoxLayout y-axis
-	private JPanelBoxLayout jPanelMapMatching; 	// BoxLayout y-axis
+//	private JPanelBoxLayout jPanelMapMatching; 	// BoxLayout y-axis
 	private JPanelBoxLayout jPanelOverlay; 		// BoxLayout y-axis
 	private JPanelBoxLayout jPanelNRoute; 		// BoxLayout y-axis
 	private JPanelBoxLayout jPanelSelectRoute; 	// BoxLayout y-axis 
@@ -67,7 +67,7 @@ public class JXMapMatchGUI extends JFrame implements JXMapMatchGUIInterface {
 	
 
     // JScrollPane
-    private JScrollPane jScrollPaneRight;
+//    private JScrollPane jScrollPaneRight;
 	
 	// JLabels
 	private JLabel jLabelChooseGraph;
@@ -199,11 +199,12 @@ public class JXMapMatchGUI extends JFrame implements JXMapMatchGUIInterface {
 		
 		// initialize map matching panel
 		this.statusUpdate.updateStatus("loading map matching panel...");
-		initMapMatchingPanel(jPanelRight);
+//		initMapMatchingPanel(jPanelRight);
 		
 		// initialize N Route panel
 		this.statusUpdate.updateStatus("loading N Route panel...");
-		initNRoutePanel(jPanelMapMatching);
+//		initNRoutePanel(jPanelMapMatching);
+		initNRoutePanel(jPanelRight);
 		
 		// initialize Select Route panel
 		this.statusUpdate.updateStatus("loading route select panel...");
@@ -225,7 +226,7 @@ public class JXMapMatchGUI extends JFrame implements JXMapMatchGUIInterface {
 		
 		// notify update status interface, that we're finished loading
 		statusUpdate.finished();	
-		
+
 	}
 
 
@@ -255,7 +256,15 @@ public class JXMapMatchGUI extends JFrame implements JXMapMatchGUIInterface {
         // set right pane (add scroll pane as main container)
         jPanelRight = new JPanel();
 		//jPanelRight.setPreferredSize(new Dimension(150,10)); //set fixed width for right panel
-		jPanelRight.setLayout(new BoxLayout(jPanelRight, BoxLayout.Y_AXIS));
+//		jPanelRight.setLayout(new BoxLayout(jPanelRight, BoxLayout.Y_AXIS));
+		
+        
+        jPanelRight.setLayout(new BoxLayout(jPanelRight, BoxLayout.Y_AXIS));
+        jPanelRight.setMinimumSize(new Dimension(175,10));
+        jPanelRight.setMaximumSize(new Dimension(175,this.getHeight()));
+        jPanelRight.setAlignmentX(LEFT_ALIGNMENT);
+
+		/*
         jScrollPaneRight = new JScrollPane(jPanelRight, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                                                         ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         
@@ -265,13 +274,15 @@ public class JXMapMatchGUI extends JFrame implements JXMapMatchGUIInterface {
         jScrollPaneRight.setMinimumSize(new Dimension(175,0));
         jScrollPaneRight.setPreferredSize(new Dimension(175,0));
         jScrollPaneRight.setMaximumSize(new Dimension(175, this.getHeight()));
-        
+        */
         
 		// add panels to container
 		contentPane.add(mainPanel, BorderLayout.CENTER);
+				
 		mainPanel.add(jPanelLeft);
 		mainPanel.add(Box.createHorizontalStrut(5)); //add some space between right and left panel
-		mainPanel.add(jScrollPaneRight);
+		//mainPanel.add(jScrollPaneRight);
+		mainPanel.add(jPanelRight);
 	}
 	
 	private void initJXMapKit(Container container) {
@@ -287,7 +298,11 @@ public class JXMapMatchGUI extends JFrame implements JXMapMatchGUIInterface {
 
 	private void initSourcePanel(Container container) {
 		// create source panel
-		jPanelSource = new JPanelBoxLayout(BoxLayout.Y_AXIS, 150, 5, "Choose source files");
+		jPanelSource = new JPanelBoxLayout(BoxLayout.Y_AXIS, container.getWidth(), 5, "Choose source files");
+		
+		jPanelSource.setAlignmentX(LEFT_ALIGNMENT);
+		jPanelSource.setMaximumSize(container.getMaximumSize());
+		jPanelSource.setMinimumSize(container.getMinimumSize());
 		
 		// create choose graph label
 		jLabelChooseGraph = new JLabel("Routing Graph:");
@@ -297,7 +312,7 @@ public class JXMapMatchGUI extends JFrame implements JXMapMatchGUIInterface {
 		jButtonOpenStreetMap = new JButton("...");
 		jButtonOpenStreetMap.setActionCommand("Open routing graph file");
 		jButtonOpenStreetMap.setAlignmentX(CENTER_ALIGNMENT);
-		jButtonOpenStreetMap.setMaximumSize(new Dimension(125, 25));
+		jButtonOpenStreetMap.setMaximumSize(new Dimension(150, 25));
 		
 		// create choose GPS track label 
 		jLabelChooseGPSTrack = new JLabel("GPS Track:");
@@ -306,23 +321,29 @@ public class JXMapMatchGUI extends JFrame implements JXMapMatchGUIInterface {
 		jButtonOpenGPSTrace = new JButton("...");
 		jButtonOpenGPSTrace.setActionCommand("Open GPS trace file");
 		jButtonOpenGPSTrace.setAlignmentX(CENTER_ALIGNMENT);
-		jButtonOpenGPSTrace.setMaximumSize(new Dimension(125, 25));
+		
+		
+		jButtonOpenGPSTrace.setMaximumSize(new Dimension(150, 25));
 		
 		// add components to source panel
 		jPanelSource.add(jLabelChooseGraph);
 		jPanelSource.add(jButtonOpenStreetMap);
 		jPanelSource.add(jLabelChooseGPSTrack);
 		jPanelSource.add(jButtonOpenGPSTrace);
-
+		
 		// add to container
 		container.add(jPanelSource);
 	}
 	
 	private void initOverlayPanel(Container container) {
 		// create panel
-		jPanelOverlay = new JPanelBoxLayout(BoxLayout.Y_AXIS, 150, 5, "Overlays");
+		jPanelOverlay = new JPanelBoxLayout(BoxLayout.Y_AXIS, container.getWidth(), 5, "Overlays");
 		//JPanel jPanelOverlay = new JPanel();
 		//jPanelOverlay.setLayout(new BoxLayout(jPanelOverlay,BoxLayout.Y_AXIS));
+		
+		jPanelOverlay.setAlignmentX(LEFT_ALIGNMENT);
+		jPanelOverlay.setMaximumSize(container.getMaximumSize());
+		jPanelOverlay.setMinimumSize(container.getMinimumSize());
 		
 		// create label
 		jLabelOverlay = new JLabel("Select overlays:");
@@ -349,9 +370,14 @@ public class JXMapMatchGUI extends JFrame implements JXMapMatchGUIInterface {
 		container.add(jPanelOverlay);
 	}
 	
-	private void initMapMatchingPanel(Container container) {
+/*
+		private void initMapMatchingPanel(Container container) {
 		// create panel
-		jPanelMapMatching = new JPanelBoxLayout(BoxLayout.Y_AXIS, 150, 5, "Map Matching Algorithm");
+		jPanelMapMatching = new JPanelBoxLayout(BoxLayout.Y_AXIS, container.getWidth(), 5, "Map Matching Algorithm");
+		
+		jPanelMapMatching.setAlignmentX(LEFT_ALIGNMENT);
+		jPanelMapMatching.setMaximumSize(container.getMaximumSize());
+		jPanelMapMatching.setMinimumSize(container.getMinimumSize());
 		
 		/*
 		// create JComboBox
@@ -362,10 +388,11 @@ public class JXMapMatchGUI extends JFrame implements JXMapMatchGUIInterface {
 		// add components to map matching panel
 		jPanelMapMatching.add(jComboBoxMapMatching);
 		*/
-		
+/*		
 		// add to container
 		container.add(jPanelMapMatching);
 	}
+*/
 	
 	private void initNRoutePanel(Container container) {
 		// initialize hash table containing captions for match button
@@ -382,7 +409,12 @@ public class JXMapMatchGUI extends JFrame implements JXMapMatchGUIInterface {
 		matchGPStoNRouteAlgorithmMatchButtonCaptions.put(MATCH_GPS_TO_N_ROUTE_RECESSED, "Match");
 		
 		// create panel
-		jPanelNRoute = new JPanelBoxLayout(BoxLayout.Y_AXIS, 0, 5);
+		//jPanelNRoute = new JPanelBoxLayout(BoxLayout.Y_AXIS, container.getWidth(), 5);
+		jPanelNRoute = new JPanelBoxLayout(BoxLayout.Y_AXIS, container.getWidth(), 5, "Map Matching Algorithm");
+		
+		jPanelNRoute.setAlignmentX(LEFT_ALIGNMENT);
+		jPanelNRoute.setMaximumSize(container.getMaximumSize());
+		jPanelNRoute.setMinimumSize(container.getMinimumSize());
 		
 		// create label
 		jLabelNRoute = new JLabel("N Route Algorithm");
@@ -396,7 +428,7 @@ public class JXMapMatchGUI extends JFrame implements JXMapMatchGUIInterface {
 		jLabelSelectNRoute.setAlignmentX(CENTER_ALIGNMENT);
 		// create JSlider
 		jSliderSelectNRoute = new JSlider(JSlider.HORIZONTAL, 1, 7, 1);
-		jSliderSelectNRoute.setMaximumSize(new Dimension(140,20));
+		jSliderSelectNRoute.setMaximumSize(new Dimension(150,20));
 		jSliderSelectNRoute.setAlignmentX(CENTER_ALIGNMENT);
 		// create label
 		jLabelNRouteSize = new JLabel("max. container size");
@@ -478,7 +510,12 @@ public class JXMapMatchGUI extends JFrame implements JXMapMatchGUIInterface {
 	
 	private void initSelectRoutePanel(Container container) {
 		// create panel
-		jPanelSelectRoute = new JPanelBoxLayout(BoxLayout.Y_AXIS, 150, 5, "Route Select");
+		jPanelSelectRoute = new JPanelBoxLayout(BoxLayout.Y_AXIS, container.getWidth(), 5, "Route Select");
+
+		jPanelSelectRoute.setAlignmentX(LEFT_ALIGNMENT);
+		jPanelSelectRoute.setMaximumSize(container.getMaximumSize());
+		jPanelSelectRoute.setMinimumSize(container.getMinimumSize());
+		
 		// create label
 		jLabelSelectRoute = new JLabel("Select Route manually");
 		jLabelSelectRoute.setAlignmentX(CENTER_ALIGNMENT);
@@ -532,8 +569,8 @@ public class JXMapMatchGUI extends JFrame implements JXMapMatchGUIInterface {
 	private void setRightScrollPaneScrollbarPosition() {
 		// get and set mid value of horizontal scroll bar maximum as new value 
 		// middle position seems to be max value / 4
-		int midHorizontalPos = (int) (jScrollPaneRight.getHorizontalScrollBar().getMaximum() / 4.0);
-		jScrollPaneRight.getHorizontalScrollBar().setValue(midHorizontalPos);
+		//int midHorizontalPos = (int) (jScrollPaneRight.getHorizontalScrollBar().getMaximum() / 4.0);
+		//jScrollPaneRight.getHorizontalScrollBar().setValue(midHorizontalPos);		
 	}
 	
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -584,6 +621,7 @@ public class JXMapMatchGUI extends JFrame implements JXMapMatchGUIInterface {
 	 * set custom tile factory for map representation with default
 	 * values for zoom, size and orientation
 	 */
+
 	@Override
 	public void setTileFactory(String url, String xParam, String yParam, String zParam) {
 		// call overloaded method with default values
@@ -743,7 +781,8 @@ public class JXMapMatchGUI extends JFrame implements JXMapMatchGUIInterface {
 	private void enableBasicElements() {
 		// keep jxMapKit, scroll pane and status panel enabled
 		enableOverLayPanel(true);
-		jScrollPaneRight.setEnabled(true);
+		//jScrollPaneRight.setEnabled(true);
+		jPanelRight.setEnabled(true);
 		Tools.enableComponentsInsideContainer(jxMapKit, true);
 		Tools.enableComponentsInsideContainer(jPanelStatusBar,true);
 	}
