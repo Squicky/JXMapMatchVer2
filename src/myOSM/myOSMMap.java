@@ -10,10 +10,9 @@ import java.util.Vector;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
-
-import cartesian.Coordinates;
-import osm.StreetLink;
-import osm.StreetMap;
+//import cartesian.Coordinates;
+//import osm.StreetLink;
+//import osm.StreetMap;
 
 public class myOSMMap {
 
@@ -83,10 +82,9 @@ public class myOSMMap {
 		isBuildingWay = false;
 		parseXML();
 
-		
-		
 	}
 	
+	/*
 	public StreetMap getSteetMap() {
 		
 		StreetMap streetMap = new StreetMap(getNrOfAllWayParts(), nodes.size(), "");
@@ -173,6 +171,7 @@ public class myOSMMap {
         
         return streetMap;
 	}
+	*/
 	
 	public int getNrOfAllWayParts() {
 		
@@ -185,6 +184,7 @@ public class myOSMMap {
 		return z;
 	}
 	
+	/*
 	public void linkToStreetMap(StreetMap sm) {
 
 		for (int i=0; i < ways.size(); i++) {
@@ -198,7 +198,7 @@ public class myOSMMap {
 //				for (int k=0; k < sm.getNrOfLinks(); k++) {
 					
 					//StreetLink sl = sm.getLinks()[k];
-				StreetLink sl = sm.getStreetLink(wp.startNode.id, wp.endNode.id, wp.parentWay.id);
+				//StreetLink sl = sm.getStreetLink(wp.startNode.id, wp.endNode.id, wp.parentWay.id);
 			
 					
 					if (sl == null || wp == null) {
@@ -218,7 +218,8 @@ public class myOSMMap {
 						}
 					}
 					
-					/*
+					
+					
 					if (sl.myid == wp.parentWay.id) {
 						if (
 								sl.getStartX() == wp.startNode.x && 
@@ -260,7 +261,7 @@ public class myOSMMap {
 							}
 						}
 					}
-					*/
+					
 //				}
 				
 			}
@@ -310,7 +311,7 @@ public class myOSMMap {
 			}
 		}
 		
-		StreetLink sl = null;
+		//StreetLink sl = null;
 		
 		for (int k=0; k < sm.getNrOfLinks(); k++) {
 			sl = sm.getLinks()[k];
@@ -358,7 +359,9 @@ public class myOSMMap {
 
 			}
 		}
+		
 	}
+	*/
 		
 	public void removeUnusedNotesAndWaysAndSetWayParts() {
 		

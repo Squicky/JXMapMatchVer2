@@ -39,7 +39,7 @@ public class JXMapMatch extends Thread{
 		// start program
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				try {			
+				try {
 					// create loading window
 					jWindowLoading = JWindowLoading.createLoadingWindow();
 					// start JXMapMatch on new thread
@@ -51,7 +51,7 @@ public class JXMapMatch extends Thread{
 			}
 		});
 	}
-	
+
 
 	/**
 	 * load and show GUI

@@ -38,6 +38,7 @@ public class GPSTraceStreamer {
 	
 	// pattern for GPS point: timestamp, latitude, longitude -> digit(s),digit(s).digit(s),digit(s).digit(s)
 	static private final Pattern gpsPattern = Pattern.compile("-?\\d+(,-?\\d+.\\d+){2}"); 
+	static private final Pattern gpsPattern2 = Pattern.compile("-?\\d+(,-?\\d+.\\d+){4}"); 
 	static private final Pattern gpsSplitPattern = Pattern.compile(",");
 	
 	// pattern for date strings in GPX files (e.g. "2012-10-02T16:17:16Z"), we have to split at '-', 'T' and 'Z' Position
@@ -115,7 +116,7 @@ public class GPSTraceStreamer {
 			
 			// access file and save name
 			File gpsTraceFile = new File(filePath);
-					
+
 			// read file via buffered Reader due to better performance
 			FileReader fReader = new FileReader(gpsTraceFile);
 			BufferedReader bReader = new BufferedReader(fReader);
@@ -166,7 +167,7 @@ public class GPSTraceStreamer {
 				count++;
 				
 				// read line must confirm to pattern
-				if (gpsPattern.matcher(line).matches() || line.startsWith("2014-")){
+				if (gpsPattern.matcher(line).matches() || gpsPattern2.matcher(line).matches() || line.startsWith("2014-")){
 					gpsData = gpsSplitPattern.split(line);
 					
 					// read time, read latitude/longitude

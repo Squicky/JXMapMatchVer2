@@ -3,7 +3,7 @@ package myOSM;
 import java.util.NoSuchElementException;
 import java.util.Vector;
 import algorithm.MatchedRange;
-import osm.StreetLink;
+//import osm.StreetLink;
 
 public class myOSMWayPart {
 
@@ -23,7 +23,7 @@ public class myOSMWayPart {
 	public myOSMWay parentWay;
 	public int parentWayStepNr = -1;
 	public boolean isBackDirection = false;
-	public StreetLink streetLink = null;
+//	public StreetLink streetLink = null;
 
     private Vector<MatchedRange> matchedRanges;
     
