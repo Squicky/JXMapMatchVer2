@@ -1,5 +1,8 @@
 package myOSM;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class myOSMWay {
 
 	//means of transport constants
@@ -26,6 +29,11 @@ public class myOSMWay {
 	
 //	public List<myOSMWayPart> WayParts = new LinkedList<myOSMWayPart>();
 	public myOSMWayPart[] WayParts = new myOSMWayPart[0];
+
+	public myOSMWayPart[] WayPartsHin = new myOSMWayPart[0];
+	public myOSMWayPart[] WayPartsRueck = null;
+
+	public myOSMMap map;
 	
 	public String name = "";
 	
@@ -49,29 +57,61 @@ public class myOSMWay {
 	public int minY = Integer.MAX_VALUE;
 	public int maxX = Integer.MIN_VALUE;
 	public int maxY = Integer.MIN_VALUE;
+
+	public Map<Long, Integer> IndexOfNodeId = new HashMap<Long, Integer>();
+	
+	public double length = -1;
+	
+	machen:
+		1. length von Way
+		2. startWayLengthPos und endWayLengthPos von WayPart
+		3. startEdgeLength und endEdgeLength von WayPart		
 	
 	public void setWayParts() {
-		
+
 		if (onyWay == false) {
 			WayParts = new myOSMWayPart[(refs.length - 1) * 2];
 		} else {
 			WayParts = new myOSMWayPart[(refs.length - 1)];
 		}
+
+		WayPartsHin = new myOSMWayPart[(refs.length - 1)];
+		if (onyWay == false) {
+			WayPartsRueck = new myOSMWayPart[(refs.length - 1)];			
+		}
 		
 		int k;
 		for (k = 0; k < (refs.length - 1); k++) {
-			WayParts[k] =  new myOSMWayPart(refs[k], refs[k+1], this, k, false);
-			
+			myOSMWayPart wp = new myOSMWayPart(refs[k], refs[k+1], this, k, false);
+			wp.tbus_edge_id = this.id + "#" + k;
+
+			WayParts[k] =  wp;
+
 			if (WayParts[k].startNode.x < minX) {
 				minX = WayParts[k].startNode.x;
 			} else if (maxX < WayParts[k].startNode.x) {
 				maxX = WayParts[k].startNode.x;
 			}
-			
+
 			if (WayParts[k].startNode.y < minY) {
 				minY = WayParts[k].startNode.y;
 			} else if (maxY < WayParts[k].startNode.y) {
 				maxY = WayParts[k].startNode.y;
+			}
+			
+			WayPartsHin[k] = wp;
+			if (onyWay == false) {
+				WayPartsRueck[k] = wp;
+			}
+			
+		}
+		
+		for (k = 0; k < refs.length; k++) {
+			if (IndexOfNodeId.containsKey(refs[k].id)) {
+				System.out.println("Error: setWayParts(): Kreis im Way?");
+				System.exit(-1);
+			} else {
+				IndexOfNodeId.put(refs[0].id, k);
 			}
 		}
 
@@ -98,10 +138,15 @@ public class myOSMWay {
 		if (onyWay == false) {
 			for (int i = (refs.length - 1); i >=1 ; i--) {
 				myOSMWayPart wp = new myOSMWayPart(refs[i], refs[i-1], this, j, true);
+				wp.tbus_edge_id = "-" + this.id + "#" + (i-1);
 				j++;
 				WayParts[k] = wp;
 				k++;
 			}
+		}
+	
+		for (k = 0; k < WayParts.length; k++) {
+			WayParts[k].setEdge();
 		}
 		
 		
@@ -136,8 +181,7 @@ public class myOSMWay {
 			this.meansOfTransport |= myOSMWay.CAR;		
 	}
 	
-	public boolean getMeansOfTransportPermission(final int transportFlag)
-	{
+	public boolean getMeansOfTransportPermission(final int transportFlag) {
 		//check if bit for this means of transport is set
 		return ((meansOfTransport & transportFlag) != 0);
 	}
@@ -159,7 +203,7 @@ public class myOSMWay {
 	 * @param id
 	 * @return 0 = not allowed, 1 = restricted, 2 = allowed
 	 */
-	public static int carPermission(int highwayType, String motorcar,long id){
+	public static int carPermission(int highwayType, String motorcar,long id) {
 		// highway types usually intended for car
 		if (highwayType>=0 && highwayType<=29)
 		{

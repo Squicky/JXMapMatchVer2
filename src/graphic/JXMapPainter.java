@@ -411,8 +411,13 @@ public class JXMapPainter {
      * @param color
      */
     public void drawStreetMap(Graphics2D g, JXMapViewer map, StreetMap streetMap, Color color, double zoomFactor, myOSMMap myMap){
-		c++;
-		c = c % myMap.ways.size();
+    	
+    	if (myMap != null){
+        	if (myMap.ways != null){
+        		c++;
+        		c = c % myMap.ways.size();    		        		
+        	}
+    	}
 		
         // create graphics
         g = (Graphics2D) g.create();

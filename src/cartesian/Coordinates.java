@@ -192,8 +192,12 @@ public class Coordinates {
           * @param y2
           * @return double
           */
-         public static double getDistanceSquared(int x1, int y1, double x2, double y2){
+         public static double getDistanceSquared(double x1, double y1, double x2, double y2){
              return Math.abs(((double)(x2-x1)*(double)(x2-x1))+((double)(y2-y1)*(double)(y2-y1)));
+         }
+         
+         public static double getDistanceSquared(int x1, int y1, double x2, double y2){
+        	 return getDistanceSquared((double) x1, (double) y1, x2, y2);
          }
 
          /**
@@ -218,7 +222,7 @@ public class Coordinates {
           * @param by
           * @return X coordinate on line (from (ax,ay) to (bx,by)) with shortest distance to point (px,py)
           */
-         public static double getNearestPointX(int px, int py, int ax, int ay, int bx, int by){
+         public static double getNearestPointX(double px, double py, double ax, double ay, double bx, double by){
         	 
         	 if (ax == bx && ay == by) {
         		 return ax;
@@ -228,6 +232,7 @@ public class Coordinates {
              // m ist Anteil der gesamten Strecke (ax,ay) nach (bx,by), so dass die kürzeste
              // Distanz zu Punkt (px,py) erreicht ist
              double m = (double)((bx-ax)*(px-ax)+(by-ay)*(py-ay))/((bx-ax)*(bx-ax)+(by-ay)*(by-ay));
+             
              // Wenn m außerhalb der Strecke liegt
              // pruefe, welcher Endpunkt (ax,ay) oder (bx,by) naeher an Punkt (px,py) liegt
              if ((m>1)||(m<0)){
@@ -241,6 +246,12 @@ public class Coordinates {
              // gib nur X koordinate aus
              return (double)(ax+m*(bx-ax));
          }
+         
+         public static double getNearestPointX(int px, int py, int ax, int ay, int bx, int by){
+        	 return getNearestPointX((double) px, (double) py, (double) ax, (double) ay, (double) bx, (double) by);
+         }
+        	 
+         
          /**
           * gets nearest matched GPS point y-position onto street link
           * @param px
@@ -251,17 +262,19 @@ public class Coordinates {
           * @param by
           * @return Y coordinate on line (from (ax,ay) to (bx,by)) with shortest distance to point (px,py)
           */
-         public static double getNearestPointY(int px, int py, int ax, int ay, int bx, int by){
+         public static double getNearestPointY(double px, double py, double ax, double ay, double bx, double by){
         	 
         	 if (ax == bx && ay == by) {
         		 return ay;
         	 }
+
         	 
              // berechne m:
              // m ist Anteil der gesamten Strecke (ax,ay) nach (bx,by), sodass die kürzeste
              // Distanz zu Punkt (px,py) erreicht ist
              double m = (double)((bx-ax)*(px-ax)+(by-ay)*(py-ay))/((bx-ax)*(bx-ax)+(by-ay)*(by-ay));
 
+             
              // Wenn m außerhalb der Strecke liegt
              // pruefe, welcher Endpunkt (ax,ay) oder (bx,by) naeher an Punkt (px,py) liegt
              if ((m>1)||(m<0)){
@@ -269,17 +282,27 @@ public class Coordinates {
                  else return by;
              }
              // gib nur Y koordinate aus
-             return (double)(ay+m*(by-ay));
+             double d = (double)(ay+m*(by-ay));
+             return d;
+         }
+         
+         public static double getNearestPointY(int px, int py, int ax, int ay, int bx, int by){
+        	 return getNearestPointY((double)px, (double)py, (double)ax, (double)ay, (double)bx, (double)by);
          }
         
          
-         public static double getPercentOfPointInWayPart(int px, int py, int ax, int ay, int bx, int by){
+         public static double getPercentOfPointInWayPart(int matchedX, int matchedY, int ax, int ay, int bx, int by){
         	 
-        	 double lenghtWayPart = ((bx - ax) * (bx - ax)) + ((by - ay) * (by - ay));
-        	 lenghtWayPart = Math.sqrt(lenghtWayPart);
-        	 
-        	 int ppx = (int) getNearestPointX(px, py, ax, ay, bx, by);
-        	 int ppy = (int) getNearestPointY(px, py, ax, ay, bx, by);
+        	 double lenghtWayPart;
+        	 //double lenghtWayPart2 = ((bx - ax) * (bx - ax)) + ((by - ay) * (by - ay));
+        	 double d1 = (bx - ax);
+        	 d1 = d1 * d1;
+        	 double d3 = (by - ay);
+        	 d3 = d3 * d3;
+        	 lenghtWayPart = Math.sqrt(d1 + d3);
+        	
+        	 int ppx = (int) getNearestPointX(matchedX, matchedY, ax, ay, bx, by);
+        	 int ppy = (int) getNearestPointY(matchedX, matchedY, ax, ay, bx, by);
         	 
         	 if (ppx == ax && ppy == ay) {
         		 return 0;
@@ -289,10 +312,17 @@ public class Coordinates {
         		 return 100;
         	 }
         	 
-        	 double lenghtStartToPint = ((ppx - ax) * (ppx - ax)) + ((ppy - ay) * (ppy - ay));
-        	 lenghtStartToPint = Math.sqrt(lenghtStartToPint);
+        	 double lenghtStartToPint;
+        	 //lenghtStartToPint2 = ((ppx - ax) * (ppx - ax)) + ((ppy - ay) * (ppy - ay));
+        	 d1 = (ppx - ax);
+        	 d1 = d1 * d1;
+        	 d3 = (ppy - ay);
+        	 d3 = d3 * d3;
+        	 lenghtStartToPint = Math.sqrt(d1 + d3);
         	 
-        	 double perc = lenghtStartToPint / (lenghtWayPart / 100.0);
+        	 lenghtWayPart = lenghtWayPart / 100.0;
+        	 
+        	 double perc = lenghtStartToPint / lenghtWayPart;
         	 
         	 return perc;
          }

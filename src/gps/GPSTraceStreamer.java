@@ -464,13 +464,13 @@ public class GPSTraceStreamer {
     		// write structural info in the form of comments
     		bWriter.write("#all Tstamps substracted by " + (refTimeStamp - timeStampOffSet)); //+ gpsTrace.getTimestamp());
     		bWriter.newLine();
-    		bWriter.write("#NormTstamp [ns], matched latitude, matched longitude, unmatched latitude, unmatched longitude");
+    		bWriter.write("#NormTstamp [ns], matched latitude, matched longitude, unmatched latitude, unmatched longitude, tbus_edge_id, matched_percent_in_WayParty, startNode.id, endNode.id");
     		bWriter.newLine();
-    		
+
     		// for calculating current progress
 			float currentProgress = 0;
     		int nodeCounter = 0;
-    				
+
 			// write matched GPS Points to file
     		for(MatchedGPSNode matchedGPSNode : gpsNodesToMatch){
     			// get just matched GPS Points
@@ -481,23 +481,28 @@ public class GPSTraceStreamer {
     				// write line to file
     				bWriter.write((matchedGPSNode.getTimestamp() + timeStampOffSet) + ",");
     				bWriter.write(latFormat.format(matchedGeoPos.getLatitude()) + "," + lonFormat.format(matchedGeoPos.getLongitude()) + ",");
-    				bWriter.write(latFormat.format(unmatchedGeoPos.getLatitude()) + "," + lonFormat.format(unmatchedGeoPos.getLongitude()));
+    				bWriter.write(latFormat.format(unmatchedGeoPos.getLatitude()) + "," + lonFormat.format(unmatchedGeoPos.getLongitude()) + ",");
+
+    				bWriter.write( matchedGPSNode.tbus_edge_id + "," + matchedGPSNode.matched_percent_in_WayParty + ",");
+
+    				bWriter.write( matchedGPSNode.matchtedWayPart.startNode.id + "," +matchedGPSNode.matchtedWayPart.endNode.id );
+
     				bWriter.newLine();
-    				
+
     				// increase counter
     				nodeCounter++;
     				// update current status of exporting progress
     				statusUpdate.updateStatus("Writing matched GPS node nr." + nodeCounter);
     			}
-    			
+
     			// calculate progress and update
     			currentProgress = ((float) nodeCounter / nrOfMatchedNodes * 100);
     			statusUpdate.updateStatus(currentProgress);
     		}
-    		
+
     		// close writer
     		bWriter.close();
-    		
+
     		// finished
     		statusUpdate.finished(nrOfMatchedNodes + " matched GPS nodes saved to " + gpsTracefile.getName());
      	} 
@@ -506,11 +511,11 @@ public class GPSTraceStreamer {
      		System.out.println("Error during exporting matched GPS points!");
      		return false;
      	}
-    	
+
     	// successful!
     	return true;
     }
-    
+
     /**
      * saves all matched GPS points to text file. time stamps can be normalized if desired
      * @param gpsTrace

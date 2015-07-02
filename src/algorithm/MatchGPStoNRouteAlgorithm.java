@@ -8,6 +8,8 @@ import java.awt.Component;
 import java.util.Collections;
 import java.util.Vector;
 
+import org.jdesktop.swingx.mapviewer.GeoPosition;
+
 import logging.Logger;
 import myOSM.myOSMNode;
 import myOSM.myOSMWayPart;
@@ -288,8 +290,16 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 		Logger.print("matching GPS node: " + nodeIndex + "\n" + "----------------------------------------" + "\n");
 		
 		// get matched position on link
-		double matchedX = Coordinates.getNearestPointX(matchedGPSNode, matchedNLink.getStreetLink());
-		double matchedY = Coordinates.getNearestPointY(matchedGPSNode, matchedNLink.getStreetLink());
+		myOSMWayPart wp = matchedNLink.getStreetLink();
+		double matchedX = Coordinates.getNearestPointX(matchedGPSNode, wp);
+		double matchedY = Coordinates.getNearestPointY(matchedGPSNode, wp);
+				
+		
+		matchedGPSNode.tbus_edge_id = wp.tbus_edge_id;
+		
+		matchedGPSNode.matched_percent_in_WayParty = Coordinates.getPercentOfPointInWayPart((int)matchedX, (int)matchedY, wp.startNode.x, wp.startNode.y, wp.endNode.x, wp.endNode.y);
+
+		matchedGPSNode.matchtedWayPart = wp;
 		
 		// set matched position to GPS node
 		matchedGPSNode.setMatchedX((int)matchedX);

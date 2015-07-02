@@ -7,6 +7,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
+
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
@@ -58,12 +59,34 @@ public class myOSMMap {
 	int anzahl_ways_Building = 0;
 	int anzahl_ways_Car = 0;
 	
+	Map<Long, Map<Integer, myEdge>> edges = new HashMap<Long, Map<Integer, myEdge>>();
 	
-	public myOSMMap(File _xmlFile) {
+	public myOSMMap(File _xmlFile, String netFilePath) {
 		
 		xmlFile = _xmlFile;
 		
 		try {
+			Map<Integer, myEdge> edgesTemp = myEdge.loadGetEdges(netFilePath);
+			
+			for (int i = 0 ; i < edgesTemp.size(); i++) {
+				
+				myEdge e = edgesTemp.get(i);
+				
+				if (edges.containsKey(e.osmWayId)) {
+					
+					Map<Integer, myEdge> me = edges.get(e.osmWayId);
+					
+					me.put(me.size(), e);
+				} else {
+					Map<Integer, myEdge> me = new HashMap<Integer, myEdge>();
+					
+					me.put(me.size(), e);
+					
+					edges.put(e.osmWayId, me);
+				}
+				
+			}
+			
 			parser = factory.createXMLStreamReader( new FileInputStream( xmlFile));
 		} catch (Exception e) {
 			System.err.println("Error: " + e.toString());
@@ -654,6 +677,7 @@ public class myOSMMap {
 					}
 					
 					tempWay.setWayParts();
+					tempWay.map = this;
 					this.ways.put(this.ways.size(), tempWay);
 					//this.ways.add(tempWay);
 					//this.ways.put(tempWay.id, tempWay);

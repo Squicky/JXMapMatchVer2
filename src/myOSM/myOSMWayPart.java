@@ -1,7 +1,10 @@
 package myOSM;
 
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Vector;
+
+import cartesian.Coordinates;
 import algorithm.MatchedRange;
 //import osm.StreetLink;
 
@@ -33,6 +36,20 @@ public class myOSMWayPart {
 
 	public final static long NO_ID = -1;
 	
+	public String tbus_edge_id = "";
+	
+	public double length = -1;
+	
+	public myEdge edge = null;
+	
+	public double startEdgeLength = -1;
+	
+	public double endEdgeLength = -1;
+	
+	public double startWayLengthPos = -1;
+	
+	public double endWayLengthPos = -1;
+	
 	public myOSMWayPart(myOSMNode n1, myOSMNode n2, long myid, long startNodeId, long endNodeId) {
     	this(n1, n2, NO_ID, false, myid, startNodeId, endNodeId);
     }
@@ -51,6 +68,8 @@ public class myOSMWayPart {
 		selectedCounter= 0;
 		
 		startNode.WayPartsOutgoing_add(this);
+		
+		length = Coordinates.getDistance(startNode, endNode);
 	}
 	
     public myOSMWayPart(myOSMNode n1, myOSMNode n2, long id, boolean artificial, long myid, long startNodeId, long endNodeId) {
@@ -70,6 +89,64 @@ public class myOSMWayPart {
 	
 	public myOSMWayPart(myOSMNode n1, myOSMNode n2, boolean artificial, long myid, long startNodeId, long endNodeId) {
 		this(n1, n2, NO_ID, artificial, myid, startNodeId, endNodeId);
+	}
+	
+	public void setEdge() {
+		
+		Map<Integer, myEdge> edges = this.parentWay.map.edges.get(this.parentWay.id);
+		
+		this.edge = null;
+		
+		for (int i=0; i < edges.size(); i++) {
+			
+			if (this.isBackDirection == false) {
+				
+				if (edges.get(i).reverse_direction == false) {
+					
+					int startIndexOfWP = this.parentWay.IndexOfNodeId.get(this.startNode.id);
+					int endIndexOfWP = this.parentWay.IndexOfNodeId.get(this.endNode.id);
+					
+					int startIndexOfE = this.parentWay.IndexOfNodeId.get(edges.get(i).startNode);
+					int endIndexOfE = this.parentWay.IndexOfNodeId.get(edges.get(i).endNode);
+					
+					if (startIndexOfE <= startIndexOfWP && endIndexOfWP <= endIndexOfE) {
+						
+						if (this.edge == null) {
+							this.edge = edges.get(i);							
+						} else {
+							System.out.println("Error: setEdge(): edge doppelt");
+							System.exit(-1);
+						}
+					}
+				}
+			} else {
+				
+				if (edges.get(i).reverse_direction == true) {
+					
+					int startIndexOfWP = this.parentWay.IndexOfNodeId.get(this.startNode.id);
+					int endIndexOfWP = this.parentWay.IndexOfNodeId.get(this.endNode.id);
+					
+					int startIndexOfE = this.parentWay.IndexOfNodeId.get(edges.get(i).startNode);
+					int endIndexOfE = this.parentWay.IndexOfNodeId.get(edges.get(i).endNode);
+					
+					if (startIndexOfE >= startIndexOfWP && endIndexOfWP >= endIndexOfE) {
+						
+						if (this.edge == null) {
+							this.edge = edges.get(i);							
+						} else {
+							System.out.println("Error: setEdge(): edge doppelt");
+							System.exit(-1);
+						}
+					}
+				}
+				
+			}
+		}
+		
+		if (this.edge == null) {
+			System.out.println("Error: setEdge(): no edge");
+			System.exit(-1);
+		}
 	}
 	
 	public myOSMNode getStartNode() {

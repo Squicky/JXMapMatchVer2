@@ -4,6 +4,8 @@ import gps.GPSNode;
 
 import java.awt.Color;
 
+import myOSM.myOSMWayPart;
+
 public class MatchedGPSNode extends GPSNode {
 	
 	 // matched position
@@ -24,6 +26,10 @@ public class MatchedGPSNode extends GPSNode {
     protected Color initColor;
     protected Color color;
 
+	public String tbus_edge_id = "";
+	public double matched_percent_in_WayParty = -1;
+	public myOSMWayPart matchtedWayPart = null;
+	
 	public MatchedGPSNode(GPSNode gpsNode, Color color) {
 		super(gpsNode.getX(), gpsNode.getY(), gpsNode.getTimestamp());
 		this.initColor = color;

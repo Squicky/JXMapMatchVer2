@@ -210,7 +210,7 @@ public class JXMapMatchController implements ActionListener,
 			// if nothing was loaded yet and map file path was passed
 			if ((loadStatus == MAP_TO_LOAD) && (arguments.length > 0)) {
 				// load map file, first parameter must contain map file path
-				openRoutingGraph(arguments[MAP_FILE_INDEX], CLIENT_ARGUMENTS);
+				openRoutingGraph(arguments[MAP_FILE_INDEX], arguments[MAP_FILE_INDEX].replace(".osm", ".net.xml"), CLIENT_ARGUMENTS);
 			}
 			// if map was loaded and a second argument was passed 
 			else if ((loadStatus == MAP_LOADED) && (arguments.length == 2))  {
@@ -220,7 +220,7 @@ public class JXMapMatchController implements ActionListener,
 			else if ((loadStatus == NROUTE_MAP_TO_LOAD) && (arguments.length > 0)) {
 				// load map file, first parameter must contain map file path, tell
 				// function to callback this method in order to possibly load N route
-				openRoutingGraph(arguments[MAP_FILE_INDEX], NROUTE_ARGUMENTS);
+				openRoutingGraph(arguments[MAP_FILE_INDEX], arguments[MAP_FILE_INDEX].replace(".osm", ".net.xml"), NROUTE_ARGUMENTS);
 			}
 			else if ((loadStatus == NROUTE_MAP_LOADED) && (arguments.length == 2)) {
 				// load N route from file
@@ -486,7 +486,9 @@ public class JXMapMatchController implements ActionListener,
 	private void openRoutingGraph() {
 		// if user choose an valid file load routing graph
 		if (jFileOpenDialogGraph.showOpenDialog()){
-			openRoutingGraph(jFileOpenDialogGraph.getSelectedFile(), CLIENT_FILE_DIALOG);
+			File f = jFileOpenDialogGraph.getSelectedFile();
+			String netFilePath = f.getAbsolutePath().replace(".osm", ".net.xml");
+			openRoutingGraph(jFileOpenDialogGraph.getSelectedFile(), netFilePath, CLIENT_FILE_DIALOG);
 		}
 	}
 	
@@ -494,19 +496,21 @@ public class JXMapMatchController implements ActionListener,
 	 * loads routing graph from given file path
 	 * @param filepath
 	 */
-	private void openRoutingGraph(String filepath, String client) {
+	private void openRoutingGraph(String osmFilePath, String netFilePath, String client) {
 		// call overloaded method by creating file instance from given file path
-		openRoutingGraph(new File(filepath), client);
+		openRoutingGraph(new File(osmFilePath), netFilePath, client);
 	}
 	
 	/**
 	 * loads routing graph from given file in another thread
-	 * @param file
+	 * @param osmFile
 	 * @param client who calls this method
 	 */
-	private void openRoutingGraph(File file, final String client) {
+	private void openRoutingGraph(File osmFile, String _netFilePath, final String client) {
 		// get chosen routing graph file
-		final File streetMapFile= file;
+		final File streetMapFile = osmFile;
+
+		final String netFilePath = _netFilePath;
 					
 		// set routing graph button caption
 		jxMapMatchGUI.setStreetMapButtonText(streetMapFile.getName());
@@ -521,8 +525,8 @@ public class JXMapMatchController implements ActionListener,
 			protected Boolean doInBackground() throws Exception {
 				try {
 					
-					if (streetMapFile.getName().endsWith(".osm")) {
-						myMap = new myOSMMap(streetMapFile);
+					if (streetMapFile.getName().endsWith(".osm") || streetMapFile.getName().endsWith(".osm.xml")) {
+						myMap = new myOSMMap(streetMapFile, netFilePath);
 						myMap.removeUnusedNotesAndWaysAndSetWayParts();
 //		                streetMap = myMap.getSteetMap();
 					}
@@ -1373,7 +1377,7 @@ public class JXMapMatchController implements ActionListener,
 	 */
 	private boolean checkArgs(String args[]) {		
 		// maximum two arguments (map and trace file) allowed
-		if (args.length <= 2) {
+		if (args.length <= 3) {
 			
 			// check if file(s) exists
 			for (String arg : args) {
