@@ -69,6 +69,8 @@ public class myOSMWayPart {
 		
 		startNode.WayPartsOutgoing_add(this);
 		
+		startNode.setXY();
+		
 		length = Coordinates.getDistance(startNode, endNode);
 	}
 	
@@ -90,6 +92,14 @@ public class myOSMWayPart {
 	public myOSMWayPart(myOSMNode n1, myOSMNode n2, boolean artificial, long myid, long startNodeId, long endNodeId) {
 		this(n1, n2, NO_ID, artificial, myid, startNodeId, endNodeId);
 	}
+	
+	
+	public void setStartEndEdgeLength() {
+		
+		this.startEdgeLength = this.edge.length * (this.startWayLengthPos / this.parentWay.length);
+		this.endEdgeLength = this.edge.length * (this.endWayLengthPos / this.parentWay.length);		
+	}
+	
 	
 	public void setEdge() {
 		
@@ -139,7 +149,6 @@ public class myOSMWayPart {
 						}
 					}
 				}
-				
 			}
 		}
 		

@@ -465,6 +465,10 @@ public class GPSTraceStreamer {
     		bWriter.write("#all Tstamps substracted by " + (refTimeStamp - timeStampOffSet)); //+ gpsTrace.getTimestamp());
     		bWriter.newLine();
     		bWriter.write("#NormTstamp [ns], matched latitude, matched longitude, unmatched latitude, unmatched longitude, tbus_edge_id, matched_percent_in_WayParty, startNode.id, endNode.id");
+
+    		bWriter.write(", edge.id_str, length_in_edge");
+
+    		
     		bWriter.newLine();
 
     		// for calculating current progress
@@ -483,10 +487,28 @@ public class GPSTraceStreamer {
     				bWriter.write(latFormat.format(matchedGeoPos.getLatitude()) + "," + lonFormat.format(matchedGeoPos.getLongitude()) + ",");
     				bWriter.write(latFormat.format(unmatchedGeoPos.getLatitude()) + "," + lonFormat.format(unmatchedGeoPos.getLongitude()) + ",");
 
-    				bWriter.write( matchedGPSNode.tbus_edge_id + "," + matchedGPSNode.matched_percent_in_WayParty + ",");
+    				bWriter.write( "," + matchedGPSNode.tbus_edge_id + "," + matchedGPSNode.matched_percent_in_WayParty );
 
-    				bWriter.write( matchedGPSNode.matchtedWayPart.startNode.id + "," +matchedGPSNode.matchtedWayPart.endNode.id );
+    				bWriter.write( "," + matchedGPSNode.matchtedWayPart.startNode.id + "," +matchedGPSNode.matchtedWayPart.endNode.id );
 
+    				if (matchedGPSNode.matchtedWayPart.edge == null) {
+    					int i=0;
+    					i++;
+    					i--;
+    				}
+    				
+    				bWriter.write( "," + matchedGPSNode.matchtedWayPart.edge.id_str );
+
+    				double lpos = matchedGPSNode.matchtedWayPart.endEdgeLength - matchedGPSNode.matchtedWayPart.startEdgeLength;
+
+    				lpos = lpos * matchedGPSNode.matched_percent_in_WayParty;
+    				
+    				lpos = lpos / 100;
+    				
+    				lpos = matchedGPSNode.matchtedWayPart.startEdgeLength + lpos;
+    				
+    				bWriter.write( "," + lpos );
+    				
     				bWriter.newLine();
 
     				// increase counter

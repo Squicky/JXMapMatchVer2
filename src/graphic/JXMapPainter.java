@@ -415,7 +415,9 @@ public class JXMapPainter {
     	if (myMap != null){
         	if (myMap.ways != null){
         		c++;
-        		c = c % myMap.ways.size();    		        		
+        		if (myMap.ways.size() != 0) {
+            		c = c % myMap.ways.size();    		        		        			
+        		}
         	}
     	}
 		

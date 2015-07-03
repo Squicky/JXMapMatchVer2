@@ -62,10 +62,16 @@ public class myOSMWay {
 	
 	public double length = -1;
 	
+	/*
 	machen:
 		1. length von Way
 		2. startWayLengthPos und endWayLengthPos von WayPart
-		3. startEdgeLength und endEdgeLength von WayPart		
+		3. startEdgeLength und endEdgeLength von WayPart
+	*/
+	
+	public myOSMWay(myOSMMap map) {
+		this.map = map;		
+	}
 	
 	public void setWayParts() {
 
@@ -100,21 +106,19 @@ public class myOSMWay {
 			}
 			
 			WayPartsHin[k] = wp;
-			if (onyWay == false) {
-				WayPartsRueck[k] = wp;
-			}
-			
 		}
 		
 		for (k = 0; k < refs.length; k++) {
+			long lid = refs[k].id;
 			if (IndexOfNodeId.containsKey(refs[k].id)) {
 				System.out.println("Error: setWayParts(): Kreis im Way?");
 				System.exit(-1);
 			} else {
-				IndexOfNodeId.put(refs[0].id, k);
+				IndexOfNodeId.put(refs[k].id, k);
 			}
 		}
 
+		k = (refs.length - 1);
 		if (k > 0) {
 			k--;
 
@@ -133,23 +137,63 @@ public class myOSMWay {
 			k++;
 		}
 
+		if (onyWay == false) {
+			for (k = 0; k < (WayPartsHin.length); k++) {
+				WayPartsRueck[k] = WayPartsHin[WayPartsHin.length - 1 - k];
+			}
+		}
 		
 		int j = 0;
 		if (onyWay == false) {
 			for (int i = (refs.length - 1); i >=1 ; i--) {
 				myOSMWayPart wp = new myOSMWayPart(refs[i], refs[i-1], this, j, true);
 				wp.tbus_edge_id = "-" + this.id + "#" + (i-1);
+				
+				WayPartsRueck[j] = wp;
+				
 				j++;
 				WayParts[k] = wp;
 				k++;
 			}
 		}
 	
-		for (k = 0; k < WayParts.length; k++) {
-			WayParts[k].setEdge();
+		this.length = 0;
+		
+		for (k = 0; k < WayPartsHin.length; k++) {
+			
+			WayPartsHin[k].setEdge();
+			
+			WayPartsHin[k].startWayLengthPos = this.length;
+			
+			this.length = this.length + WayPartsHin[k].length;
+			
+			WayPartsHin[k].endWayLengthPos = this.length;
 		}
 		
+		if (this.onyWay == false) {
+			this.length = 0;
+			
+			for (k = 0; k < WayPartsRueck.length; k++) {
+				
+				WayPartsRueck[k].setEdge();
+				
+				WayPartsRueck[k].startWayLengthPos = this.length;
+				
+				this.length = this.length + WayPartsRueck[k].length;
+				
+				WayPartsRueck[k].endWayLengthPos = this.length;
+			}			
+		}
 		
+		for (k = 0; k < WayPartsHin.length; k++) {
+			WayPartsHin[k].setStartEndEdgeLength();
+		}
+		
+		if (this.onyWay == false) {
+			for (k = 0; k < WayPartsRueck.length; k++) {
+				WayPartsRueck[k].setStartEndEdgeLength();
+			}
+		}
 	}
 	
 	public void setCountAndXYOfNotes() {

@@ -676,6 +676,7 @@ public class JXMapMatchController implements ActionListener,
 					try {
 						GPSTraceStreamer.saveMatchedGPSTraceToFile(matchingGPSObj.getMatchedGPSNodes(), matchingGPSObj.getRefTimeStamp(), jxMapMatchGUI.getNormalizeGPSTimeStamp(), gpsTraceFile.getAbsolutePath(), jxMapMatchGUI);
 					} catch (Exception e) { 
+						e.printStackTrace();
 						return false;
 					}
 					

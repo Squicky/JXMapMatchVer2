@@ -46,7 +46,7 @@ public class myOSMMap {
 	//spacer to check XML formation
 	private StringBuilder spacer = new StringBuilder();
 
-	private myOSMWay tempWay = new myOSMWay();
+	private myOSMWay tempWay = new myOSMWay(this);
 
 	private String lastkey = ""; 
 	
@@ -594,7 +594,7 @@ public class myOSMMap {
 	 */
 	public void wayHandler(){
   	  	
-		tempWay = new myOSMWay();
+		tempWay = new myOSMWay(this);
 		nodeIdsOfWay.clear();
 		this.isBuildingWay = false;
 		
@@ -718,7 +718,7 @@ public class myOSMMap {
 		
 		count_ways++;
 
-		tempWay = new myOSMWay();
+		tempWay = new myOSMWay(this);
 		this.isBuildingWay = false;
 		this.nodeIdsOfWay.clear();
 		
