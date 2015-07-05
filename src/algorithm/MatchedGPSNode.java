@@ -26,7 +26,6 @@ public class MatchedGPSNode extends GPSNode {
     protected Color initColor;
     protected Color color;
 
-	public String tbus_edge_id = "";
 	public double matched_percent_in_WayParty = -1;
 	public myOSMWayPart matchtedWayPart = null;
 	

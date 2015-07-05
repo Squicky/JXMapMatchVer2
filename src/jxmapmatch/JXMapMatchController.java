@@ -188,11 +188,13 @@ public class JXMapMatchController implements ActionListener,
 		String [] s1 = {"osm", "large"};
 		String [] s2 = {"OpenStreetMap (*.osm)", "Large routing graph (*.large)"};
 		//jFileOpenDialogGraph = new JFileDialog((Component) jxMapMatchGUI, "large", "Large routing graph (*.large)");
-		jFileOpenDialogGraph = new JFileDialog((Component) jxMapMatchGUI, s1, s2, "C:\\Users\\user\\Desktop\\Uni\\MA\\eclipse\\eclipse_workspace-luna-SR2-win32-x86_64\\git\\OSMStAXParser");
+		jFileOpenDialogGraph = new JFileDialog((Component) jxMapMatchGUI, s1, s2, "C:\\priv\\Uni\\MA\\eclipse\\eclipse_workspace-luna-SR2-win32-x86_64\\git\\OSMStAXParser");
 		jFileOpenDialogGPS = new JFileDialog((Component) jxMapMatchGUI, gpsFileExtensions , gpsFileDescriptions, "C:\\Users\\user\\Desktop\\Uni\\MA\\TRACES\\TRACES.r59619");
 		jFileOpenNRoute = new JFileDialog((Component) jxMapMatchGUI, "nroute", "N route (*.nroute)");
 		jFileSaveNRoute = new JFileDialog((Component) jxMapMatchGUI, "nroute", "N route (*.nroute)");
-		jFileSaveDialogMatchedGPS = new JFileDialog((Component) jxMapMatchGUI, "txt", "Text based files (*.txt)");
+		String [] s3 = {"txt"};
+		String [] s4 = {"Text based files (*.txt)"};
+		jFileSaveDialogMatchedGPS = new JFileDialog((Component) jxMapMatchGUI, s3, s4, "C:\\priv\\Uni\\MA");
 		
 		// check program call arguments, and load map/trace files
 		checkArgsAndLoadFiles(MAP_TO_LOAD);
@@ -1387,8 +1389,10 @@ public class JXMapMatchController implements ActionListener,
 				File file = new File(arg);
 				
 				// Does it exists and is it a file
-				if (!(file.exists() && file.isFile()))
-					return false;
+				if (!(file.exists() && file.isFile())) {
+					System.out.println("Error: " + file.getPath());
+					return false;					
+				}
 			}
 			
 			// files exists

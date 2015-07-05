@@ -36,8 +36,6 @@ public class myOSMWayPart {
 
 	public final static long NO_ID = -1;
 	
-	public String tbus_edge_id = "";
-	
 	public double length = -1;
 	
 	public myEdge edge = null;
@@ -70,6 +68,7 @@ public class myOSMWayPart {
 		startNode.WayPartsOutgoing_add(this);
 		
 		startNode.setXY();
+		endNode.setXY();
 		
 		length = Coordinates.getDistance(startNode, endNode);
 	}

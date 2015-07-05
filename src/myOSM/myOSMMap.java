@@ -757,7 +757,8 @@ public class myOSMMap {
   		  		}
   		  		else if (lastkey.equals("oneway")) {
   		  			String s = parser.getAttributeValue(i);
-  		  			if (s.equals("yes")) {
+  		  			
+  		  			if (s.equals("yes") || s.equals("-1")) {
   		  				tempWay.onyWay = true;
   		  			} else {
   		  				tempWay.onyWay = Boolean.valueOf(s);

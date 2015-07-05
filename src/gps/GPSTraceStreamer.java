@@ -6,6 +6,7 @@ package gps;
 
 import interfaces.StatusUpdate;
 
+import java.awt.Color;
 import java.io.*;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -13,11 +14,19 @@ import java.text.DecimalFormatSymbols;
 import java.util.Date;
 import java.util.Vector;
 import java.util.regex.Pattern;
+
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+
+import myOSM.myOSMMap;
+import myOSM.myOSMNode;
+import myOSM.myOSMWay;
+import myOSM.myOSMWayPart;
+
 import org.jdesktop.swingx.mapviewer.GeoPosition;
+
 import algorithm.MatchedGPSNode;
 import algorithm.ReorderedMatchedGPSNode;
 import cartesian.Coordinates;
@@ -443,6 +452,12 @@ public class GPSTraceStreamer {
 		// access file and save name
 		File gpsTracefile = new File(filePath);
 		
+		File kmlfile1 = new File(filePath + ".unmatched.matched.kml");
+		File kmlfile2 = new File(filePath + ".matched.kml");
+		File kmlfile3 = new File(filePath + ".unmatched.kml");
+		File kmlfile4 = new File(filePath + ".osm.kml");
+
+		
 		// create offSet if user wishes to normalize exported time stamp
 		long timeStampOffSet = (normalizeTimeStamp) ? refTimeStamp : 0;
 		
@@ -456,6 +471,80 @@ public class GPSTraceStreamer {
     	try {
     		// wrap with buffered writer 
     		BufferedWriter bWriter = new BufferedWriter(new FileWriter(gpsTracefile));
+
+    		
+    		BufferedWriter bKml1Writer = new BufferedWriter(new FileWriter(kmlfile1));
+    		BufferedWriter bKml2Writer = new BufferedWriter(new FileWriter(kmlfile2));
+    		BufferedWriter bKml3Writer = new BufferedWriter(new FileWriter(kmlfile3));
+    		BufferedWriter bKml4Writer = new BufferedWriter(new FileWriter(kmlfile4));
+
+
+    		bKml1Writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + System.lineSeparator());
+    		bKml1Writer.write("<kml xmlns=\"http://earth.google.com/kml/2.0\">" + System.lineSeparator());
+    		bKml1Writer.write("	<Document>" + System.lineSeparator());
+    		bKml1Writer.write("		<name>" + kmlfile1.getName() + "</name>" + System.lineSeparator());
+    		bKml1Writer.write("" + System.lineSeparator());
+    		
+    		bKml2Writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + System.lineSeparator());
+    		bKml2Writer.write("<kml xmlns=\"http://earth.google.com/kml/2.0\">" + System.lineSeparator());
+    		bKml2Writer.write("	<Document>" + System.lineSeparator());
+    		bKml2Writer.write("		<name>" + kmlfile2.getName() + "</name>" + System.lineSeparator());
+    		bKml2Writer.write("" + System.lineSeparator());
+    		bKml2Writer.write("		<Placemark>" + System.lineSeparator());
+    		bKml2Writer.write("			<name>matched</name>" + System.lineSeparator());
+    		bKml2Writer.write("			<LineString>" + System.lineSeparator());
+    		bKml2Writer.write("				<coordinates>" + System.lineSeparator());
+    		
+    		bKml3Writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + System.lineSeparator());
+    		bKml3Writer.write("<kml xmlns=\"http://earth.google.com/kml/2.0\">" + System.lineSeparator());
+    		bKml3Writer.write("	<Document>" + System.lineSeparator());
+    		bKml3Writer.write("		<name>" + kmlfile3.getName() + "</name>" + System.lineSeparator());
+    		bKml3Writer.write("" + System.lineSeparator());
+    		bKml3Writer.write("		<Placemark>" + System.lineSeparator());
+    		bKml3Writer.write("			<name>unmatched</name>" + System.lineSeparator());
+    		bKml3Writer.write("			<LineString>" + System.lineSeparator());
+    		bKml3Writer.write("				<coordinates>" + System.lineSeparator());
+
+    		bKml4Writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + System.lineSeparator());
+    		bKml4Writer.write("<kml xmlns=\"http://earth.google.com/kml/2.0\">" + System.lineSeparator());
+    		bKml4Writer.write("	<Document>" + System.lineSeparator());
+    		bKml4Writer.write("		<name>" + kmlfile4.getName() + "</name>" + System.lineSeparator());
+    		bKml4Writer.write("" + System.lineSeparator());
+
+    		myOSMMap myMap = gpsNodesToMatch.get(0).matchtedWayPart.parentWay.map;
+       		for (int i=0; i < myMap.ways.size(); i++) {
+    			myOSMWay w = myMap.ways.get(i);
+    	    	
+    			for (int j=0; j < w.WayParts.length; j++) {
+    	    	   	myOSMWayPart wp = w.WayParts[j];
+    	    	   	myOSMNode n1 = wp.startNode;
+    	    	   	myOSMNode n2 = wp.endNode;
+
+    				bKml4Writer.write("		<Placemark>" + System.lineSeparator());
+    	    		bKml4Writer.write("			<name>" + wp.parentWay.id + "</name>" + System.lineSeparator());
+    	    		bKml4Writer.write("			<LineString>" + System.lineSeparator());
+    	    	   	bKml4Writer.write("				<coordinates>" + System.lineSeparator());
+
+    	    	   	bKml4Writer.write(n1.lon + "," + n1.lat + ",0" + System.lineSeparator());
+    	    	   	bKml4Writer.write(n2.lon + "," + n2.lat + ",0" + System.lineSeparator());
+
+    	    	   	bKml4Writer.write("				</coordinates>" + System.lineSeparator());
+    	    	   	bKml4Writer.write("			</LineString>" + System.lineSeparator());
+    	    	   	bKml4Writer.write("			<Style> " + System.lineSeparator());
+    	    	   	bKml4Writer.write("				<LineStyle>  " + System.lineSeparator());
+    	    	   	bKml4Writer.write("					<color>#ff000000</color>" + System.lineSeparator());
+    	    	   	bKml4Writer.write("					<width>5</width>" + System.lineSeparator());
+    	    	   	bKml4Writer.write("				</LineStyle> " + System.lineSeparator());
+    	    	   	bKml4Writer.write("			</Style>" + System.lineSeparator());
+    	    	   	bKml4Writer.write("		</Placemark>" + System.lineSeparator());
+    	    	   	bKml4Writer.write("" + System.lineSeparator());
+    	    	}
+       		}
+    		
+       		bKml4Writer.write("	</Document>" + System.lineSeparator());
+       		bKml4Writer.write("</kml>" + System.lineSeparator());
+       		bKml4Writer.write("" + System.lineSeparator());
+    		
     		
     		// write numbers of (matched) GPS nodes
     		bWriter.write("#" + nrOfMatchedNodes);
@@ -464,11 +553,10 @@ public class GPSTraceStreamer {
     		// write structural info in the form of comments
     		bWriter.write("#all Tstamps substracted by " + (refTimeStamp - timeStampOffSet)); //+ gpsTrace.getTimestamp());
     		bWriter.newLine();
-    		bWriter.write("#NormTstamp [ns], matched latitude, matched longitude, unmatched latitude, unmatched longitude, tbus_edge_id, matched_percent_in_WayParty, startNode.id, endNode.id");
+    		bWriter.write("#NormTstamp [ns], matched latitude, matched longitude, unmatched latitude, unmatched longitude, matched_percent_in_WayParty, startNode.id, endNode.id");
 
     		bWriter.write(", edge.id_str, length_in_edge");
 
-    		
     		bWriter.newLine();
 
     		// for calculating current progress
@@ -483,20 +571,17 @@ public class GPSTraceStreamer {
     				GeoPosition matchedGeoPos = Coordinates.getGeoPos(matchedGPSNode.getMatchedX(), matchedGPSNode.getMatchedY());
     				GeoPosition unmatchedGeoPos = Coordinates.getGeoPos(matchedGPSNode.getX(), matchedGPSNode.getY());
     				// write line to file
-    				bWriter.write((matchedGPSNode.getTimestamp() + timeStampOffSet) + ",");
-    				bWriter.write(latFormat.format(matchedGeoPos.getLatitude()) + "," + lonFormat.format(matchedGeoPos.getLongitude()) + ",");
-    				bWriter.write(latFormat.format(unmatchedGeoPos.getLatitude()) + "," + lonFormat.format(unmatchedGeoPos.getLongitude()) + ",");
+    				bWriter.write((matchedGPSNode.getTimestamp() + timeStampOffSet) + "");
+    				
+    				
+    				
+    				bWriter.write( "," + latFormat.format(matchedGeoPos.getLatitude()) + "," + lonFormat.format(matchedGeoPos.getLongitude()));
+    				bWriter.write( "," + latFormat.format(unmatchedGeoPos.getLatitude()) + "," + lonFormat.format(unmatchedGeoPos.getLongitude()));
 
-    				bWriter.write( "," + matchedGPSNode.tbus_edge_id + "," + matchedGPSNode.matched_percent_in_WayParty );
+    				bWriter.write( "," + matchedGPSNode.matched_percent_in_WayParty );
 
     				bWriter.write( "," + matchedGPSNode.matchtedWayPart.startNode.id + "," +matchedGPSNode.matchtedWayPart.endNode.id );
-
-    				if (matchedGPSNode.matchtedWayPart.edge == null) {
-    					int i=0;
-    					i++;
-    					i--;
-    				}
-    				
+   				
     				bWriter.write( "," + matchedGPSNode.matchtedWayPart.edge.id_str );
 
     				double lpos = matchedGPSNode.matchtedWayPart.endEdgeLength - matchedGPSNode.matchtedWayPart.startEdgeLength;
@@ -510,7 +595,36 @@ public class GPSTraceStreamer {
     				bWriter.write( "," + lpos );
     				
     				bWriter.newLine();
+    				
+    				Calendar c = Calendar.getInstance();
+    	    		long t = matchedGPSNode.getTimestamp() + timeStampOffSet;
+    	    		t = t / 1000000L;
+    	    		c.setTimeInMillis(t);
+    	    		
+    				
+    	    		bKml1Writer.write("		<Placemark>" + System.lineSeparator());
+    	    		bKml1Writer.write("			<name>" + matchedGPSNode.getTimestamp() + timeStampOffSet + " " + c.getTime().toString() + "</name>" + System.lineSeparator());
+    	    		bKml1Writer.write("			<LineString>" + System.lineSeparator());
+    	    		bKml1Writer.write("				<coordinates>" + System.lineSeparator());
+    	    		bKml1Writer.write(lonFormat.format(unmatchedGeoPos.getLongitude()) + "," + latFormat.format(unmatchedGeoPos.getLatitude()) + ",0" + System.lineSeparator());
+    	    		bKml1Writer.write(lonFormat.format(matchedGeoPos.getLongitude()) + "," + latFormat.format(matchedGeoPos.getLatitude()) + ",0" + System.lineSeparator());
+    	    		bKml1Writer.write("				</coordinates>" + System.lineSeparator());
+    	    		bKml1Writer.write("			</LineString>" + System.lineSeparator());
+    	    		bKml1Writer.write("			<Style> " + System.lineSeparator());
+    	    		bKml1Writer.write("				<LineStyle>  " + System.lineSeparator());
+    	    		bKml1Writer.write("					<color>#ff00FFFF</color>" + System.lineSeparator());
+    	    		bKml1Writer.write("					<width>5</width>" + System.lineSeparator());
+    	    		bKml1Writer.write("				</LineStyle> " + System.lineSeparator());
+    	    		bKml1Writer.write("			</Style>" + System.lineSeparator());
+    	    		bKml1Writer.write("		</Placemark>" + System.lineSeparator());
+    	    		bKml1Writer.write("" + System.lineSeparator());
 
+
+    	    		bKml2Writer.write(lonFormat.format(matchedGeoPos.getLongitude()) + "," + latFormat.format(matchedGeoPos.getLatitude()) + ",0" + System.lineSeparator());
+    	    		
+    	    		bKml3Writer.write(lonFormat.format(unmatchedGeoPos.getLongitude()) + "," + latFormat.format(unmatchedGeoPos.getLatitude()) + ",0" + System.lineSeparator());
+
+    	    		
     				// increase counter
     				nodeCounter++;
     				// update current status of exporting progress
@@ -522,7 +636,46 @@ public class GPSTraceStreamer {
     			statusUpdate.updateStatus(currentProgress);
     		}
 
+
+    		bKml1Writer.write("	</Document>" + System.lineSeparator());
+    		bKml1Writer.write("</kml>" + System.lineSeparator());
+    		bKml1Writer.write("" + System.lineSeparator());
+    		
+    		bKml2Writer.write("				</coordinates>" + System.lineSeparator());
+    		bKml2Writer.write("			</LineString>" + System.lineSeparator());
+    		bKml2Writer.write("			<Style> " + System.lineSeparator());
+    		bKml2Writer.write("				<LineStyle>  " + System.lineSeparator());
+    		bKml2Writer.write("					<color>#ff00FF00</color>" + System.lineSeparator());
+    		bKml2Writer.write("					<width>5</width>" + System.lineSeparator());
+    		bKml2Writer.write("				</LineStyle> " + System.lineSeparator());
+    		bKml2Writer.write("			</Style>" + System.lineSeparator());
+    		bKml2Writer.write("		</Placemark>" + System.lineSeparator());
+    		bKml2Writer.write("" + System.lineSeparator());
+    		bKml2Writer.write("	</Document>" + System.lineSeparator());
+    		bKml2Writer.write("</kml>" + System.lineSeparator());
+    		bKml2Writer.write("" + System.lineSeparator());
+    		
+    		bKml3Writer.write("				</coordinates>" + System.lineSeparator());
+    		bKml3Writer.write("			</LineString>" + System.lineSeparator());
+    		bKml3Writer.write("			<Style> " + System.lineSeparator());
+    		bKml3Writer.write("				<LineStyle>  " + System.lineSeparator());
+    		bKml3Writer.write("					<color>#ff0000FF</color>" + System.lineSeparator());
+    		bKml3Writer.write("					<width>5</width>" + System.lineSeparator());
+    		bKml3Writer.write("				</LineStyle> " + System.lineSeparator());
+    		bKml3Writer.write("			</Style>" + System.lineSeparator());
+    		bKml3Writer.write("		</Placemark>" + System.lineSeparator());
+    		bKml3Writer.write("" + System.lineSeparator());
+    		bKml3Writer.write("	</Document>" + System.lineSeparator());
+    		bKml3Writer.write("</kml>" + System.lineSeparator());
+    		bKml3Writer.write("" + System.lineSeparator());
+    		
     		// close writer
+
+       		bKml1Writer.close();
+       		bKml2Writer.close();
+       		bKml3Writer.close();
+       		bKml4Writer.close();
+       	    		
     		bWriter.close();
 
     		// finished
@@ -549,8 +702,8 @@ public class GPSTraceStreamer {
     public static boolean saveNMatchedGPSTraceToFile(Vector<ReorderedMatchedGPSNode> matchedGPSNodes, GPSTrace gpsTrace, boolean normalizeTimeStamp, String filePath, StatusUpdate statusUpdate){
     
 		// access file and save name
-		File gpsTracefile = new File(filePath);
-    	
+    	File gpsTracefile = new File(filePath);
+				
 		// get starting time of  measurement
 		long refTimeStamp = gpsTrace.getRefTimeStamp();
 		

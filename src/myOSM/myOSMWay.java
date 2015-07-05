@@ -89,7 +89,6 @@ public class myOSMWay {
 		int k;
 		for (k = 0; k < (refs.length - 1); k++) {
 			myOSMWayPart wp = new myOSMWayPart(refs[k], refs[k+1], this, k, false);
-			wp.tbus_edge_id = this.id + "#" + k;
 
 			WayParts[k] =  wp;
 
@@ -109,7 +108,6 @@ public class myOSMWay {
 		}
 		
 		for (k = 0; k < refs.length; k++) {
-			long lid = refs[k].id;
 			if (IndexOfNodeId.containsKey(refs[k].id)) {
 				System.out.println("Error: setWayParts(): Kreis im Way?");
 				System.exit(-1);
@@ -147,7 +145,6 @@ public class myOSMWay {
 		if (onyWay == false) {
 			for (int i = (refs.length - 1); i >=1 ; i--) {
 				myOSMWayPart wp = new myOSMWayPart(refs[i], refs[i-1], this, j, true);
-				wp.tbus_edge_id = "-" + this.id + "#" + (i-1);
 				
 				WayPartsRueck[j] = wp;
 				
@@ -158,6 +155,11 @@ public class myOSMWay {
 		}
 	
 		this.length = 0;
+		
+		if(this.id == 18358665) {
+			this.id++;
+			this.id--;
+		}
 		
 		for (k = 0; k < WayPartsHin.length; k++) {
 			
