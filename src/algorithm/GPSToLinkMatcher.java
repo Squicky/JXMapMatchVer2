@@ -97,7 +97,7 @@ public class GPSToLinkMatcher implements MatchingGPSObject {
 	 * @param x
 	 * @param y
 	 */
-	public void setSelectableLink(int x, int y) {
+	public void setSelectableLink(double x, double y) {
 		selectedRoute.setSelectableLink(x, y);
 	}
 	
@@ -133,7 +133,7 @@ public class GPSToLinkMatcher implements MatchingGPSObject {
 	 * @param x
 	 * @param y
 	 */
-	public void addLink(int x, int y) {
+	public void addLink(double x, double y) {
 		 // delegate to select link
 		 if (!busy && selectedRoute.addLink(x, y)) {
 			 // now we're busy
@@ -196,7 +196,7 @@ public class GPSToLinkMatcher implements MatchingGPSObject {
 	 * @param x
 	 * @param y
 	 */
-	public void removeLink(final int x, final int y) {
+	public void removeLink(final double x, final double y) {
 		 if (!busy){
 			 // now we're busy
 			 busy = true;
@@ -264,8 +264,8 @@ public class GPSToLinkMatcher implements MatchingGPSObject {
 		
 		
 		// save previous GPS point coordinates, count points which are congruent to previous points
-		int previousX = -1;
-		int previousY = -1;
+		double previousX = -1;
+		double previousY = -1;
 		int identicalPointsCounter = 0;
 		
 		// 1.)
@@ -461,8 +461,8 @@ public class GPSToLinkMatcher implements MatchingGPSObject {
 			for (int j=startIndex; j<=endIndex; j++){
 				
 				//get next position of GPS nodes
-				int nextX = (int) (gpsNodesToMatch.get(j).getX() + (f*(gpsNodesToMatch.get(j).getMatchedX() - gpsNodesToMatch.get(j).getX())));
-				int nextY = (int) (gpsNodesToMatch.get(j).getY() + (f*(gpsNodesToMatch.get(j).getMatchedY() - gpsNodesToMatch.get(j).getY())));
+				double nextX = (gpsNodesToMatch.get(j).getX() + (f*(gpsNodesToMatch.get(j).getMatchedX() - gpsNodesToMatch.get(j).getX())));
+				double nextY = (gpsNodesToMatch.get(j).getY() + (f*(gpsNodesToMatch.get(j).getMatchedY() - gpsNodesToMatch.get(j).getY())));
 				
 				//set calculated moved position as next position to draw
 				gpsNodesToMatch.get(j).setDrawX(nextX);
@@ -498,8 +498,8 @@ public class GPSToLinkMatcher implements MatchingGPSObject {
 				for (int j=startIndex; j<=endIndex; j++){
 					
 					//get next position of GPS nodes
-					int nextX = (int) (gpsNodesToMatch.get(j).getMatchedX() + (f*(gpsNodesToMatch.get(j).getX() - gpsNodesToMatch.get(j).getMatchedX())));
-					int nextY = (int) (gpsNodesToMatch.get(j).getMatchedY() + (f*(gpsNodesToMatch.get(j).getY() - gpsNodesToMatch.get(j).getMatchedY())));
+					double nextX = (gpsNodesToMatch.get(j).getMatchedX() + (f*(gpsNodesToMatch.get(j).getX() - gpsNodesToMatch.get(j).getMatchedX())));
+					double nextY = (gpsNodesToMatch.get(j).getMatchedY() + (f*(gpsNodesToMatch.get(j).getY() - gpsNodesToMatch.get(j).getMatchedY())));
 					
 					//set calculated moved position as next position to draw
 					gpsNodesToMatch.get(j).setDrawX(nextX);
@@ -538,8 +538,8 @@ public class GPSToLinkMatcher implements MatchingGPSObject {
 			for (int j=startIndex; j<=endIndex; j++){
 				
 				//get next position of GPS nodes
-				int nextX = (int) (gpsNodesToMatch.get(j).getX() + (f*(gpsNodesToMatch.get(j).getMatchedX() - gpsNodesToMatch.get(j).getX())));
-				int nextY = (int) (gpsNodesToMatch.get(j).getY()  + (f*(gpsNodesToMatch.get(j).getMatchedY() - gpsNodesToMatch.get(j).getY())));
+				double nextX = (gpsNodesToMatch.get(j).getX() + (f*(gpsNodesToMatch.get(j).getMatchedX() - gpsNodesToMatch.get(j).getX())));
+				double nextY = (gpsNodesToMatch.get(j).getY()  + (f*(gpsNodesToMatch.get(j).getMatchedY() - gpsNodesToMatch.get(j).getY())));
 				
 				//set calculated moved position as next position to draw
 				gpsNodesToMatch.get(j).setDrawX(nextX);

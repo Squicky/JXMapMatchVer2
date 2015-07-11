@@ -152,28 +152,28 @@ public class StreetLink {
      * get X-Position of first StreetNode
      * @return (int) X-Pos
      */
-    public int getStartX() {
+    public double getStartX() {
         return startNode.getX();
     }
     /**
      * get Y-Position of first StreetNode
      * @return (int) Y-Pos
      */
-    public int getStartY() {
+    public double getStartY() {
         return startNode.getY();
     }
     /**
      * get X-Position of second StreetNode
      * @return (int) X-Pos
      */
-    public int getEndX() {
+    public double getEndX() {
         return endNode.getX();
     }
     /**
      * get Y-Position of second StreetNode
      * @return (int) Y-Pos
      */
-    public int getEndY() {
+    public double getEndY() {
         return endNode.getY();
     }
     
@@ -201,8 +201,8 @@ public class StreetLink {
     
     public double getLength() {
     	// link as vector with x & y components
-    	int vecX = getEndX() - getStartX();
-    	int vecY = getStartY() - getEndY();
+    	double vecX = getEndX() - getStartX();
+    	double vecY = getStartY() - getEndY();
     	
     	// calculate length
     	return Math.sqrt((vecX*vecX) + (vecY*vecY));

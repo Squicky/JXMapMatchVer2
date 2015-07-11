@@ -19,8 +19,8 @@ public class SelectedNRoute {
 	
 //	private Component drawComponent;
 	
-	private int lastKnownPosX;						// saves last known x-position
-	private int lastKnownPosY;						// saves last known y-position
+	private double lastKnownPosX;						// saves last known x-position
+	private double lastKnownPosY;						// saves last known y-position
 	
 //	private ArrayList<StreetLink> streetLinksStart;
 //	private ArrayList<StreetLink> streetLinksEnd;
@@ -41,7 +41,7 @@ public class SelectedNRoute {
 		this( myMap, drawComponent);
 		
 		// initialize start array list, convert best route to array list
-		streetLinksStart = convertNRouteToArrayList(nRouteAlgorithm.getNRoute(0));
+		streetLinksStart = convertNRouteToArrayList(nRouteAlgorithm.getNRoute(/*0*/));
 	}
 	
 	public SelectedNRoute(myOSMMap myMap, Component drawComponent) {
@@ -107,13 +107,13 @@ public class SelectedNRoute {
 		return streetLinksArrayList;
 	}
 	
-	public void setEditableLinks(int x, int y) {
+	public void setEditableLinks(double x, double y) {
 		saveLastKnownPosition(x, y);
 		seekSelectableLink();
 		seekDeletableLink();
 	}
 	
-	public void addLink(int x, int y) {
+	public void addLink(double x, double y) {
 		saveLastKnownPosition(x, y);
 		
 		// add to first part?
@@ -188,7 +188,7 @@ public class SelectedNRoute {
 		}	
 	}
 	
-	public void deleteLink(int x, int y) {
+	public void deleteLink(double x, double y) {
 		saveLastKnownPosition(x, y);
 		
 		if (isNRouteSplitted) {
@@ -258,7 +258,7 @@ public class SelectedNRoute {
 		double nearestY;
 		
         //start and end position of streetLink
-        int ax,ay,bx,by;
+		double ax,ay,bx,by;
 		
 		// save distance/current minimal distance to a street link
 		double distance = Double.MAX_VALUE;
@@ -427,7 +427,7 @@ public class SelectedNRoute {
 		double nearestY;
 		
         //start and end position of streetLink
-        int ax,ay,bx,by;
+		double ax,ay,bx,by;
 		
 		// save distance/current minimal distance to a street link
 		double distance = Double.MAX_VALUE;
@@ -501,7 +501,7 @@ public class SelectedNRoute {
 	 * @param x
 	 * @param y
 	 */
-	private void saveLastKnownPosition(int x, int y) {
+	private void saveLastKnownPosition(double x, double y) {
 		lastKnownPosX = x;
 		lastKnownPosY = y;
 	}

@@ -10,8 +10,8 @@ package algorithm;
 
 public class MatchedPoint {
 	
-	private final int matchedX;			// matched x-coordinate of GPS point
-	private final int matchedY;			// matched x-coordinate of GPS point
+	private final double matchedX;			// matched x-coordinate of GPS point
+	private final double matchedY;			// matched x-coordinate of GPS point
 	private final double distance;		// distance to
 	private final boolean isEuclidian;	// is matched point vertical to unmatched position
 	
@@ -22,7 +22,7 @@ public class MatchedPoint {
 	 * @param distance
 	 * @param isEuclidian
 	 */
-	public MatchedPoint(int matchedX, int matchedY, double distance, boolean isEuclidian){
+	public MatchedPoint(double matchedX, double matchedY, double distance, boolean isEuclidian){
 		this.matchedX = matchedX;
 		this.matchedY = matchedY;
 		this.distance = distance;
@@ -32,14 +32,14 @@ public class MatchedPoint {
 	/**
 	 * @return matched x-coordinate
 	 */
-	public int getX(){
+	public double getX(){
 		return matchedX;
 	}
 	
 	/**
 	 * @return matched y-coordinate
 	 */
-	public int getY(){
+	public double getY(){
 		return matchedY;
 	}
 	

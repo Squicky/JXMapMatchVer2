@@ -14,8 +14,8 @@ import java.util.Vector;
 public class StreetNode {
 	
 	// x, y position of node
-    private int posX=0;
-    private int posY=0;
+    private double posX=0;
+    private double posY=0;
     
     public long myid = -1;
     
@@ -28,7 +28,7 @@ public class StreetNode {
      * @param x
      * @param y
      */
-    public StreetNode(int x, int y, long id) {
+    public StreetNode(double x, double y, long id) {
         posX = x;
         posY = y;
         
@@ -92,19 +92,19 @@ public class StreetNode {
 
     //methods for node
 
-    public int getX(){
+    public double getX(){
         return posX;
     }
 
-    public int getY(){
+    public double getY(){
         return posY;
     }
 
-    public void setX(int x){
+    public void setX(double x){
         posX = x;
     }
 
-    public void setY(int y){
+    public void setY(double y){
         posY = y;
     }
     

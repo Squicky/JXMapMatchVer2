@@ -68,11 +68,11 @@ public class Coordinates {
      * @param lat
      * @return cartesian X coordinate (int)
      */
-     public static int getCartesianX(double lon, double lat){
+     public static double getCartesianX(double lon, double lat){
          // use JXMapViewer to convert geographic coordinates to cartesian
          // geoToPixel(geoPosition(lat,lon),MapViewer.getZoom()) use Zoom=1
          Point2D point = MapViewer.getTileFactory().geoToPixel(new GeoPosition(lat, lon), 1);
-         return (int)point.getX();
+         return point.getX();
      }
 
      /**
@@ -81,11 +81,11 @@ public class Coordinates {
      * @param lat
      * @return cartesian Y coordinate (int)
      */
-     public static int getCartesianY(double lon, double lat){
+     public static double getCartesianY(double lon, double lat){
          // use JXMapViewer to convert geographic coordinates to cartesian
          // geoToPixel(geoPosition(lat,lon),MapViewer.getZoom()) use Zoom=1
          Point2D point = MapViewer.getTileFactory().geoToPixel(new GeoPosition(lat, lon), 1);
-         return (int)point.getY();          
+         return point.getY();          
      }
      
      // same methods as above but considering zoom
@@ -96,10 +96,10 @@ public class Coordinates {
       * @param zoom
       * @return cartesian X coordinate (int)
       */
-      public static int getCartesianX(double lon, double lat, int zoom){
+      public static double getCartesianX(double lon, double lat, int zoom){
           // use JXMapViewer to convert geographic coordinates to cartesian
           Point2D point = MapViewer.getTileFactory().geoToPixel(new GeoPosition(lat, lon), zoom);
-          return (int)point.getX();
+          return point.getX();
       }
 
      /**
@@ -109,10 +109,10 @@ public class Coordinates {
       * @param zoom
       * @return cartesian Y coordinate (int)
       */
-      public static int getCartesianY(double lon, double lat, int zoom){
+      public static double getCartesianY(double lon, double lat, int zoom){
           // use JXMapViewer to convert geographic coordinates to cartesian
           Point2D point = MapViewer.getTileFactory().geoToPixel(new GeoPosition(lat, lon), zoom);
-          return (int)point.getY();
+          return point.getY();
       }
      
       /**
@@ -123,7 +123,7 @@ public class Coordinates {
        * @param y
        * @return GeoPosition
        */
-      public static GeoPosition getGeoPos(int x, int y){
+      public static GeoPosition getGeoPos(double x, double y){
      	 //Point2D point2d = new Point2D.Double(x,y);
           return MapViewer.getTileFactory().pixelToGeo(new Point2D.Double(x, y), 1);
       }
@@ -136,7 +136,7 @@ public class Coordinates {
        * @param y
        * @return GeoPosition
        */
-      public static GeoPosition getGeoPos(int x, int y, int zoom){
+      public static GeoPosition getGeoPos(double x, double y, int zoom){
      	 //Point2D point2d = new Point2D.Double(x,y);
           return MapViewer.getTileFactory().pixelToGeo(new Point2D.Double(x, y), zoom);
       }       
@@ -149,9 +149,9 @@ public class Coordinates {
 	   * @param maxY
 	   * @return
 	   */
-      public static GeoPosition getMiddleGeoPos(int minX, int minY, int maxX, int maxY){
-    	  int midX = (int) (minX + ((maxX - minX) / (float) 2));
-    	  int midY = (int) (minY + ((maxY - minY) / (float) 2));
+      public static GeoPosition getMiddleGeoPos(double minX, double minY, double maxX, double maxY){
+    	  double midX = (double) (minX + ((maxX - minX) / (double) 2));
+    	  double midY = (double) (minY + ((maxY - minY) / (double) 2));
     	  //return middle position via GeoPosition
 		  return Coordinates.getGeoPos(midX, midY);
 	  }
@@ -196,9 +196,11 @@ public class Coordinates {
              return Math.abs(((double)(x2-x1)*(double)(x2-x1))+((double)(y2-y1)*(double)(y2-y1)));
          }
          
-         public static double getDistanceSquared(int x1, int y1, double x2, double y2){
+         /*
+         public static double getDistanceSquared(double x1, double y1, double x2, double y2){
         	 return getDistanceSquared((double) x1, (double) y1, x2, y2);
          }
+         */
 
          /**
           * get euclidean distance between (x1,y1) and (x2,y2)
@@ -208,7 +210,7 @@ public class Coordinates {
           * @param y2
           * @return double
           */
-         public static double getDistance(int x1, int y1, double x2, double y2){
+         public static double getDistance(double x1, double y1, double x2, double y2){
              return Math.sqrt( getDistanceSquared(x1, y1, x2, y2) );
          }
          
@@ -244,12 +246,15 @@ public class Coordinates {
                  }
              }
              // gib nur X koordinate aus
-             return (double)(ax+m*(bx-ax));
+             double d = (double)(ax+m*(bx-ax));
+             return d;
          }
          
+         /*
          public static double getNearestPointX(int px, int py, int ax, int ay, int bx, int by){
         	 return getNearestPointX((double) px, (double) py, (double) ax, (double) ay, (double) bx, (double) by);
          }
+         */
         	 
          
          /**
@@ -286,23 +291,33 @@ public class Coordinates {
              return d;
          }
          
+         /*
          public static double getNearestPointY(int px, int py, int ax, int ay, int bx, int by){
         	 return getNearestPointY((double)px, (double)py, (double)ax, (double)ay, (double)bx, (double)by);
          }
+         */
         
          
-         public static double getPercentOfPointInWayPart(int matchedX, int matchedY, int ax, int ay, int bx, int by){
+         public static double getPercentOfPointInWayPart(double matchedX, double matchedY, double ax, double ay, double bx, double by){
         	 
         	 double lenghtWayPart;
-        	 //double lenghtWayPart2 = ((bx - ax) * (bx - ax)) + ((by - ay) * (by - ay));
+        	 
+        	 double lenghtWayPart2 = ((bx - ax) * (bx - ax)) + ((by - ay) * (by - ay));
+        	 
         	 double d1 = (bx - ax);
         	 d1 = d1 * d1;
         	 double d3 = (by - ay);
         	 d3 = d3 * d3;
+        	 
+        	 if (d1 + d3 != lenghtWayPart2) {
+        		 lenghtWayPart = lenghtWayPart2;
+        	 }
+        	 
+        	 
         	 lenghtWayPart = Math.sqrt(d1 + d3);
         	
-        	 int ppx = (int) getNearestPointX(matchedX, matchedY, ax, ay, bx, by);
-        	 int ppy = (int) getNearestPointY(matchedX, matchedY, ax, ay, bx, by);
+        	 double ppx = getNearestPointX(matchedX, matchedY, ax, ay, bx, by);
+        	 double ppy = getNearestPointY(matchedX, matchedY, ax, ay, bx, by);
         	 
         	 if (ppx == ax && ppy == ay) {
         		 return 0;
@@ -361,9 +376,9 @@ public class Coordinates {
           * @param by b point of line y position
           * @return MatchedPoint
           */
-         public static MatchedPoint getNearestEuclidianPoint(int px, int py, int ax, int ay, int bx, int by){
-         	int x;
-         	int y;
+         public static MatchedPoint getNearestEuclidianPoint(double px, double py, double ax, double ay, double bx, double by){
+        	 double x;
+        	 double y;
          	double distance;
          	boolean euclidian;
          	
@@ -391,8 +406,8 @@ public class Coordinates {
          	}
          	else{
          		euclidian = true;
-         		x = (int)(ax+m*(bx-ax));
-         		y = (int)(ay+m*(by-ay));
+         		x = (double)(ax+m*(bx-ax));
+         		y = (double)(ay+m*(by-ay));
          		distance = getDistanceSquared(px, py, x, y);
          	}
          		
@@ -497,8 +512,11 @@ public class Coordinates {
           * @return int distance gps node to street link
           */
          public static double getDistance(GPSNode gpsNode, myOSMWayPart myWayPart){
-        	 return getDistance(gpsNode.getX(), gpsNode.getY(), getNearestPointX(gpsNode, myWayPart),
-        			 				   getNearestPointY(gpsNode, myWayPart));
+        	 
+        	 double x = getNearestPointX(gpsNode, myWayPart);
+        	 double y = getNearestPointY(gpsNode, myWayPart);
+        	 
+        	 return getDistance(gpsNode.getX(), gpsNode.getY(), x, y);
          }
          
          /**

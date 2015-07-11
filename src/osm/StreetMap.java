@@ -38,10 +38,10 @@ public class StreetMap {
     private int NrOfNodes=0;
     private int MaxNrOfNodes=0;
 
-    private int minX=0;
-    private int minY=0;
-    private int maxX=0;
-    private int maxY=0;
+    private double minX=0;
+    private double minY=0;
+    private double maxX=0;
+    private double maxY=0;
     
     private File streetMapFile;
     
@@ -80,10 +80,10 @@ public class StreetMap {
     		
     		for (int j=0; j<i; j++) {
     			
-    			int a = streetLinks[i].getStartX();
-    			int b = streetLinks[i].getStartY();
-    			int c = streetLinks[i].getEndX();
-    			int d = streetLinks[i].getEndY();
+    			double a = streetLinks[i].getStartX();
+    			double b = streetLinks[i].getStartY();
+    			double c = streetLinks[i].getEndX();
+    			double d = streetLinks[i].getEndY();
     			
     			
     			if ( a == 8708905 && b == 5605140 && c == 8708900 && d == 5605141) {
@@ -131,7 +131,7 @@ public class StreetMap {
      * @param x2
      * @param y2
      */
-    public StreetLink addLink(int x1, int y1, int x2, int y2, long parentId, long startNoteId, long endNoteId){
+    public StreetLink addLink(double x1, double y1, double x2, double y2, long parentId, long startNoteId, long endNoteId){
     	
         StreetNode sn1 = addNode(x1,y1, startNoteId);
         StreetNode sn2 = addNode(x2,y2, endNoteId);
@@ -361,7 +361,7 @@ public class StreetMap {
      * @param i
      * @return int
      */
-    public int getStartX(int i){
+    public double getStartX(int i){
         if (i<0) i=0;
         if (i<NrOfLinks) return streetLinks[i].getStartX();
         return 0;
@@ -372,7 +372,7 @@ public class StreetMap {
      * @param i
      * @return int
      */
-    public int getStartY(int i){
+    public double getStartY(int i){
         if (i<0) i=0;
         if (i<NrOfLinks) return streetLinks[i].getStartY();
         return 0;
@@ -382,7 +382,7 @@ public class StreetMap {
      * @param i
      * @return int
      */
-    public int getEndX(int i){
+    public double getEndX(int i){
         if (i<0) i=0;
         if (i<NrOfLinks) return streetLinks[i].getEndX();
         return 0;
@@ -392,7 +392,7 @@ public class StreetMap {
      * @param i
      * @return int
      */
-    public int getEndY(int i){
+    public double getEndY(int i){
         if (i<0) i=0;
         if (i<NrOfLinks) return streetLinks[i].getEndY();
         return 0;
@@ -425,7 +425,7 @@ public class StreetMap {
      * @param x
      * @param y
      */
-    public StreetNode addNode(int x, int y, long nodeId){
+    public StreetNode addNode(double x, double y, long nodeId){
         //check if node already exists
     	
     	StreetNode n = getNode(x, y, nodeId);
@@ -450,7 +450,7 @@ public class StreetMap {
      * @param y
      * @return Streetnode
      */
-    public StreetNode getNode(int x, int y, long myid){
+    public StreetNode getNode(double x, double y, long myid){
 
     	StreetNode sn = null;
     	
@@ -496,7 +496,7 @@ public class StreetMap {
      * @param i
      * @return int
      */
-    public int getNodeX(int i){
+    public double getNodeX(int i){
         if (i<0) i=0;
         if (i<NrOfNodes) return streetNodes[i].getX();
         return 0;
@@ -506,7 +506,7 @@ public class StreetMap {
      * @param i
      * @return int
      */
-    public int getNodeY(int i){
+    public double getNodeY(int i){
         if (i<0) i=0;
         if (i<NrOfNodes) return streetNodes[i].getY();
         return 0;
@@ -540,33 +540,33 @@ public class StreetMap {
         return null;
     }
 
-    public void setMinX(int m){
+    public void setMinX(double m){
         minX = m;
     }
 
-    public void setMinY(int m){
+    public void setMinY(double m){
         minY = m;
     }
-    public void setMaxX(int m){
+    public void setMaxX(double m){
         maxX = m;
     }
 
-    public void setMaxY(int m){
+    public void setMaxY(double m){
         maxY = m;
     }
 
-    public int getMinX(){
+    public double getMinX(){
         return minX;
     }
 
-    public int getMinY(){
+    public double getMinY(){
         return minY;
     }
-    public int getMaxX(){
+    public double getMaxX(){
         return maxX;
     }
 
-    public int getMaxY(){
+    public double getMaxY(){
         return maxY;
     }
     

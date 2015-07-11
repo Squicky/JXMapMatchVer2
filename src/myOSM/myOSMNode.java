@@ -12,9 +12,9 @@ public class myOSMNode {
 	public double lon = -1;
 	public double lat = -1;
 
-	public int x = -1;
+	public double x = -1;
 	
-	public int y = -1;
+	public double y = -1;
 	
 	public int countIsStartOfWay = 0;
 	
@@ -28,7 +28,7 @@ public class myOSMNode {
 	
 	public myOSMNode() {}
 	
-    public myOSMNode(int x, int y, long id) {
+    public myOSMNode(double x, double y, long id) {
     	this.x = x;
     	this.y = y;
         
@@ -36,6 +36,8 @@ public class myOSMNode {
     }
 	
 	public void setXY() {
+
+		
 		if (lon != -1 && lat != -1) {
 			x = Coordinates.getCartesianX(lon, lat);
 			y = Coordinates.getCartesianY(lon, lat);			

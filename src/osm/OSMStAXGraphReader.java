@@ -4,11 +4,7 @@
 
 package osm;
 
-import interfaces.StatusUpdate;
-
 import java.io.*;
-import java.util.Vector;
-import cartesian.*;
 
 /**
  * @author Tob
@@ -21,8 +17,10 @@ public class OSMStAXGraphReader {
      * @param fullFilePath
      * @return StreetMap
      */
+	/*
     public static StreetMap convertToStreetMap(String fullFilePath, StatusUpdate statusUpdate) throws Exception {
-        int i=0,k=0,l=0;
+
+   		int i=0,k=0,l=0;
         int large=0;
         
         int NrOfNodes=0;
@@ -234,14 +232,14 @@ public class OSMStAXGraphReader {
                 for (i=0;i<NrOfEdges;i++){
 //                	System.out.println("start: " + startNode[i] + " target: " + targetNode[i]);
                 }
-                
+                */
                 /*
                 System.out.println(" Nr of Nodes: " +NrOfNodes);
                 System.out.println(" Nr of All nodes: " +NrOfAllNodes);
                 System.out.println(" Nr of Edges: " +NrOfEdges);
                 System.out.println(" Nr of All Edges: " +NrOfAllEdges);
                 */
-                
+                /*
                 // for progression of thirs and last step: read all edges, reset counter
                 sumElements = NrOfNodes;
                 currentElement = 0;
@@ -250,7 +248,7 @@ public class OSMStAXGraphReader {
                 streetMap = new StreetMap(NrOfAllEdges,NrOfAllNodes, streetMapFile);
                 
                 //set boundary
-                int ii = Coordinates.getCartesianX(minLon, minLat);
+                double ii = Coordinates.getCartesianX(minLon, minLat);
                 streetMap.setMinX(ii);
                 streetMap.setMinY(Coordinates.getCartesianY(minLon, minLat));
                 streetMap.setMaxX(Coordinates.getCartesianX(maxLon, maxLat));
@@ -341,7 +339,7 @@ public class OSMStAXGraphReader {
                     currentProgressPercent = ((float) currentElement / sumElements * 100);
                     statusUpdate.updateStatus("Node Nr." + k + " adding to street map", currentProgressPercent);
                 }
-                
+                */
                 /*
                 // print all nodes
                 for (k=0; k < NrOfNodes;k++){
@@ -372,7 +370,7 @@ public class OSMStAXGraphReader {
                     }
                 }
                  */
-                
+                /*
                 // close resources
                 dis.close();
                 fis.close();
@@ -396,6 +394,7 @@ public class OSMStAXGraphReader {
      
         return streetMap;
     }
+    */
 
     /**
      * load file "path" and print its routing graph

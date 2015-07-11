@@ -31,8 +31,8 @@ public class SelectedRoute {
 	private boolean noSelectableLinkLeft;					// should all links be selectable, cause there isn't any selectable link left
 	private boolean allLinksSelectableMode;					// user wants to select all links
 	
-	private int lastKnownPosX;								// saves last known x-position
-	private int lastKnownPosY;								// saves last known y-position
+	private double lastKnownPosX;								// saves last known x-position
+	private double lastKnownPosY;								// saves last known y-position
 
 	/**
 	 * constructor initializes with street map
@@ -57,7 +57,7 @@ public class SelectedRoute {
 	 * @param x
 	 * @param y
 	 */
-	public void setSelectableLink(int x, int y){
+	public void setSelectableLink(double x, double y){
 		// save position
 		saveLastKnownPosition(x, y);
 		
@@ -79,7 +79,7 @@ public class SelectedRoute {
 		switchAllLinksSelectableMode(lastKnownPosX, lastKnownPosY);
 	}
 	
-	public void switchAllLinksSelectableMode(int x, int y) {
+	public void switchAllLinksSelectableMode(double x, double y) {
 		allLinksSelectableMode = !allLinksSelectableMode;
 		setSelectableLink(x, y);
 	}
@@ -134,7 +134,7 @@ public class SelectedRoute {
 	 * @param y current mouse y-position
 	 * @return link could be added
 	 */
-	public boolean addLink(int x, int y ) {		
+	public boolean addLink(double x, double y ) {		
 		// save position
 		saveLastKnownPosition(x, y);
 		
@@ -174,7 +174,7 @@ public class SelectedRoute {
 	 * @param y current mouse y-position
 	 * @return link could be removed
 	 */
-	public boolean removeLink(int x, int y){
+	public boolean removeLink(double x, double y){
 		// save position
 		saveLastKnownPosition(x, y);
 		
@@ -367,7 +367,7 @@ public class SelectedRoute {
 		return false;
 	}
 	
-	private myOSMWayPart getNearestLink(int x, int y) {
+	private myOSMWayPart getNearestLink(double x, double y) {
 		//nearest street link
 		myOSMWayPart nearestStreetLink = null;
 		//last selected street link
@@ -382,7 +382,7 @@ public class SelectedRoute {
         double minDistance = Double.MAX_VALUE;
         
         //start and end position of streetLink
-        int ax,ay,bx,by;
+        double ax,ay,bx,by;
 
         for (myOSMWayPart streetLink : selectableStreetLinksPool){
         	//street link mustn't be already selected
@@ -414,7 +414,7 @@ public class SelectedRoute {
 	 * @param x
 	 * @param y
 	 */
-	private void saveLastKnownPosition(int x, int y) {
+	private void saveLastKnownPosition(double x, double y) {
 		lastKnownPosX = x;
 		lastKnownPosY = y;
 	}

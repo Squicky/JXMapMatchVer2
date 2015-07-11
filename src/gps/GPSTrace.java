@@ -21,10 +21,10 @@ public class GPSTrace {
     private int maxNrOfNodes=0;
 
     // reset min/max values for gps nodes
-    private int minX=Integer.MAX_VALUE;
-    private int minY=Integer.MAX_VALUE;
-    private int maxX=-Integer.MAX_VALUE;
-    private int maxY=-Integer.MAX_VALUE;
+    private double minX=Integer.MAX_VALUE;
+    private double minY=Integer.MAX_VALUE;
+    private double maxX=-Integer.MAX_VALUE;
+    private double maxY=-Integer.MAX_VALUE;
     
     // save reference timestamp which we had to add to 
     // GPS node timestamps to get absolute timestamp since 01.01.1970
@@ -67,10 +67,10 @@ public class GPSTrace {
      * @param y
      * @param t
      */
-    public void addNode(int x, int y, long t){
+    public void addNode(double x, double y, long t, double lon,  double lat){
         if (nrOfNodes < maxNrOfNodes){
         	// if there is space in array, add GPS node
-            nodes[nrOfNodes] = new GPSNode(x,y,t);
+            nodes[nrOfNodes] = new GPSNode(x,y,t, lon, lat);
             nrOfNodes++;
             
             // set minX, minY, maxY and maxX
@@ -87,7 +87,7 @@ public class GPSTrace {
      */
     public void addNode(GPSNode gpsNode){
     	// add GPS point by creating new one and copy given values
-    	addNode(gpsNode.getX(), gpsNode.getY(), gpsNode.getTimestamp());
+    	addNode(gpsNode.getX(), gpsNode.getY(), gpsNode.getTimestamp(), gpsNode.getLon(), gpsNode.getLat());
     }
 
     /**
@@ -116,7 +116,7 @@ public class GPSTrace {
      * @param i
      * @return (int) X-Pos
      */
-    public int getNodeX(int i){
+    public double getNodeX(int i){
         if (i<0) i=0;
         if (i<nrOfNodes) return nodes[i].getX();
         return 0;
@@ -128,7 +128,7 @@ public class GPSTrace {
      * @param i
      * @return (int) Y-Pos
      */
-    public int getNodeY(int i){
+    public double getNodeY(int i){
         if (i<0) i=0;
         if (i<nrOfNodes) return nodes[i].getY();
         return 0;
@@ -172,7 +172,7 @@ public class GPSTrace {
      * @param y
      * @return GPSNode
      */
-    public GPSNode getNode(int x, int y){
+    public GPSNode getNode(double x, double y){
         int i=0;
         while (i<nrOfNodes){
             // check if node already exists
@@ -183,19 +183,19 @@ public class GPSTrace {
         return null;
     }
 
-    public int getMinX(){
+    public double getMinX(){
         return minX;
     }
 
-    public int getMinY(){
+    public double getMinY(){
         return minY;
     }
 
-    public int getMaxX(){
+    public double getMaxX(){
         return maxX;
     }
 
-    public int getMaxY(){
+    public double getMaxY(){
         return maxY;
     }
     

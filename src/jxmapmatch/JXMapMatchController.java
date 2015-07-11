@@ -212,7 +212,7 @@ public class JXMapMatchController implements ActionListener,
 			// if nothing was loaded yet and map file path was passed
 			if ((loadStatus == MAP_TO_LOAD) && (arguments.length > 0)) {
 				// load map file, first parameter must contain map file path
-				openRoutingGraph(arguments[MAP_FILE_INDEX], arguments[MAP_FILE_INDEX].replace(".osm", ".net.xml"), CLIENT_ARGUMENTS);
+				openRoutingGraph(arguments[MAP_FILE_INDEX], arguments[MAP_FILE_INDEX].replace(".osm", ".net.xml"), CLIENT_ARGUMENTS, arguments[GPS_TRACE_FILE_INDEX]);
 			}
 			// if map was loaded and a second argument was passed 
 			else if ((loadStatus == MAP_LOADED) && (arguments.length == 2))  {
@@ -222,7 +222,7 @@ public class JXMapMatchController implements ActionListener,
 			else if ((loadStatus == NROUTE_MAP_TO_LOAD) && (arguments.length > 0)) {
 				// load map file, first parameter must contain map file path, tell
 				// function to callback this method in order to possibly load N route
-				openRoutingGraph(arguments[MAP_FILE_INDEX], arguments[MAP_FILE_INDEX].replace(".osm", ".net.xml"), NROUTE_ARGUMENTS);
+				openRoutingGraph(arguments[MAP_FILE_INDEX], arguments[MAP_FILE_INDEX].replace(".osm", ".net.xml"), NROUTE_ARGUMENTS, arguments[GPS_TRACE_FILE_INDEX]);
 			}
 			else if ((loadStatus == NROUTE_MAP_LOADED) && (arguments.length == 2)) {
 				// load N route from file
@@ -490,7 +490,7 @@ public class JXMapMatchController implements ActionListener,
 		if (jFileOpenDialogGraph.showOpenDialog()){
 			File f = jFileOpenDialogGraph.getSelectedFile();
 			String netFilePath = f.getAbsolutePath().replace(".osm", ".net.xml");
-			openRoutingGraph(jFileOpenDialogGraph.getSelectedFile(), netFilePath, CLIENT_FILE_DIALOG);
+			openRoutingGraph(jFileOpenDialogGraph.getSelectedFile(), netFilePath, CLIENT_FILE_DIALOG, "");
 		}
 	}
 	
@@ -498,9 +498,14 @@ public class JXMapMatchController implements ActionListener,
 	 * loads routing graph from given file path
 	 * @param filepath
 	 */
-	private void openRoutingGraph(String osmFilePath, String netFilePath, String client) {
+	private void openRoutingGraph(String osmFilePath, String netFilePath, String client, String gpsFilePath) {
 		// call overloaded method by creating file instance from given file path
-		openRoutingGraph(new File(osmFilePath), netFilePath, client);
+		
+		File f = new File(gpsFilePath);
+		String gpsFolderPath = f.getAbsolutePath().replace(f.getName(), "");
+		
+		openRoutingGraph(new File(osmFilePath), netFilePath, client, gpsFolderPath);
+		
 	}
 	
 	/**
@@ -508,12 +513,14 @@ public class JXMapMatchController implements ActionListener,
 	 * @param osmFile
 	 * @param client who calls this method
 	 */
-	private void openRoutingGraph(File osmFile, String _netFilePath, final String client) {
+	private void openRoutingGraph(File osmFile, String _netFilePath, final String client, String _DatasetFolderPath) {
 		// get chosen routing graph file
 		final File streetMapFile = osmFile;
 
 		final String netFilePath = _netFilePath;
-					
+
+		final String DatasetFolderPath = _DatasetFolderPath;
+
 		// set routing graph button caption
 		jxMapMatchGUI.setStreetMapButtonText(streetMapFile.getName());
 		
@@ -528,7 +535,7 @@ public class JXMapMatchController implements ActionListener,
 				try {
 					
 					if (streetMapFile.getName().endsWith(".osm") || streetMapFile.getName().endsWith(".osm.xml")) {
-						myMap = new myOSMMap(streetMapFile, netFilePath);
+						myMap = new myOSMMap(streetMapFile, netFilePath, DatasetFolderPath);
 						myMap.removeUnusedNotesAndWaysAndSetWayParts();
 //		                streetMap = myMap.getSteetMap();
 					}
@@ -676,7 +683,7 @@ public class JXMapMatchController implements ActionListener,
 				@Override
 				protected Boolean doInBackground() throws Exception {
 					try {
-						GPSTraceStreamer.saveMatchedGPSTraceToFile(matchingGPSObj.getMatchedGPSNodes(), matchingGPSObj.getRefTimeStamp(), jxMapMatchGUI.getNormalizeGPSTimeStamp(), gpsTraceFile.getAbsolutePath(), jxMapMatchGUI);
+						GPSTraceStreamer.saveMatchedGPSTraceToFile(matchingGPSObj.getMatchedGPSNodes(), matchingGPSObj.getRefTimeStamp(), jxMapMatchGUI.getNormalizeGPSTimeStamp(), gpsTraceFile.getAbsolutePath(), jxMapMatchGUI, matchGPStoNRouteAlgorithm.getMatchedNLinks());
 					} catch (Exception e) { 
 						e.printStackTrace();
 						return false;
@@ -1322,8 +1329,6 @@ public class JXMapMatchController implements ActionListener,
 				// calculate zoom factor (2 ^ (zoom - 1)), e.g. for zoom = 1 (no zoom) => 2^0 = 1 => no change)
 				double zoomFactor = Math.pow(2, jxMapViewer.getZoom()-1);
 				
-				
-				
 				// draw routing graph?
 				if (drawStreetMap){
 					jxMapPainter.drawStreetMap(g2D, jxMapViewer, null, STREET_MAP_COLOR, zoomFactor, myMap);
@@ -1342,7 +1347,8 @@ public class JXMapMatchController implements ActionListener,
 				}
 				// draw matched n route?
 				else if (drawNRoute && nRouteAlgorithm != null) {
-					jxMapPainter.drawNRoute(g2D, jxMapViewer, nRouteAlgorithm.getNRoute(jxMapMatchGUI.getSelectedNRoute()), N_ROUTE_LINK_COLOR, zoomFactor);
+					//jxMapPainter.drawNRoute(g2D, jxMapViewer, nRouteAlgorithm.getNRoute(jxMapMatchGUI.getSelectedNRoute()), N_ROUTE_LINK_COLOR, zoomFactor);
+					jxMapPainter.drawNRoute(g2D, jxMapViewer, nRouteAlgorithm.getNRoute(/*jxMapMatchGUI.getSelectedNRoute()*/), N_ROUTE_LINK_COLOR, zoomFactor);
 				}
 
 				
@@ -1380,7 +1386,7 @@ public class JXMapMatchController implements ActionListener,
 	 */
 	private boolean checkArgs(String args[]) {		
 		// maximum two arguments (map and trace file) allowed
-		if (args.length <= 3) {
+		if (args.length == 2) {
 			
 			// check if file(s) exists
 			for (String arg : args) {
@@ -1391,7 +1397,7 @@ public class JXMapMatchController implements ActionListener,
 				// Does it exists and is it a file
 				if (!(file.exists() && file.isFile())) {
 					System.out.println("Error: " + file.getPath());
-					return false;					
+					return false;
 				}
 			}
 			

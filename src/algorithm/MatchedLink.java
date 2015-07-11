@@ -69,6 +69,12 @@ public class MatchedLink {
 		return matchedRange.getRangeStartIndex();
 	}
 	
+	
+	public int getRangeStartIndexForClone() {
+		return matchedRange.getRangeStartIndexForClone();
+	}	
+	
+	
 	/**
 	 * set end index of matched range 
 	 * @param rangeEndIndex
@@ -83,6 +89,10 @@ public class MatchedLink {
 	 */
 	public int getRangeEndIndex() {
 		return matchedRange.getRangeEndIndex();
+	}
+	
+	public int getRangeEndIndexForClone() {
+		return matchedRange.getRangeEndIndexForClone();
 	}
 	
 	/**

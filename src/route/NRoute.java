@@ -290,7 +290,9 @@ public class NRoute implements Comparable<NRoute>, Cloneable {
 	public boolean removeLastGPSNodeFromLastLink() {
 		// remove last matched GPS node from last link
 		// if route container isn't empty and we got at least one matched GPS node
-		if (!nRouteLinks.isEmpty() && (nRouteLinks.lastElement().getRangeSize() > 0)) {
+		//if (!nRouteLinks.isEmpty() && (nRouteLinks.lastElement().getRangeSize() > 0)) {
+		
+		if (!nRouteLinks.isEmpty()) {
 			// get last added matched link
 			MatchedLink lastAddedMatchedLink = nRouteLinks.lastElement();
 			// update score by subtracting score
@@ -298,10 +300,14 @@ public class NRoute implements Comparable<NRoute>, Cloneable {
 												  lastAddedMatchedLink.getRangeEndIndex(),
 												  lastAddedMatchedLink.getRangeEndIndex()) );
 			
-			
-			// NOW remove last matched GPS node after updating score
-			lastAddedMatchedLink.setRangeEndIndex( lastAddedMatchedLink.getRangeEndIndex()-1 );
-			
+			// NOW remove last matched GPS node after updating score			
+			if (lastAddedMatchedLink.getRangeSize() == 0) {
+				lastAddedMatchedLink.setRangeStartIndex(-1);
+				lastAddedMatchedLink.setRangeEndIndex(-1);
+			} else {
+				lastAddedMatchedLink.setRangeEndIndex( lastAddedMatchedLink.getRangeEndIndex()-1 );				
+			}
+						
 			// removing successful
 			return true;
 		}
@@ -358,8 +364,17 @@ public class NRoute implements Comparable<NRoute>, Cloneable {
 	public int compareTo(NRoute nRoute) {
 		// compare n routes
 //		if (score == nRoute.getScore()) return EQUAL_SCORE;
-		if (score == nRoute.getScore()) return WORSE_SCORE;
-		if (score < nRoute.getScore()) 	return BETTER_SCORE;	
+		if (score == nRoute.getScore()) {
+			
+			if( this.getLength() < nRoute.getLength()) {
+				return BETTER_SCORE;	
+			} else {
+				return WORSE_SCORE;
+			}
+		}
+		if (score < nRoute.getScore()) {
+			return BETTER_SCORE;	
+		}
 		
 		// otherwise the comparative n route has a better score 
 		return WORSE_SCORE;
@@ -386,8 +401,8 @@ public class NRoute implements Comparable<NRoute>, Cloneable {
 		for (MatchedLink matchedLink : nRouteLinks) {
 			// copy matched link
 			MatchedLink matchedLinkClone = new MatchedLink(matchedLink.getStreetLink(),
-														   matchedLink.getRangeStartIndex(),
-														   matchedLink.getRangeEndIndex());
+														   matchedLink.getRangeStartIndexForClone(),
+														   matchedLink.getRangeEndIndexForClone());
 			// add to vector
 			nRouteLinksClone.add(matchedLinkClone);
 		}
@@ -445,6 +460,16 @@ public class NRoute implements Comparable<NRoute>, Cloneable {
 		// check if vector is empty
 		if (!nRouteLinks.isEmpty()) {
 			return nRouteLinks.lastElement();
+		}
+		
+		// return null if there is no last added link
+		return null;
+	}
+	
+	public MatchedLink getFirstMatchedLink() {
+		// check if vector is empty
+		if (!nRouteLinks.isEmpty()) {
+			return nRouteLinks.firstElement();
 		}
 		
 		// return null if there is no last added link
@@ -878,8 +903,13 @@ public class NRoute implements Comparable<NRoute>, Cloneable {
 		return vwp;
 	}
 	
+	
 	public Vector<myOSMWayPart> getLastOSMWayPart() {
 		return NRoute.getLastOSMWayPart(this);
+	}
+	
+	public Vector<myOSMWayPart> getFirstOSMWayPart() {
+		return NRoute.getFirstOSMWayPart(this);
 	}
 	
 	public static Vector<myOSMWayPart> getLastOSMWayPart(NRoute nRoute) {
@@ -888,72 +918,14 @@ public class NRoute implements Comparable<NRoute>, Cloneable {
 
 		vwp.add(nRoute.getLastMatchedLink().getStreetLink());
 		
-		/*		
-		StreetLink lastSL = nRoute.getNRouteLinks().lastElement().getStreetLink();
-				
-		if (nRoute.getNRouteLinks().size() == 1) {
-			
-			if (lastSL.myWayPart != null) {
-				
-				vwp.add( lastSL.myWayPart );
-				
-			}
-			
-			if (lastSL.myWayPartBackDirection != null) {
-
-				vwp.add( lastSL.myWayPartBackDirection );							
-
-			}
+		return vwp;
+	}
 	
-			return vwp;
-		}
+	public static Vector<myOSMWayPart> getFirstOSMWayPart(NRoute nRoute) {
 		
-		StreetLink penultimateSL = nRoute.getNRouteLinks().get(nRoute.getNRouteLinks().size() - 2).getStreetLink();
-		
-		if (lastSL.myWayPart != null) {
-			
-			if (penultimateSL.myWayPart != null) {
-				
-				if (lastSL.myWayPart.startNode == penultimateSL.myWayPart.endNode) {
-					vwp.add( lastSL.myWayPart );
-					return vwp;
-				}
-				
-			}
+		Vector<myOSMWayPart> vwp = new Vector<myOSMWayPart>();
 
-			if (penultimateSL.myWayPartBackDirection != null) {
-			
-				if (lastSL.myWayPart.startNode == penultimateSL.myWayPartBackDirection.endNode) {
-					vwp.add( lastSL.myWayPart );
-					return vwp;
-				}
-				
-			}
-
-			
-		}
-		
-		if (lastSL.myWayPartBackDirection != null) {
-			
-			if (penultimateSL.myWayPart != null) {
-				
-				if (lastSL.myWayPartBackDirection.startNode == penultimateSL.myWayPart.endNode) {
-					vwp.add( lastSL.myWayPartBackDirection );
-					return vwp;
-				}
-				
-			}
-
-			if (penultimateSL.myWayPartBackDirection != null) {
-				
-				if (lastSL.myWayPartBackDirection.startNode == penultimateSL.myWayPartBackDirection.endNode) {
-					vwp.add( lastSL.myWayPartBackDirection );
-					return vwp;
-				}
-				
-			}
-		}
-		*/
+		vwp.add(nRoute.getFirstMatchedLink().getStreetLink());
 		
 		return vwp;
 	}

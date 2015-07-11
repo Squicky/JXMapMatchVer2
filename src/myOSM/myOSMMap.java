@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Vector;
 
@@ -61,8 +62,11 @@ public class myOSMMap {
 	
 	Map<Long, Map<Integer, myEdge>> edges = new HashMap<Long, Map<Integer, myEdge>>();
 	
-	public myOSMMap(File _xmlFile, String netFilePath) {
-		
+	LinkedList<myDataset> DatasetsUp = new LinkedList<myDataset>();
+	LinkedList<myDataset> DatasetsDown = new LinkedList<myDataset>();
+	
+	public myOSMMap(File _xmlFile, String netFilePath, String DatasetFolderPath) {
+
 		xmlFile = _xmlFile;
 		
 		try {
@@ -463,13 +467,12 @@ public class myOSMMap {
 
 
 				/*
-				if (abc > 450946) {
-					if ((abc % 1) == 0) {
-						System.out.print((new GregorianCalendar()).getTime().toString() + " | " + abc );
-						System.out.println(" |n: " + count_nodes + " | w: " + count_ways);
-					}
+				if (abc == 4966213) {
+					System.out.print((new GregorianCalendar()).getTime().toString() + " | " + abc );
+					System.out.println(" |n: " + count_nodes + " | w: " + count_ways);
 				}
 				*/
+				
 
 				/*
 				if (abc > 25570000) {
@@ -557,7 +560,7 @@ public class myOSMMap {
 				parser.next(); 
 			}
 		} catch (Exception e) {
-			System.err.println("Error parsing XML File: \n" + e.toString());
+			System.err.println("Error parsing XML File: \n" + e.toString() + "\n" + abc);
 			return false;
 		} 
 		return true;
@@ -660,6 +663,11 @@ public class myOSMMap {
 						this.neededNodesIds.put(l,l);
 					}
 				} else if (this.parseXML_status == 1) {
+					
+					if (nodeIdsOfWay.size() <= 1) {
+						System.out.println("Error: Way has only " + nodeIdsOfWay.size() + " refs");
+						System.exit(-1);
+					}
 					
 					tempWay.refs = new myOSMNode[nodeIdsOfWay.size()];
 

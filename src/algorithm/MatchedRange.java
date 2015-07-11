@@ -55,6 +55,16 @@ public class MatchedRange {
 	 * @return
 	 */
 	public int getRangeStartIndex(){
+		
+		if (rangeStartIndex == -1) {
+			rangeStartIndex++;
+			rangeStartIndex--;
+		}
+		
+		return rangeStartIndex;
+	}
+	
+	public int getRangeStartIndexForClone(){
 		return rangeStartIndex;
 	}
 	
@@ -71,6 +81,15 @@ public class MatchedRange {
 	 * @return
 	 */
 	public int getRangeEndIndex(){
+		if (rangeEndIndex == -1) {
+			rangeEndIndex++;
+			rangeEndIndex--;
+		}	
+		
+		return rangeEndIndex;
+	}
+
+	public int getRangeEndIndexForClone(){
 		return rangeEndIndex;
 	}
 	

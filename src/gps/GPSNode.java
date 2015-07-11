@@ -14,8 +14,10 @@ public class GPSNode {
 	
 	// time stamp
     private long timestamp = 0;
-    private int x = 0;
-    private int y = 0;
+    private double x = 0;
+    private double y = 0;
+    private double lat = 0;
+    private double lon = 0;
     
     public int status = 0;
     
@@ -25,18 +27,20 @@ public class GPSNode {
      * @param y
      * @param timestamp
      */
-    public GPSNode(int x , int y, long timestamp){
+    public GPSNode(double x , double y, long timestamp, double lon, double lat){
     	// save position and timestamp
         this.x = x;
         this.y = y;
         this.timestamp = timestamp;	
+        this.lon = lon;
+        this.lat = lat;        
     }
     
     /**
      * set GPSNode's X-Position
      * @param x
      */
-    public void setX(int x){
+    public void setX(double x){
         this.x = x;
     }
 
@@ -44,7 +48,7 @@ public class GPSNode {
      * set GPSNode's Y-Position
      * @param y
      */
-    public void setY(int y){
+    public void setY(double y){
         this.y = y;
     }
 
@@ -52,7 +56,7 @@ public class GPSNode {
      * get GPSNode's X-Position
      * @return (int) X-Position
      */
-    public int getX(){
+    public double getX(){
         return x;
     }
     
@@ -60,8 +64,24 @@ public class GPSNode {
      * get GPSNode's X-Position
      * @return (int) Y-Position
      */
-    public int getY(){
+    public double getY(){
         return y;
+    }
+    
+    /**
+     * get GPSNode's Lon-Position
+     * @return (double) Lon-Position
+     */
+    public double getLon(){
+        return lon;
+    }
+    
+    /**
+     * get GPSNode's Lat-Position
+     * @return (double) lat-Position
+     */
+    public double getLat(){
+        return lat;
     }
     
     /**

@@ -53,10 +53,10 @@ public class myOSMWay {
 
 	public int carPermission; //0 = notallowed, 1 = restricted, 2 = allowed
 	
-	public int minX = Integer.MAX_VALUE;
-	public int minY = Integer.MAX_VALUE;
-	public int maxX = Integer.MIN_VALUE;
-	public int maxY = Integer.MIN_VALUE;
+	public double minX = Integer.MAX_VALUE;
+	public double minY = Integer.MAX_VALUE;
+	public double maxX = Integer.MIN_VALUE;
+	public double maxY = Integer.MIN_VALUE;
 
 	public Map<Long, Integer> IndexOfNodeId = new HashMap<Long, Integer>();
 	
@@ -156,11 +156,6 @@ public class myOSMWay {
 	
 		this.length = 0;
 		
-		if(this.id == 18358665) {
-			this.id++;
-			this.id--;
-		}
-		
 		for (k = 0; k < WayPartsHin.length; k++) {
 			
 			WayPartsHin[k].setEdge();
@@ -259,7 +254,7 @@ public class myOSMWay {
 					motorcar.equals("restricted") || motorcar.equals("destination") || motorcar.equals("customer") ||
 					motorcar.equals("delivery") || motorcar.equals("agricultural") || motorcar.equals("forestry") || 
 					motorcar.equals("destination; no") || motorcar.equals("agricultural;forestry") || motorcar.equals("access") || 
-					motorcar.equals("delivery;destination") 	)
+					motorcar.equals("delivery;destination") || motorcar.equals("customers")	)
 					{
 
 				return 1;

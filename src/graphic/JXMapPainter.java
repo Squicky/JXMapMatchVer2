@@ -180,8 +180,8 @@ public class JXMapPainter {
     	x_max = (x_max + 1) * (int) zoomFactor;
     	y_max = (y_max + 1) * (int) zoomFactor;
         
-    	int x;
-    	int y;
+    	double x;
+    	double y;
     	
         //draw every GPS node of trace
         for(int i=gpsTrace.getNrOfNodes()-1; i>=0; i--){
@@ -211,6 +211,11 @@ public class JXMapPainter {
     static int cc = 0;
     
     public void drawNRoute(Graphics2D g, JXMapViewer map, Vector<NRoute> nRoutes, Color nRouteColor, double zoomFactor) {
+    	
+    	if (nRoutes == null) {
+    		return;
+    	}
+    	
     	// create graphics
         g = (Graphics2D) g.create();
         //convert from view port to world bitmap
@@ -226,7 +231,7 @@ public class JXMapPainter {
         // set brush
         g.setStroke(new BasicStroke(3));
         
-        g.setColor(Color.black);
+        g.setColor(Color.YELLOW);
         
     	Rectangle Rectangle_getViewportBounds = map.getViewportBounds();
     	int x_min = (int) Rectangle_getViewportBounds.getMinX();
@@ -240,28 +245,59 @@ public class JXMapPainter {
     	y_max = (y_max + 1) * (int) zoomFactor;
         
 		// draw route for each route
+    	
+    	myOSMWayPart[] lastWayParts = new myOSMWayPart[nRoutes.size()];
+    	
         for (int i=0; i < nRoutes.size(); i++ ){
         	
-        	if (i == cc) 
+        	//if (i == cc) 
         	{
 
         		NRoute nRoute = nRoutes.get(i);
         		
+        		//System.out.println(i + "/" + nRoutes.size() + " | " + nRoute.getLastOSMWayPart().get(0).parentWay.id + " | " + nRoute.getScore());
+        
+        		int indexWP = 0;
+        		int lastIndexWP = nRoute.getNRouteLinks().size() - 1;
+        		        		
     			for (MatchedLink nRouteLink : nRoute.getNRouteLinks()) {
     				    				
-    				// draw line for every link
-    				// devide x,y coordinates by 2^(zoom-1) to fit to current zoom
-    				g.drawLine((int) (nRouteLink.getStreetLink().startNode.x / zoomFactor),
-    						(int) (nRouteLink.getStreetLink().startNode.y / zoomFactor),
-    						(int) (nRouteLink.getStreetLink().endNode.x / zoomFactor),
-    						(int) (nRouteLink.getStreetLink().endNode.y / zoomFactor));
+    				myOSMWayPart wp = nRouteLink.getStreetLink();
+    						
+    				if (indexWP != lastIndexWP) {
+        				// draw line for every link
+        				// devide x,y coordinates by 2^(zoom-1) to fit to current zoom
+        				g.drawLine((int) (wp.startNode.x / zoomFactor),
+        						(int) (wp.startNode.y / zoomFactor),
+        						(int) (wp.endNode.x / zoomFactor),
+        						(int) (wp.endNode.y / zoomFactor));    					
+    				} else {
+    					lastWayParts[i] = wp;
+    				}
+    				
+    				indexWP++;
     			}
     			
-    			System.out.print("\n");
-        		
         	}
 	
         }
+        
+        g.setColor(Color.BLACK);
+       
+        for (int i=0; i < lastWayParts.length; i++ ){
+        	
+        	//if (i == cc) 
+        	{
+        		myOSMWayPart wp = lastWayParts[i];
+        		
+        		g.drawLine((int) (wp.startNode.x / zoomFactor),
+						(int) (wp.startNode.y / zoomFactor),
+						(int) (wp.endNode.x / zoomFactor),
+						(int) (wp.endNode.y / zoomFactor)); 
+        	}
+       
+        }
+       
 		
         if (nRoutes.size() > 0) {
     		cc++;
