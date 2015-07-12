@@ -70,6 +70,11 @@ public class myOSMMap {
 		xmlFile = _xmlFile;
 		
 		try {
+			
+			DatasetsUp = myDataset.loadDatasetsUp(DatasetFolderPath + "upstream-data.csv");
+			
+			DatasetsDown = myDataset.loadDatasetsDown(DatasetFolderPath + "downstream-data.csv");
+			
 			Map<Integer, myEdge> edgesTemp = myEdge.loadGetEdges(netFilePath);
 			
 			for (int i = 0 ; i < edgesTemp.size(); i++) {
@@ -93,7 +98,7 @@ public class myOSMMap {
 			
 			parser = factory.createXMLStreamReader( new FileInputStream( xmlFile));
 		} catch (Exception e) {
-			System.err.println("Error: " + e.toString());
+			System.err.println("Error: myOSMMap(...) " + e.toString());
 		}
 		
 		parseXML_status = 0;

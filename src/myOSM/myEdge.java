@@ -122,7 +122,7 @@ public class myEdge {
 								}
 							}
 						}
-						
+
 					}
 
 				}
@@ -131,7 +131,7 @@ public class myEdge {
 			}
 			
 			bReader.close();
-			
+		
 		} catch (Exception e) {			
 			System.out.println("Error: loadGetEdges: \n" + line + "\n" + e.toString());
 		}

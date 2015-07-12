@@ -1,12 +1,16 @@
 package algorithm;
 
 import java.awt.Color;
+import java.util.Vector;
+
 import myOSM.myOSMWayPart;
 
 public class MatchedNLink {
 	
 	private myOSMWayPart streetLink;
 	private MatchedRange matchedRange;		// reference to matched range
+	
+	public Vector<MatchedGPSNode> matchedGPSNodes = new Vector<MatchedGPSNode>();
 	
 	private Color color;
 	

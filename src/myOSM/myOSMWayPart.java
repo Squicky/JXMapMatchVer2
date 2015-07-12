@@ -31,8 +31,6 @@ public class myOSMWayPart {
 
     private Vector<MatchedRange> matchedRanges;
 
-    public Vector<MatchedGPSNode> matchedGPSNodes = new Vector<MatchedGPSNode>();
-
     private int selectedCounter;
     
     private boolean artificial = false;							//is this link artificial (not part of parsed street map)
@@ -50,6 +48,10 @@ public class myOSMWayPart {
 	public double startWayLengthPos = -1;
 	
 	public double endWayLengthPos = -1;
+	
+	public myOSMWayPart WayPartBackDirektion = null;
+	
+	public int CountMatchedGPSNodes = 0;
 	
 	public myOSMWayPart(myOSMNode n1, myOSMNode n2, long myid, long startNodeId, long endNodeId) {
     	this(n1, n2, NO_ID, false, myid, startNodeId, endNodeId);

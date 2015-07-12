@@ -370,26 +370,27 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 		
 		matchedGPSNode.matched_percent_in_WayParty = Coordinates.getPercentOfPointInWayPart(matchedX, matchedY, wp.startNode.x, wp.startNode.y, wp.endNode.x, wp.endNode.y);
 
-		matchedGPSNode.matchtedWayPart = wp;
+		matchedGPSNode.matchtedWayPart = wp; 
 		
-		wp.matchedGPSNodes.addElement(matchedGPSNode);
+		matchedNLink.matchedGPSNodes.addElement(matchedGPSNode); 
+		wp.CountMatchedGPSNodes++;
 		
-		// set matched position to GPS node
-		matchedGPSNode.setMatchedX(matchedX);
-		matchedGPSNode.setMatchedY(matchedY);
-		matchedGPSNode.setMatched(true);
+		// set matched position to GPS node 
+		matchedGPSNode.setMatchedX(matchedX); 
+		matchedGPSNode.setMatchedY(matchedY); 
+		matchedGPSNode.setMatched(true); 
 		
-		// adjust matching range
-		if (matchedNLink.isMatched()) {
-			matchedNLink.setRangeEndIndex(nodeIndex);
+		// adjust matching range 
+		if (matchedNLink.isMatched()) { 
+			matchedNLink.setRangeEndIndex(nodeIndex); 
 		} 
-		// first node to match, so set start index
-		else {
-			matchedNLink.setRangeStartIndex(nodeIndex);
-			matchedNLink.setRangeEndIndex(nodeIndex);
-			matchedNLink.setMatched(true);
-		}
-	}
+		// first node to match, so set start index 
+		else { 
+			matchedNLink.setRangeStartIndex(nodeIndex); 
+			matchedNLink.setRangeEndIndex(nodeIndex); 
+			matchedNLink.setMatched(true); 
+		} 
+	} 
 
 	private void animateCurrentLink(MatchedNLink matchedNLink) {
 		

@@ -151,6 +151,18 @@ public class myOSMWay {
 				j++;
 				WayParts[k] = wp;
 				k++;
+				
+				for (int a = 0; a < WayPartsHin.length; a++) {
+					
+					if (wp.startNode == WayPartsHin[a].endNode && wp.endNode == WayPartsHin[a].startNode) {
+						
+						wp.WayPartBackDirektion = WayPartsHin[a];
+						WayPartsHin[a].WayPartBackDirektion = wp;
+						
+					}
+					
+				}
+				
 			}
 		}
 	

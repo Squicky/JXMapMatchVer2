@@ -8,12 +8,62 @@ import java.util.LinkedList;
 
 public class myDataset {
 
-	public long timestamp = 0;
-	public int datarate = 0;
-	public double delay = 0;
-	
+	public long timestamp = -1;
+	public int datarate = -1;
+	public double delay = -1;
 	
 	public static LinkedList<myDataset> loadDatasetsUp(String FilePath) {
+		
+		LinkedList<myDataset> list = new LinkedList<myDataset>();
+		
+		String line = "";
+		try {
+			BufferedReader bReader = new BufferedReader( new InputStreamReader( new FileInputStream( new File( FilePath ) ), "UTF-8" ));
+			
+			line = bReader.readLine();
+			
+			int columnNrDataRate = -1;
+			int columnNrDelay = -1;
+			int columnNrTimestamp = -1;
+			
+			if (line != null) {
+				String [] lines = line.split(",");
+				
+				for (int i = 0; i < lines.length; i++) {
+					
+					if (lines[i].equals("data rate [Byte/s]")) {
+						
+						columnNrDataRate = i;
+					
+					} else if (lines[i].equals("delay [s]")) {
+					
+						columnNrDelay = i;
+					
+					} else if (lines[i].equals("first ttx [ns]")) {
+					
+						columnNrTimestamp = i;
+					
+					} 
+					
+				}
+				
+				list = loadDatasetsUp(bReader, columnNrDataRate, columnNrDelay, columnNrTimestamp);
+				
+			}
+			
+			bReader.close();
+			
+			return list;
+			
+		} catch (Exception e) {			
+			System.out.println("Error: loadGetEdges: \n" + line + "\n" + e.toString());
+		}		
+		
+		return list;
+		
+	}
+	
+	public static LinkedList<myDataset> loadDatasetsDown(String FilePath) {
 		
 		LinkedList<myDataset> list = new LinkedList<myDataset>();
 		
@@ -79,12 +129,27 @@ public class myDataset {
 				
 				String[] lines = line.split(",");
 				
-				d.datarate = Integer.parseInt(lines[columnNrDataRate]);
-				d.delay = Double.parseDouble(lines[columnNrDelay]);
-				d.timestamp = Long.parseLong(lines[columnNrTimestamp]);
+				try {
+					d.datarate = Integer.parseInt(lines[columnNrDataRate]);					
+				} catch (Exception e) {
+					d.datarate = -1;
+				}
+				
+				try {
+					d.delay = Double.parseDouble(lines[columnNrDelay]);		
+				} catch (Exception e) {
+					d.delay = -1;
+				}
+				
+				try {
+					d.timestamp = Long.parseLong(lines[columnNrTimestamp]);				
+				} catch (Exception e) {
+					d.timestamp = -1;
+				}
 				
 				list.add(d);
 				
+				line = bReader.readLine();	
 			}		
 		} catch(Exception e) {
 			System.out.println("Error: loadGetEdges: \n" + line + "\n" + e.toString());
@@ -92,4 +157,5 @@ public class myDataset {
 		
 		return list;
 	}
+
 }

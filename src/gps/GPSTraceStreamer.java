@@ -21,14 +21,11 @@ import myOSM.myOSMMap;
 import myOSM.myOSMNode;
 import myOSM.myOSMWay;
 import myOSM.myOSMWayPart;
-
 import org.jdesktop.swingx.mapviewer.GeoPosition;
-
 import algorithm.MatchedGPSNode;
 import algorithm.MatchedNLink;
 import algorithm.ReorderedMatchedGPSNode;
 import cartesian.Coordinates;
-
 import java.util.*;
 
 /**
@@ -449,6 +446,8 @@ public class GPSTraceStreamer {
     
 		// access file and save name
 		File gpsTracefile = new File(filePath);
+
+		File gpsTracefile2 = new File(filePath.replace(".", "2."));
 		
 		File kmlUnmatchedMatched = new File(filePath + ".unmatched.matched.kml");
 		File kmlMatched = new File(filePath + ".matched.kml");
@@ -470,6 +469,8 @@ public class GPSTraceStreamer {
     	try {
     		// wrap with buffered writer 
     		BufferedWriter bWriter = new BufferedWriter(new FileWriter(gpsTracefile));
+
+    		BufferedWriter bWriter2 = new BufferedWriter(new FileWriter(gpsTracefile2));
 
     		BufferedWriter bKmlWriterUnmatchedMatched = new BufferedWriter(new FileWriter(kmlUnmatchedMatched));
     		BufferedWriter bKmlWriterMatched = new BufferedWriter(new FileWriter(kmlMatched));
@@ -552,10 +553,195 @@ public class GPSTraceStreamer {
        		
     		int anzahl = 0;
     		for (int i=0; i < matchedNLinks.size(); i++) {
-    			anzahl += matchedNLinks.get(i).getStreetLink().matchedGPSNodes.size();
+    			anzahl += matchedNLinks.get(i).matchedGPSNodes.size();
     		}
     		
     		int anzahl2 = gpsNodesToMatch.size();
+    		
+    		bWriter2.write("type,timestamp,matched latitude,matchedlongitude,unmatched latitude,unmatched longitude,matched_percent_in_WayParty,startNode.id,endNode.id,edge.id_str,length_in_edge,length_of_edge");
+    		bWriter2.newLine();
+    		for (int i=0; i < matchedNLinks.size(); i++) {
+
+    			MatchedNLink matchedNLink = matchedNLinks.get(i);
+
+    			// calculate virtual TimeStamps for Edges without gps MatchPoints
+    			// calculate TimeStamps from Distance of last and next gps MatchPoints
+    			if (matchedNLink.matchedGPSNodes.size() == 0 && matchedNLink.getStreetLink().edge != null) {
+    				
+    				if (matchedNLink.getStreetLink().CountMatchedGPSNodes == 0) {
+    					
+    					myOSMWayPart WayPartBackDirektion = matchedNLink.getStreetLink().WayPartBackDirektion;
+    					
+    					if (WayPartBackDirektion != null && WayPartBackDirektion.CountMatchedGPSNodes == 0) {
+    						
+    						long lastTimeStamp = -1;
+    						MatchedNLink lastMatchedNLink = null;
+    						MatchedGPSNode lastMatchedGPSNode = null;
+    						
+    						double disFromLast = 0;
+    						
+    						for ( int j = i-1; j >=0; j--) {
+    							if (matchedNLinks.get(j).matchedGPSNodes.size() == 0) {
+    								disFromLast += matchedNLinks.get(j).getStreetLink().length;
+    							} else {
+    								lastMatchedNLink = matchedNLinks.get(j);
+    								lastMatchedGPSNode = lastMatchedNLink.matchedGPSNodes.lastElement();
+    								lastTimeStamp = lastMatchedGPSNode.getTimestamp();
+    								j = -1;
+    							}
+    						}
+    						
+    						disFromLast += lastMatchedNLink.getStreetLink().length * ((100.0 - lastMatchedGPSNode.matched_percent_in_WayParty) / 100.0);
+    						    						
+    						long nextTimeStamp = -1;
+    						MatchedNLink nextMatchedNLink = null;
+    						MatchedGPSNode nextMatchedGPSNode = null;
+    						
+    						double disToNext = 0;
+    						
+    						for ( int j = i+1; j < matchedNLinks.size(); j++) {
+    							if (matchedNLinks.get(j).matchedGPSNodes.size() == 0) {
+    								disToNext += matchedNLinks.get(j).getStreetLink().length;
+    							} else {
+    								nextMatchedNLink = matchedNLinks.get(j);
+    								nextMatchedGPSNode = nextMatchedNLink.matchedGPSNodes.lastElement();
+    								nextTimeStamp = nextMatchedGPSNode.getTimestamp();
+    								j = matchedNLinks.size();
+    							}
+    						}
+    						
+    						disToNext += nextMatchedNLink.getStreetLink().length * (nextMatchedGPSNode.matched_percent_in_WayParty / 100.0);
+    						
+    						double totalDistance = disFromLast + matchedNLink.getStreetLink().length + disToNext;
+    						
+    						long totalTime = nextTimeStamp - lastTimeStamp;
+    						
+    						double percent = disFromLast / totalDistance;
+    						    						
+    						long newStartTimeStamp = (long) (((double)totalTime) * percent);
+    						newStartTimeStamp += lastTimeStamp;
+    						
+    						percent = disToNext / totalDistance;
+    						
+    						long newEndTimeStamp = (long) (((double)totalTime) * percent);
+    						newEndTimeStamp += lastTimeStamp;   						
+    						
+    						long newTimeStamp = newEndTimeStamp - newStartTimeStamp;
+    						newTimeStamp = newTimeStamp / 2;
+    						newTimeStamp = newStartTimeStamp + newTimeStamp;
+    						
+    						myOSMWayPart wp = matchedNLink.getStreetLink();
+    	    				
+    	    				bWriter2.write( "calc," + (newTimeStamp + timeStampOffSet));
+    	    				
+    	    				bWriter2.write( ",-,-"); //   matched lat lon
+    	    				bWriter2.write( ",-,-"); // unmatched lat lon
+
+    	    				bWriter2.write( ",50.0" );
+
+    	    				bWriter2.write( "," + wp.startNode.id + "," + wp.endNode.id );
+    	   				
+    	    				if (wp.edge == null) {
+    	    					bWriter2.write( ",null");
+    	    				} else {
+    	    					bWriter2.write( "," + wp.edge.id_str);
+    	    				}
+
+    	    				double EdgeLength = wp.endEdgeLength - wp.startEdgeLength;
+
+    	    				bWriter2.write( "," + ( EdgeLength / 2.0 ) );
+
+    	        			bWriter2.write( "," + EdgeLength );
+
+    	    				bWriter2.newLine();
+    						
+    					}
+    					
+    				}
+    				
+    			}
+    			
+    			for(MatchedGPSNode matchedGPSNode : matchedNLink.matchedGPSNodes){
+
+    				myOSMWayPart wp = matchedGPSNode.matchtedWayPart;
+
+    				// convert to geographic position
+    				GeoPosition matchedGeoPos = Coordinates.getGeoPos(matchedGPSNode.getMatchedX(), matchedGPSNode.getMatchedY());
+    				GeoPosition unmatchedGeoPos = Coordinates.getGeoPos(matchedGPSNode.getX(), matchedGPSNode.getY());
+    				
+    				bWriter2.write( "Real," + (matchedGPSNode.getTimestamp() + timeStampOffSet));
+    				
+    				bWriter2.write( "," + latFormat.format(matchedGeoPos.getLatitude()) + "," + lonFormat.format(matchedGeoPos.getLongitude()));
+    				bWriter2.write( "," + latFormat.format(unmatchedGeoPos.getLatitude()) + "," + lonFormat.format(unmatchedGeoPos.getLongitude()));
+
+    				bWriter2.write( "," + matchedGPSNode.matched_percent_in_WayParty );
+
+    				bWriter2.write( "," + wp.startNode.id + "," + wp.endNode.id );
+   				
+    				if (wp.edge == null) {
+    					bWriter2.write( ",null");
+    				} else {
+    					bWriter2.write( "," + wp.edge.id_str);
+    				}
+
+    				double EdgeLength = wp.endEdgeLength - wp.startEdgeLength;
+
+    				double lpos = EdgeLength * matchedGPSNode.matched_percent_in_WayParty;
+
+    				lpos = lpos / 100;
+
+    				lpos = wp.startEdgeLength + lpos;
+
+    				bWriter2.write( "," + lpos );
+    				
+        			bWriter2.write( "," + EdgeLength );
+
+    				bWriter2.newLine();
+    				
+    				if (wp.WayPartBackDirektion != null) {
+    					
+        				if (wp.WayPartBackDirektion.CountMatchedGPSNodes == 0) {
+        					
+        					wp = wp.WayPartBackDirektion;
+        					
+        					bWriter2.write( "BackDirektion," + (matchedGPSNode.getTimestamp() + timeStampOffSet));
+            				
+        					bWriter2.write( "," + latFormat.format(matchedGeoPos.getLatitude()) + "," + lonFormat.format(matchedGeoPos.getLongitude()));
+            				bWriter2.write( "," + latFormat.format(unmatchedGeoPos.getLatitude()) + "," + lonFormat.format(unmatchedGeoPos.getLongitude()));
+
+            				bWriter2.write( "," + (100.0 - matchedGPSNode.matched_percent_in_WayParty) );
+
+            				bWriter2.write( "," + wp.startNode.id + "," + wp.endNode.id );
+           				
+            				if (wp.edge == null) {
+            					bWriter2.write( ",null");
+            				} else {
+            					bWriter2.write( "," + wp.edge.id_str);
+            				}
+
+            				EdgeLength = wp.endEdgeLength - wp.startEdgeLength;
+
+            				lpos = EdgeLength * (100.0 - matchedGPSNode.matched_percent_in_WayParty);
+
+            				lpos = lpos / 100;
+
+            				lpos = wp.startEdgeLength + lpos;
+
+            				bWriter2.write( "," + lpos );
+            				
+                			bWriter2.write( "," + EdgeLength );
+
+            				bWriter2.newLine();
+        				}    					
+    					
+    				}
+    				
+    			}
+    			
+    		}
+    		
+    		bWriter2.close();
+    		
     		
     		for (int i=0; i < matchedNLinks.size(); i++) {
     			
@@ -566,7 +752,7 @@ public class GPSTraceStreamer {
     	    	myOSMNode n2 = wp.endNode;
 
     	   	  	bKmlWriterRoute.write("		<Placemark>" + System.lineSeparator());
-    	   	   	bKmlWriterRoute.write("			<name>" + wp.parentWay.id + " " + m.getRangeSize() + "</name>" + System.lineSeparator());
+    	   	   	bKmlWriterRoute.write("			<name>" + wp.parentWay.id + " " + m.matchedGPSNodes.size() + "</name>" + System.lineSeparator());
     	   	   	bKmlWriterRoute.write("			<LineString>" + System.lineSeparator());
     	   	   	bKmlWriterRoute.write("				<coordinates>" + System.lineSeparator());
 
@@ -642,11 +828,11 @@ public class GPSTraceStreamer {
 
     				bWriter.newLine();
 
+    				
     				Calendar c = Calendar.getInstance();
     	    		long t = matchedGPSNode.getTimestamp() + timeStampOffSet;
     	    		t = t / 1000000L;
     	    		c.setTimeInMillis(t);
-
 
     	    		bKmlWriterUnmatchedMatched.write("		<Placemark>" + System.lineSeparator());
     	    		bKmlWriterUnmatchedMatched.write("			<name>" + (matchedGPSNode.getTimestamp() + timeStampOffSet) + " " + c.getTime().toString() + "</name>" + System.lineSeparator());
