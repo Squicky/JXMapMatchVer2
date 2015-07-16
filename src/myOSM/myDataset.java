@@ -4,17 +4,19 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 public class myDataset {
 
 	public long timestamp = -1;
 	public int datarate = -1;
 	public double delay = -1;
+	public double loss_rate = -1;
 	
-	public static LinkedList<myDataset> loadDatasetsUp(String FilePath) {
+	
+	public static ArrayList<myDataset> loadDatasetsUp(String FilePath) {
 		
-		LinkedList<myDataset> list = new LinkedList<myDataset>();
+		ArrayList<myDataset> list = new ArrayList<myDataset>();
 		
 		String line = "";
 		try {
@@ -25,6 +27,7 @@ public class myDataset {
 			int columnNrDataRate = -1;
 			int columnNrDelay = -1;
 			int columnNrTimestamp = -1;
+			int columnNrLossRate = -1;
 			
 			if (line != null) {
 				String [] lines = line.split(",");
@@ -43,11 +46,15 @@ public class myDataset {
 					
 						columnNrTimestamp = i;
 					
+					} else if (lines[i].equals("loss rate")) {
+					
+						columnNrLossRate = i;
+					
 					} 
 					
 				}
 				
-				list = loadDatasetsUp(bReader, columnNrDataRate, columnNrDelay, columnNrTimestamp);
+				list = loadDatasetsUp(bReader, columnNrDataRate, columnNrDelay, columnNrTimestamp, columnNrLossRate);
 				
 			}
 			
@@ -63,9 +70,9 @@ public class myDataset {
 		
 	}
 	
-	public static LinkedList<myDataset> loadDatasetsDown(String FilePath) {
+	public static ArrayList<myDataset> loadDatasetsDown(String FilePath) {
 		
-		LinkedList<myDataset> list = new LinkedList<myDataset>();
+		ArrayList<myDataset> list = new ArrayList<myDataset>();
 		
 		String line = "";
 		try {
@@ -76,6 +83,7 @@ public class myDataset {
 			int columnNrDataRate = -1;
 			int columnNrDelay = -1;
 			int columnNrTimestamp = -1;
+			int columnNrLossRate = -1;
 			
 			if (line != null) {
 				String [] lines = line.split(",");
@@ -94,11 +102,15 @@ public class myDataset {
 					
 						columnNrTimestamp = i;
 					
+					} else if (lines[i].equals("loss rate")) {
+					
+						columnNrLossRate = i;
+					
 					} 
 					
 				}
 				
-				list = loadDatasetsUp(bReader, columnNrDataRate, columnNrDelay, columnNrTimestamp);
+				list = loadDatasetsUp(bReader, columnNrDataRate, columnNrDelay, columnNrTimestamp, columnNrLossRate);
 				
 			}
 			
@@ -114,9 +126,9 @@ public class myDataset {
 		
 	}
 	
-	private static LinkedList<myDataset> loadDatasetsUp(BufferedReader bReader, int columnNrDataRate, int columnNrDelay, int columnNrTimestamp) {
+	private static ArrayList<myDataset> loadDatasetsUp(BufferedReader bReader, int columnNrDataRate, int columnNrDelay, int columnNrTimestamp, int columnNrLossRate) {
 		
-		LinkedList<myDataset> list = new LinkedList<myDataset>();
+		ArrayList<myDataset> list = new ArrayList<myDataset>();
 		
 		String line = "";
 		
@@ -145,6 +157,12 @@ public class myDataset {
 					d.timestamp = Long.parseLong(lines[columnNrTimestamp]);				
 				} catch (Exception e) {
 					d.timestamp = -1;
+				}
+				
+				try {
+					d.loss_rate = Double.parseDouble(lines[columnNrLossRate]);				
+				} catch (Exception e) {
+					d.loss_rate = -1;
 				}
 				
 				list.add(d);

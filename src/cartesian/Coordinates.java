@@ -415,18 +415,6 @@ public class Coordinates {
          	return new MatchedPoint(x, y, distance, euclidian);
          }
          
-         /**
-          * get nearest euclidean point for a GPS node to a street link
-          * @param gpsNode
-          * @param streetLink
-          * @return MatchedPoint
-          */
-         public static MatchedPoint getNearestEuclidianPoint(GPSNode gpsNode, StreetLink streetLink){
-       	  //delegate
-       	  return getNearestEuclidianPoint(gpsNode.getX(), gpsNode.getY(), streetLink.getStartX(), streetLink.getStartY(),
-       			  		   		  streetLink.getEndX(), streetLink.getEndY());
-         }
-         
          public static MatchedPoint getNearestEuclidianPoint(GPSNode gpsNode, myOSMWayPart streetLink){
           	  //delegate
           	  return getNearestEuclidianPoint(gpsNode.getX(), gpsNode.getY(), streetLink.getStartX(), streetLink.getStartY(),
@@ -558,14 +546,6 @@ public class Coordinates {
         	 return getDistance(node1, node2);
          }
          
-         /**
-          * get radical street length
-          * @param streetLink
-          * @return
-          */
-         public static double getStreetLengthSquared(StreetLink streetLink) {
-        	 return getDistanceSquared(streetLink.getStartNode(), streetLink.getEndNode());
-         }
          
          /**
           * get radical street length

@@ -13,19 +13,25 @@ import java.text.DecimalFormatSymbols;
 import java.util.Date;
 import java.util.Vector;
 import java.util.regex.Pattern;
+
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+
+import myOSM.myDataset;
 import myOSM.myOSMMap;
 import myOSM.myOSMNode;
 import myOSM.myOSMWay;
 import myOSM.myOSMWayPart;
+
 import org.jdesktop.swingx.mapviewer.GeoPosition;
+
 import algorithm.MatchedGPSNode;
 import algorithm.MatchedNLink;
 import algorithm.ReorderedMatchedGPSNode;
 import cartesian.Coordinates;
+
 import java.util.*;
 
 /**
@@ -551,14 +557,8 @@ public class GPSTraceStreamer {
     		bKmlWriterRoute.write("		<name>" + kmlRoute.getName() + "</name>" + System.lineSeparator());
     		bKmlWriterRoute.write("" + System.lineSeparator());
        		
-    		int anzahl = 0;
-    		for (int i=0; i < matchedNLinks.size(); i++) {
-    			anzahl += matchedNLinks.get(i).matchedGPSNodes.size();
-    		}
     		
-    		int anzahl2 = gpsNodesToMatch.size();
-    		
-    		bWriter2.write("type,timestamp,matched latitude,matchedlongitude,unmatched latitude,unmatched longitude,matched_percent_in_WayParty,startNode.id,endNode.id,edge.id_str,length_in_edge,length_of_edge");
+    		bWriter2.write("type,timestamp,matched latitude,matchedlongitude,unmatched latitude,unmatched longitude,matched_percent_in_WayParty,startNode.id,endNode.id,edge.id_str,length_in_edge,length_of_edge,Dataset Up Timestamp, Dataset Up datarate,Dataset Up delay,Dataset Up loss rate,Dataset Down Timestamp, Dataset Down datarate,Dataset Down delay,Dataset Down loss rate");
     		bWriter2.newLine();
     		for (int i=0; i < matchedNLinks.size(); i++) {
 
@@ -653,6 +653,28 @@ public class GPSTraceStreamer {
 
     	        			bWriter2.write( "," + EdgeLength );
 
+    	        			myDataset DatasetUp = myMap.getDatasetUp((newTimeStamp + timeStampOffSet));
+    	        			myDataset DatasetDown = myMap.getDatasetDown((newTimeStamp + timeStampOffSet));
+    	        			
+    	        			if (DatasetUp != null) {
+    	        				bWriter2.write( "," + DatasetUp.timestamp );
+    	        				bWriter2.write( "," + DatasetUp.datarate );
+    	        				bWriter2.write( "," + DatasetUp.delay );
+    	        				bWriter2.write( "," + DatasetUp.loss_rate );
+    	        			} else {
+    	        				bWriter2.write( ",-,-,-,-" );
+    	        			}
+
+    	        			if (DatasetDown != null) {
+    	        				bWriter2.write( "," + DatasetDown.timestamp );
+    	        				bWriter2.write( "," + DatasetDown.datarate );
+    	        				bWriter2.write( "," + DatasetDown.delay );
+    	        				bWriter2.write( "," + DatasetDown.loss_rate );
+    	        			} else {
+    	        				bWriter2.write( ",-,-,-,-" );
+    	        			}
+
+    	        			
     	    				bWriter2.newLine();
     						
     					}
@@ -696,6 +718,27 @@ public class GPSTraceStreamer {
     				
         			bWriter2.write( "," + EdgeLength );
 
+        			myDataset DatasetUp = myMap.getDatasetUp((matchedGPSNode.getTimestamp() + timeStampOffSet));
+        			myDataset DatasetDown = myMap.getDatasetDown((matchedGPSNode.getTimestamp() + timeStampOffSet));
+        			
+        			if (DatasetUp != null) {
+        				bWriter2.write( "," + DatasetUp.timestamp );
+        				bWriter2.write( "," + DatasetUp.datarate );
+        				bWriter2.write( "," + DatasetUp.delay );
+        				bWriter2.write( "," + DatasetUp.loss_rate );
+        			} else {
+        				bWriter2.write( ",-,-,-,-" );
+        			}
+
+        			if (DatasetDown != null) {
+        				bWriter2.write( "," + DatasetDown.timestamp );
+        				bWriter2.write( "," + DatasetDown.datarate );
+        				bWriter2.write( "," + DatasetDown.delay );
+        				bWriter2.write( "," + DatasetDown.loss_rate );
+        			} else {
+        				bWriter2.write( ",-,-,-,-" );
+        			}
+        			
     				bWriter2.newLine();
     				
     				if (wp.WayPartBackDirektion != null) {
@@ -731,6 +774,27 @@ public class GPSTraceStreamer {
             				
                 			bWriter2.write( "," + EdgeLength );
 
+    	        			DatasetUp = myMap.getDatasetUp((matchedGPSNode.getTimestamp() + timeStampOffSet));
+    	        			DatasetDown = myMap.getDatasetDown((matchedGPSNode.getTimestamp() + timeStampOffSet));
+    	        			
+    	        			if (DatasetUp != null) {
+    	        				bWriter2.write( "," + DatasetUp.timestamp );
+    	        				bWriter2.write( "," + DatasetUp.datarate );
+    	        				bWriter2.write( "," + DatasetUp.delay );
+    	        				bWriter2.write( "," + DatasetUp.loss_rate );
+    	        			} else {
+    	        				bWriter2.write( ",-,-,-,-" );
+    	        			}
+
+    	        			if (DatasetDown != null) {
+    	        				bWriter2.write( "," + DatasetDown.timestamp );
+    	        				bWriter2.write( "," + DatasetDown.datarate );
+    	        				bWriter2.write( "," + DatasetDown.delay );
+    	        				bWriter2.write( "," + DatasetDown.loss_rate );
+    	        			} else {
+    	        				bWriter2.write( ",-,-,-,-" );
+    	        			}
+                			
             				bWriter2.newLine();
         				}    					
     					
@@ -783,7 +847,7 @@ public class GPSTraceStreamer {
     		// write structural info in the form of comments
     		bWriter.write("#all Tstamps substracted by " + (refTimeStamp - timeStampOffSet)); //+ gpsTrace.getTimestamp());
     		bWriter.newLine();
-    		bWriter.write("#NormTstamp [ns], matched latitude, matched longitude, unmatched latitude, unmatched longitude, matched_percent_in_WayParty, startNode.id, endNode.id");
+    		bWriter.write("#NormTstamp [ns], matched latitude, matched longitude, unmatched latitude, unmatched longitude, matched_percent_in_WayParty, startNode.id, endNode.id,Dataset Up Timestamp, Dataset Up datarate,Dataset Up delay,Dataset Down loss rate,Dataset Down Timestamp, Dataset Down datarate,Dataset Down delay,Dataset Down loss rate");
 
     		bWriter.write(", edge.id_str, length_in_edge");
 
@@ -826,6 +890,27 @@ public class GPSTraceStreamer {
 
     				bWriter.write( "," + lpos );
 
+    				myDataset DatasetUp = myMap.getDatasetUp((matchedGPSNode.getTimestamp() + timeStampOffSet));
+        			myDataset DatasetDown = myMap.getDatasetDown((matchedGPSNode.getTimestamp() + timeStampOffSet));
+        			
+        			if (DatasetUp != null) {
+        				bWriter.write( "," + DatasetUp.timestamp );
+        				bWriter.write( "," + DatasetUp.datarate );
+        				bWriter.write( "," + DatasetUp.delay );
+        				bWriter.write( "," + DatasetUp.loss_rate );
+        			} else {
+        				bWriter.write( ",-,-,-" );
+        			}
+
+        			if (DatasetDown != null) {
+        				bWriter.write( "," + DatasetDown.timestamp );
+        				bWriter.write( "," + DatasetDown.datarate );
+        				bWriter.write( "," + DatasetDown.delay );
+        				bWriter.write( "," + DatasetDown.loss_rate );
+        			} else {
+        				bWriter.write( ",-,-,-" );
+        			}
+    				
     				bWriter.newLine();
 
     				
@@ -911,15 +996,141 @@ public class GPSTraceStreamer {
 
     		// finished
     		statusUpdate.finished(nrOfMatchedNodes + " matched GPS nodes saved to " + gpsTracefile.getName());
+    		
+    		
+    		TreeSet<Long> TreeSetWayIds = new TreeSet<Long>();
+    		TreeSet<Long> TreeSetNodeIds = new TreeSet<Long>();
+    		
+    		for (int i=0; i < matchedNLinks.size(); i++) {
+    			
+    			myOSMWayPart wp = matchedNLinks.get(i).getStreetLink();
+    			
+    			if (TreeSetWayIds.contains(wp.parentWay.id) == false) {
+    				TreeSetWayIds.add(wp.parentWay.id);
+    			}
+    			
+    			if (TreeSetNodeIds.contains(wp.startNode.id) == false) {
+    				TreeSetNodeIds.add(wp.startNode.id);
+    			}
+    			
+    			if (TreeSetNodeIds.contains(wp.endNode.id) == false) {
+    				TreeSetNodeIds.add(wp.endNode.id);
+    			}
+    		}
+    		
+    		creatNewOsm(TreeSetWayIds, TreeSetNodeIds, myMap.osmFile);
+
+    		
      	} 
     	// handle I/O error during writing operation 
     	catch (IOException e) {
-     		System.out.println("Error during exporting matched GPS points!");
+     		System.out.println("Error during exporting matched GPS points! \n" + e.toString());
      		return false;
      	}
 
     	// successful!
     	return true;
+    }
+    
+    public static void creatNewOsm(TreeSet<Long> TreeSetWayIds, TreeSet<Long> TreeSetNodeIds, File osmFile) {
+    	
+    	String FilePath = osmFile.getPath();
+    	
+    	try {
+        	BufferedReader bReader = new BufferedReader( new InputStreamReader( new FileInputStream( new File( FilePath ) ), "UTF-8" ));
+        	
+        	FilePath = FilePath + ".2.osm"; 
+        	BufferedWriter bWriter; 
+    		bWriter = new BufferedWriter( new OutputStreamWriter( new FileOutputStream( new File( FilePath ) ), "UTF-8" )); 
+    		
+    		String line = bReader.readLine();
+			
+			String tline = line.trim();
+			
+			while (line != null) {
+				if ( tline.startsWith("<node id=\"")) {
+					
+					String s = tline.replace("<node id=\"", "").split("\"")[0];
+					
+					long id = Long.parseLong(s);
+					
+					boolean write = TreeSetNodeIds.contains(id);
+
+					if (tline.endsWith("/>")) {
+						if (write) {
+							bWriter.write(line + "\n");								
+						}
+					} else if (tline.endsWith(">")) {
+							
+						if (write) {
+							bWriter.write(line + "\n");								
+						}
+							
+						line = bReader.readLine();
+						tline = line.trim();
+							
+						while (tline.equals("</node>") == false){
+							if (write) {
+								bWriter.write(line + "\n");
+							}
+							line = bReader.readLine();
+							tline = line.trim();
+						}
+							
+						if (write) {
+							bWriter.write(line + "\n");								
+						}
+						
+					} else {
+						System.out.println("Error: Ende von Note: " + id);
+					}
+					
+				}
+				else if ( tline.startsWith("<way id=\"")) {
+
+					String s = tline.replace("<way id=\"", "").split("\"",2)[0];
+					long id = Long.parseLong(s);
+					boolean write = TreeSetWayIds.contains(id);
+					
+					if (write) {
+						bWriter.write(line + "\n");								
+					}
+					
+					line = bReader.readLine();
+					tline = line.trim();
+					
+					while(tline.startsWith("</way>") == false) {
+						if (write) {
+							bWriter.write(line + "\n");								
+						}
+						
+						line = bReader.readLine();
+						tline = line.trim();
+					}
+					
+					if (write) {
+						bWriter.write(line + "\n");								
+					}
+					
+				} else {
+					bWriter.write(line + "\n");
+				}
+				
+				
+				line = bReader.readLine();
+				if (line != null) {
+					tline = line.trim();					
+				}
+			}
+    		
+			bReader.close();
+			bWriter.close();
+			
+    	} catch ( Exception e) {
+    		System.out.println("Error: creatNewOsm \n" + e.toString());
+    	}
+		
+    	
     }
 
     /**

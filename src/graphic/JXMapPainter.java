@@ -14,7 +14,6 @@ import algorithm.MatchedGPSNode;
 import algorithm.MatchedLink;
 import algorithm.MatchedNLink;
 import algorithm.ReorderedMatchedGPSNode;
-import osm.StreetMap;
 import route.*;
 import gps.GPSTrace;
 import java.awt.*;
@@ -446,7 +445,7 @@ public class JXMapPainter {
      * @param streetMap
      * @param color
      */
-    public void drawStreetMap(Graphics2D g, JXMapViewer map, StreetMap streetMap, Color color, double zoomFactor, myOSMMap myMap){
+    public void drawStreetMap(Graphics2D g, JXMapViewer map, Color color, double zoomFactor, myOSMMap myMap){
     	
     	if (myMap != null){
         	if (myMap.ways != null){
@@ -563,7 +562,7 @@ public class JXMapPainter {
      * @param street
      * @param color
      */
-    public void drawStreetNodes(Graphics2D g,JXMapViewer map, StreetMap street, Color color, double zoomFactor){
+    public void drawStreetNodes(Graphics2D g,JXMapViewer map, Color color, double zoomFactor){
         // create graphics
         g = (Graphics2D) g.create();
         //convert from viewport to world bitmap
@@ -578,12 +577,14 @@ public class JXMapPainter {
         // set color
         g.setColor(color);
 
+        /*
         for(int i=0; i<street.getNrOfNodes();i++){
             // draw point for every node
             // devide x,y coordinates by 2^(zoom-1) to fit to current zoom
             g.drawRect((int)(street.getNodeX(i)/zoomFactor),
                     (int)(street.getNodeY(i)/zoomFactor),2,2);
         }
+        */
         g.dispose();
     }
 

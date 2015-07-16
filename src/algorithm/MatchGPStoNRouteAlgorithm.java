@@ -236,7 +236,7 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 		*/
 	}
 
-
+	
 	private void applyAdditionalFeature(MatchedNLink currentMatchedNLink, int startingNode) {
 		
 		Logger.println("\napply addition feature:\n=============================");
@@ -333,6 +333,7 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 		}
 		
 	}
+	
 
 //	private void matchGPSNodeToNLink(MatchedNLink matchedNLink,
 //			MatchedGPSNode matchedGPSNode, int nodeIndex) {

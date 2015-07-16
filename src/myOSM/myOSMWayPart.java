@@ -5,7 +5,6 @@ import java.util.NoSuchElementException;
 import java.util.Vector;
 
 import cartesian.Coordinates;
-import algorithm.MatchedGPSNode;
 import algorithm.MatchedRange;
 //import osm.StreetLink;
 
@@ -107,7 +106,7 @@ public class myOSMWayPart {
 	
 	
 	public void setEdge() {
-		
+
 		Map<Integer, myEdge> edges = this.parentWay.map.edges.get(this.parentWay.id);
 		
 		this.edge = null;
@@ -121,6 +120,12 @@ public class myOSMWayPart {
 			for (int i=0; i < edges.size(); i++) {
 				
 				myEdge edge = edges.get(i);
+					
+				if (this.startNode.id == edge.startNode && this.endNode.id == edge.endNode) {
+					this.edge = edge;
+				}
+				
+				/*
 				
 				if (this.isBackDirection == false) {
 					
@@ -150,7 +155,7 @@ public class myOSMWayPart {
 					
 				} else {
 					
-					if (edges.get(i).reverse_direction == true) {
+					if (edges.get(i).reverse_direction == true ) {
 						
 						int startIndexOfWP = this.parentWay.IndexOfNodeId.get(this.startNode.id);
 						int endIndexOfWP = this.parentWay.IndexOfNodeId.get(this.endNode.id);
@@ -169,6 +174,9 @@ public class myOSMWayPart {
 						}
 					}
 				}
+				
+				*/
+				
 			}
 			
 			if (this.edge == null) {

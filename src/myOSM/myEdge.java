@@ -82,6 +82,9 @@ public class myEdge {
 									lines = e.id_str.split("\\+");
 									e.osmWayId = Long.parseLong(lines[0].split("#")[0]);
 									splited = true;
+								} else if (e.id_str.contains("_")) {
+									lines = e.id_str.split("_");
+									e.osmWayId = Long.parseLong(lines[0]);
 								} else {
 									e.osmWayId = Long.parseLong(e.id_str.split("#")[0]);
 								}

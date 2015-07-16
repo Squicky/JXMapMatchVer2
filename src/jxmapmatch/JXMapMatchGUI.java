@@ -262,6 +262,7 @@ public class JXMapMatchGUI extends JFrame implements JXMapMatchGUIInterface {
         jPanelRight.setLayout(new BoxLayout(jPanelRight, BoxLayout.Y_AXIS));
         jPanelRight.setMinimumSize(new Dimension(175,10));
         jPanelRight.setMaximumSize(new Dimension(175,this.getHeight()));
+        jPanelRight.setPreferredSize(new Dimension(175,this.getHeight()));
         jPanelRight.setAlignmentX(LEFT_ALIGNMENT);
 
 		/*

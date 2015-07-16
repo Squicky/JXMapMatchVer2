@@ -7,7 +7,6 @@ import myOSM.myOSMMap;
 import myOSM.myOSMNode;
 import myOSM.myOSMWayPart;
 import cartesian.Coordinates;
-import osm.StreetMap;
 
 
 import static osm.StreetLink.*;
@@ -38,7 +37,7 @@ public class SelectedRoute {
 	 * constructor initializes with street map
 	 * @param streetMap
 	 */
-	public SelectedRoute(StreetMap streetMap, myOSMMap myMap) {
+	public SelectedRoute(myOSMMap myMap) {
 		// save reference to street map, initialize new vectors, at the begin
 		// set boolean variables false by default, save last known position with 0,0
 //		this.streetMap = streetMap;

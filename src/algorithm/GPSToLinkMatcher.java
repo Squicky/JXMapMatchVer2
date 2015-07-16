@@ -6,13 +6,10 @@ import java.awt.Color;
 import java.awt.Component;
 import java.util.Vector;
 import java.util.concurrent.ExecutionException;
-
 import javax.swing.SwingWorker;
-
 import myOSM.myOSMMap;
 import myOSM.myOSMWayPart;
 import cartesian.Coordinates;
-import osm.StreetMap;
 import route.SelectedRoute;
 import gps.GPSNode;
 import gps.GPSTrace;
@@ -52,7 +49,7 @@ public class GPSToLinkMatcher implements MatchingGPSObject {
 	 * @param gpsTrace
 	 * @param drawComponent
 	 */
-	public GPSToLinkMatcher(StreetMap streetMap, myOSMMap myMap, GPSTrace gpsTrace, Component drawComponent) {
+	public GPSToLinkMatcher(myOSMMap myMap, GPSTrace gpsTrace, Component drawComponent) {
 		// save references, create new selected route
 //		this.streetMap = streetMap;
 		this.myMap = myMap;
@@ -60,7 +57,7 @@ public class GPSToLinkMatcher implements MatchingGPSObject {
 		this.gpsNodesToMatch = wrapGPSTrace(gpsTrace);
 		this.drawComponent = drawComponent;
 //		this.selectedRoute = new SelectedRoute(this.streetMap);
-		this.selectedRoute = new SelectedRoute(null, this.myMap);
+		this.selectedRoute = new SelectedRoute(this.myMap);
 			
 		// create color gradient between two color with a number of steps
 		colorGradient = getColorGradient(Color.BLUE, Color.CYAN, COLOR_GRADIENT_STEPS);

@@ -2,21 +2,15 @@ package route;
 
 import java.awt.Component;
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import myOSM.myOSMMap;
-import myOSM.myOSMWayPart;
 import hash.Hash;
 import interfaces.StatusUpdate;
-import osm.StreetMap;
 
 public class NRouteStreamer {
 	
@@ -138,7 +132,7 @@ public class NRouteStreamer {
 		return mapFilePath;
 	}
 	
-	public static SelectedNRoute getNRouteFromFile(String nRouteFilePath, StreetMap streetMap, myOSMMap myMap, Component drawComponent, StatusUpdate statusUpdate) throws NRouteFileNotFoundException,
+	public static SelectedNRoute getNRouteFromFile(String nRouteFilePath, myOSMMap myMap, Component drawComponent, StatusUpdate statusUpdate) throws NRouteFileNotFoundException,
 																												   					   IOException{
 		// check if n route file exists
 		File nRouteFile = new File(nRouteFilePath);
@@ -209,7 +203,8 @@ public class NRouteStreamer {
 		return selectedNRoute;
 	}
 	
-	public static boolean saveSelectedNRouteToFile(SelectedNRoute selectedNRoute, StreetMap streetMap,  String filePath, StatusUpdate statusUpdate) {
+	/*
+	public static boolean saveSelectedNRouteToFile(SelectedNRoute selectedNRoute, String filePath, StatusUpdate statusUpdate) {
 		
 		try {
 			// get street map file
@@ -305,6 +300,7 @@ public class NRouteStreamer {
 			return false;
 		} 
 	}
+	*/
 	
 	public static void testRead(File file) {
 		

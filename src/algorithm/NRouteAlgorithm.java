@@ -13,7 +13,6 @@ import logging.Logger;
 import myOSM.myOSMMap;
 import myOSM.myOSMWay;
 import myOSM.myOSMWayPart;
-import osm.StreetMap;
 import route.NRoute;
 
 /**
@@ -81,7 +80,7 @@ public class NRouteAlgorithm {
 	 * @param gpsTrace
 	 * @param drawComponent
 	 */
-	public NRouteAlgorithm(StreetMap streetMap, myOSMMap myMap, GPSTrace gpsTrace, StatusUpdate statusUpdate, Component drawComponent) {
+	public NRouteAlgorithm(myOSMMap myMap, GPSTrace gpsTrace, StatusUpdate statusUpdate, Component drawComponent) {
 		// save references
 //		this.streetMap = streetMap;
 		this.myMap = myMap;

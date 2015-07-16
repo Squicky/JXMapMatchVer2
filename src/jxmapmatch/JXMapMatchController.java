@@ -793,7 +793,7 @@ public class JXMapMatchController implements ActionListener,
 			protected Boolean doInBackground() {
 				
 				try {
-					selectedNRoute = NRouteStreamer.getNRouteFromFile(nRouteFilePath, null, myMap,  jxMapViewer, jxMapMatchGUI);
+					selectedNRoute = NRouteStreamer.getNRouteFromFile(nRouteFilePath, myMap,  jxMapViewer, jxMapMatchGUI);
 				} catch (NRouteFileNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -852,7 +852,7 @@ public class JXMapMatchController implements ActionListener,
 				@Override
 				protected Boolean doInBackground() throws Exception {
 					try {
-						NRouteStreamer.saveSelectedNRouteToFile(selectedNRoute, null, nRouteFile.getAbsolutePath(), jxMapMatchGUI);
+						//NRouteStreamer.saveSelectedNRouteToFile(selectedNRoute, nRouteFile.getAbsolutePath(), jxMapMatchGUI);
 					} catch (Exception e) { 
 						return false;
 					}
@@ -917,7 +917,7 @@ public class JXMapMatchController implements ActionListener,
 		if (isGPSTraceAndStreetMapLoaded()){
 			
 			// initialize GPS to link matcher
-			gpsToLinkMatcher = new GPSToLinkMatcher(null, this.myMap, gpsTrace, jxMapViewer);
+			gpsToLinkMatcher = new GPSToLinkMatcher(this.myMap, gpsTrace, jxMapViewer);
 			// successfully initialized
 			return true;
 		}
@@ -972,7 +972,7 @@ public class JXMapMatchController implements ActionListener,
 		if (isGPSTraceAndStreetMapLoaded()){
 			
 			// initialize N route algorithm
-			nRouteAlgorithm = new NRouteAlgorithm(null, myMap, gpsTrace, jxMapMatchGUI, jxMapViewer);
+			nRouteAlgorithm = new NRouteAlgorithm(myMap, gpsTrace, jxMapMatchGUI, jxMapViewer);
 
 			if (!isGPSTraceForSelectedNRoute) {
 				// enable/disable buttons
@@ -989,7 +989,9 @@ public class JXMapMatchController implements ActionListener,
 				allowNRouteLoadGPSTrace  = false;
 			
 				// refresh GUI
-				if (jxMapMatchGUI.getNRouteAlgorithmMode()) setNRouteAlogrithmMode();
+				if (jxMapMatchGUI.getNRouteAlgorithmMode()) {
+					setNRouteAlogrithmMode();
+				}
 				jxMapKit.repaint();
 			}
 			
@@ -1331,7 +1333,7 @@ public class JXMapMatchController implements ActionListener,
 				
 				// draw routing graph?
 				if (drawStreetMap){
-					jxMapPainter.drawStreetMap(g2D, jxMapViewer, null, STREET_MAP_COLOR, zoomFactor, myMap);
+					jxMapPainter.drawStreetMap(g2D, jxMapViewer, STREET_MAP_COLOR, zoomFactor, myMap);
 					//jxMapPainter.drawStreetNodes(g2D, jxMapViewer, streetMap, Color.RED, zoomFactor);
 				}
 				

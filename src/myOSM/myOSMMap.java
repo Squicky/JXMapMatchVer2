@@ -2,6 +2,7 @@ package myOSM;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -18,15 +19,10 @@ import javax.xml.stream.XMLStreamReader;
 
 public class myOSMMap {
 
-	public int test = 1;
-	
-	//public List<myOSMNode> nodes = new LinkedList<myOSMNode>();
 	public Map<Long, myOSMNode> nodes = new HashMap<Long, myOSMNode>();
 	public long count_nodes = 0;
 	
 	public Map<Integer, myOSMWay> ways = new HashMap<Integer, myOSMWay>();
-	//public List<myOSMWay> ways = new LinkedList<myOSMWay>();
-	//public Map<Long, myOSMWay> ways = new HashMap<Long, myOSMWay>();
 	public long count_ways = 0;
 	
 	public double osmMinLat;
@@ -42,7 +38,7 @@ public class myOSMMap {
 	private XMLStreamReader parser;
 	
 	//file class to access XML file
-	private File xmlFile;
+	public File osmFile;
 	
 	//spacer to check XML formation
 	private StringBuilder spacer = new StringBuilder();
@@ -53,7 +49,7 @@ public class myOSMMap {
 	
 	private int parseXML_status = 0;
 	private Map<Integer, Long> nodeIdsOfWay = new HashMap<Integer, Long>();
-	private Map<Long, Long> neededNodesIds = new HashMap<Long, Long>();
+	private LinkedList<Long> neededNodesIds = new LinkedList<Long>();
 	private boolean isBuildingWay = false;
 	
 	int anzahl_ways = 0;
@@ -62,12 +58,12 @@ public class myOSMMap {
 	
 	Map<Long, Map<Integer, myEdge>> edges = new HashMap<Long, Map<Integer, myEdge>>();
 	
-	LinkedList<myDataset> DatasetsUp = new LinkedList<myDataset>();
-	LinkedList<myDataset> DatasetsDown = new LinkedList<myDataset>();
+	ArrayList<myDataset> DatasetsUp = new ArrayList<myDataset>();
+	ArrayList<myDataset> DatasetsDown = new ArrayList<myDataset>();
 	
 	public myOSMMap(File _xmlFile, String netFilePath, String DatasetFolderPath) {
 
-		xmlFile = _xmlFile;
+		osmFile = _xmlFile;
 		
 		try {
 			
@@ -86,6 +82,8 @@ public class myOSMMap {
 					Map<Integer, myEdge> me = edges.get(e.osmWayId);
 					
 					me.put(me.size(), e);
+					
+					edges.put(e.osmWayId, me);
 				} else {
 					Map<Integer, myEdge> me = new HashMap<Integer, myEdge>();
 					
@@ -96,7 +94,7 @@ public class myOSMMap {
 				
 			}
 			
-			parser = factory.createXMLStreamReader( new FileInputStream( xmlFile));
+			parser = factory.createXMLStreamReader( new FileInputStream( osmFile));
 		} catch (Exception e) {
 			System.err.println("Error: myOSMMap(...) " + e.toString());
 		}
@@ -105,7 +103,7 @@ public class myOSMMap {
 		parseXML();
 		
 		try {
-			parser = factory.createXMLStreamReader( new FileInputStream( xmlFile));
+			parser = factory.createXMLStreamReader( new FileInputStream( osmFile));
 		} catch (Exception e) {
 			System.err.println("Error: " + e.toString());
 		}
@@ -204,6 +202,36 @@ public class myOSMMap {
         return streetMap;
 	}
 	*/
+	
+	public myDataset getDatasetUp (long Timestamp) {
+		
+		Timestamp = Timestamp * 1000000000L;
+		
+		for (int i = 0; i < DatasetsUp.size(); i++) {
+			
+			if (Timestamp <= DatasetsUp.get(i).timestamp) {
+				return DatasetsUp.get(i);
+			}
+			
+		}
+		
+		return null;
+	}
+	
+	public myDataset getDatasetDown (long Timestamp) {
+		
+		Timestamp = Timestamp * 1000000000L;
+		
+		for (int i = 0; i < DatasetsDown.size(); i++) {
+			
+			if (Timestamp <= DatasetsDown.get(i).timestamp) {
+				return DatasetsDown.get(i);
+			}
+			
+		}
+		
+		return null;
+	}
 	
 	public int getNrOfAllWayParts() {
 		
@@ -589,7 +617,7 @@ public class myOSMMap {
 	    }
 		
 		if (this.parseXML_status == 1) {
-			if (this.neededNodesIds.containsKey(node.id)) {
+			if (this.neededNodesIds.contains(node.id)) {
 				//nodes.add(note);
 				nodes.put(node.id, node);
 			}
@@ -665,7 +693,7 @@ public class myOSMMap {
 				if (this.parseXML_status == 0) {
 					for (int i = 0; i < nodeIdsOfWay.size(); i++) {
 						long l = nodeIdsOfWay.get(i);
-						this.neededNodesIds.put(l,l);
+						this.neededNodesIds.add(l);
 					}
 				} else if (this.parseXML_status == 1) {
 					
@@ -812,7 +840,7 @@ public class myOSMMap {
 				osmGenerator = parser.getAttributeValue(i);
 		}
 		//print these info
-		System.out.println("Parsing "+xmlFile.getName()+"...\nOSM-Version: "+osmVersion+"\nGenerator: "+osmGenerator);
+		System.out.println("Parsing "+osmFile.getName()+"...\nOSM-Version: "+osmVersion+"\nGenerator: "+osmGenerator);
 	}
 
 	/**
