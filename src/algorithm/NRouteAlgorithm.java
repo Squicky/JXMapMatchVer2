@@ -9,7 +9,6 @@ import java.util.Vector;
 import cartesian.Coordinates;
 import gps.GPSNode;
 import gps.GPSTrace;
-import logging.Logger;
 import myOSM.myOSMMap;
 import myOSM.myOSMWay;
 import myOSM.myOSMWayPart;
@@ -72,7 +71,7 @@ public class NRouteAlgorithm {
 	private double intersectionReachedTreshold = DEFAULT_INTERSECTION_REACHED_THRESHOLD;
 	
 	// keeps track of current n route index (for debugging)
-	private int nRouteIndex = 0;
+	//private int nRouteIndex = 0;
 	
 	/**
 	 * constructor needs a street man, a GPS trace and a draw component which do the painting
@@ -145,7 +144,7 @@ public class NRouteAlgorithm {
 					// create temporary sorted set v
 					TreeSet<NRoute> sortedSetV = new TreeSet<NRoute>();
 					
-					nRouteIndex = 0;
+					//nRouteIndex = 0;
 					
 					// match GPS Point on last link of every path
 					for (NRoute nRoute : sortedSetS) {
@@ -160,7 +159,7 @@ public class NRouteAlgorithm {
 						createChildPathAndAddToSet(nRoute, sortedSetV);
 						
 						// increase n route index
-						nRouteIndex++;
+						//nRouteIndex++;
 					}
 					
 					// extract best n path and set as current sorted set
@@ -743,6 +742,7 @@ public class NRouteAlgorithm {
 		return nRouteAlgorithmState;
 	}
 	
+	/*
 	private void printScore(TreeSet<NRoute> sortedSet) {
 		Logger.print("\n");
 		
@@ -754,6 +754,7 @@ public class NRouteAlgorithm {
 		}
 		
 	}
+	*/
 	
 	private boolean sleepThread(long milliseconds) {
 		// Thread sleep for animation and refresh painting

@@ -10,13 +10,9 @@ package cartesian;
 
 import myOSM.myOSMNode;
 import myOSM.myOSMWayPart;
-
 import org.jdesktop.swingx.*;
 import org.jdesktop.swingx.mapviewer.*;
-
 import algorithm.MatchedPoint;
-import osm.StreetLink;
-import osm.StreetNode;
 import gps.GPSNode;
 
 import java.awt.geom.Point2D;
@@ -422,26 +418,6 @@ public class Coordinates {
             }
          
          /**
-          * get distance between GPS node and street node
-          * @param gpsNode
-          * @param streetNode
-          * @return double
-          */
-         public static double getDistanceSquared(GPSNode gpsNode, StreetNode streetNode) {
-        	 return getDistanceSquared(gpsNode.getX(), gpsNode.getY(), streetNode.getX(), streetNode.getY());
-         }
-         
-         /**
-          * get radical distance between GPS node and street node
-          * @param gpsNode
-          * @param streetNode
-          * @return double
-          */
-         public static double getDistance(GPSNode gpsNode, StreetNode streetNode) {
-        	 return getDistance(gpsNode.getX(), gpsNode.getY(), streetNode.getX(), streetNode.getY());
-         }
-         
-         /**
           * get radical distance between GPS node and street node
           * @param gpsNode
           * @param streetNode
@@ -508,26 +484,6 @@ public class Coordinates {
          }
          
          /**
-          * gets radical distance between two streets node
-          * @param node1
-          * @param node2
-          * @return
-          */
-         public static double getDistance(StreetNode node1, StreetNode node2) {
-        	 return getDistance(node1.getX(), node1.getY(), node2.getX(), node2.getY());
-         }
-         
-         /**
-          * gets distance between two streets node
-          * @param node1
-          * @param node2
-          * @return
-          */
-         public static double getDistanceSquared(StreetNode node1, StreetNode node2) {
-        	 return getDistanceSquared(node1.getX(), node1.getY(), node2.getX(), node2.getY());
-         }
-         
-         /**
           * gets street length
           * @param streetLink
           * @return
@@ -535,25 +491,5 @@ public class Coordinates {
          public static double getStreetLength(myOSMWayPart myWayPart) {
         	return getDistance(myWayPart.startNode, myWayPart.endNode); 
          }
-         
-         /**
-          * gets street length
-          * @param node1
-          * @param node2
-          * @return
-          */
-         public static double getStreetLength(StreetNode node1, StreetNode node2) {
-        	 return getDistance(node1, node2);
-         }
-         
-         
-         /**
-          * get radical street length
-          * @param node1
-          * @param node2
-          * @return
-          */
-         public static double getStreetLengthSquared(StreetNode node1, StreetNode node2) {
-        	 return getDistanceSquared(node1, node2);
-         }    
+ 
 }

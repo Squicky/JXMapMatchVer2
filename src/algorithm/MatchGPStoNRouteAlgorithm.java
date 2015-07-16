@@ -4,13 +4,9 @@ import interfaces.MatchingGPSObject;
 import interfaces.StatusUpdate;
 import java.awt.Color;
 import java.awt.Component;
-import java.util.Collections;
 import java.util.Vector;
-import logging.Logger;
-import myOSM.myOSMNode;
 import myOSM.myOSMWayPart;
 import cartesian.Coordinates;
-import osm.StreetLink;
 import gps.GPSNode;
 import gps.GPSTrace;
 import route.SelectedNRoute;
@@ -27,7 +23,7 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 	public static final String MATCH_GPS_TO_N_ROUTE_RECESSED = "RECESSED";
 	
 	// time in ms thread should sleep after one GPS point is matched
-	private static final int DEFAULT_THREAD_SLEEP_TIME = 10;
+	//private static final int DEFAULT_THREAD_SLEEP_TIME = 10;
 	
 	// animation
 	private static final int COLOR_GRADIENT_STEPS = 10;
@@ -91,21 +87,13 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 		
 		int currentNodeIndex = 0;
 		int currentNLinkIndex = 0;
-		//int nextNLinkIndex = currentNLinkIndex + 1;
 		int maxIndex = matchedNLinks.size() - 1;
 		
 		MatchedNLink currentMatchedNLink = matchedNLinks.get(currentNLinkIndex);
-		//MatchedNLink nextMatchedNLink = matchedNLinks.get(nextNLinkIndex); 
-		//int startingNode = StreetLink.NO_CONNECTION;
 		
 		int CountCheckNext = 10;
 		
 		for(MatchedGPSNode matchedGPGNode : reorderedMatchedGPSNodes) {
-
-			if ( currentNodeIndex % 10 == 0) {
-				currentNodeIndex++;
-				currentNodeIndex--;
-			}
 			
 			currentMatchedNLink = matchedNLinks.get(currentNLinkIndex);
 			
@@ -126,8 +114,6 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 				}
 			}
 						
-			//double disToNext = Coordinates.getDistance(matchedGPGNode, nextMatchedNLink.getStreetLink()); 
-						
 			while (disToNearest <= disToCur && currentNLinkIndex != IndexOfdisToNearest) {
 				
 				currentNLinkIndex = IndexOfdisToNearest;
@@ -144,30 +130,9 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 						}
 					}
 				}
-				
-				
-				/*				
-				currentNLinkIndex++;
-				nextNLinkIndex = currentNLinkIndex + 1;
-				
-				currentMatchedNLink = nextMatchedNLink;
-				
-				if (nextNLinkIndex <= maxIndex) {
-					nextMatchedNLink = matchedNLinks.get(nextNLinkIndex);
-				}
-				
-				disToCur = Coordinates.getDistance(matchedGPGNode, currentMatchedNLink.getStreetLink());
-				disToNext = Coordinates.getDistance(matchedGPGNode, nextMatchedNLink.getStreetLink()); 
-				*/
 			}
 			
-			//matchGPSNodeToNLink(currentMatchedNLink, matchedGPGNode, currentNodeIndex);
-			
 			matchGPSNodeToNLink(matchedNLinks.get(IndexOfdisToNearest), matchedGPGNode, IndexOfdisToNearest);
-			
-			// animate last link before we match
-			// current GPS node to next link
-			//animateCurrentLink(currentMatchedNLink);
 			
 			animateCurrentLink(matchedNLinks.get(IndexOfdisToNearest));
 			
@@ -175,68 +140,9 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 			currentNodeIndex++;
 		}
 		
-		/*
-		for(MatchedGPSNode matchedGPGNode : reorderedMatchedGPSNodes) {
-			
-			Logger.println("Node index: " + currentNodeIndex + "\n");
-			
-			// get start/end node of current matched link
-			startingNode = currentMatchedNLink.getStreetLink().getStartNode(nextMatchedNLink.getStreetLink());
-			
-			// calculate distances to n links
-			double disToCur = Coordinates.getDistance(matchedGPGNode, currentMatchedNLink.getStreetLink());
-			double disToNext = Coordinates.getDistance(matchedGPGNode, nextMatchedNLink.getStreetLink()); 
-			
-			Logger.println("disToCur: " + disToCur);
-			Logger.println("disToNext: " + disToNext + "\n");
-			
-			// check if we should match to next link
-			if (disToNext < disToCur) {
-				
-				// check and apply additional features
-				applyAdditionalFeature(currentMatchedNLink, startingNode);
-
-				// animate last link before we match
-				// current GPS node to next link
-				animateCurrentLink(currentMatchedNLink);
-				
-				// increase indices
-				currentNLinkIndex++;
-				nextNLinkIndex = currentNLinkIndex + 1;
-				
-				Logger.println("increased curNLinkIndex: " + currentNLinkIndex);
-				Logger.println("increased nextNLinkIndex: " + nextNLinkIndex + "\n");
-				
-				// adjust current n link
-				currentMatchedNLink = nextMatchedNLink;
-				// set new next n link
-				if (nextNLinkIndex <= maxIndex) {
-					nextMatchedNLink = matchedNLinks.get(nextNLinkIndex);
-				}
-			}
-			
-			// match current GPS node to current link
-			matchGPSNodeToNLink(currentMatchedNLink, matchedGPGNode, currentNodeIndex);
-			
-			// increase node index
-			currentNodeIndex++;
-			
-			// sleep thread and refresh GUI for animation or pause if algorithm was disrupt or 
-			// shut down algorithm 
-			if (!sleepThread(DEFAULT_THREAD_SLEEP_TIME)) { 
-				return;
-			}
-		}
-		
-		// check and apply additional features for last link
-		applyAdditionalFeature(currentMatchedNLink, startingNode);
-		
-		// animation for last n link
-		animateCurrentLink(currentMatchedNLink);
-		*/
 	}
 
-	
+	/*
 	private void applyAdditionalFeature(MatchedNLink currentMatchedNLink, int startingNode) {
 		
 		Logger.println("\napply addition feature:\n=============================");
@@ -304,11 +210,11 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 		if (useProject) {
 			
 			// get matched link as link
-			myOSMWayPart curLink = currentMatchedNLink.getStreetLink();
-			double curLinkStartX = (startingNode == StreetLink.START_NODE) ? curLink.getStartX() : curLink.getEndX();
-			double curLinkStartY = (startingNode == StreetLink.START_NODE) ? curLink.getStartY() : curLink.getEndY();
-			double curLinkEndX = (startingNode == StreetLink.START_NODE) ? curLink.getEndX() : curLink.getStartX();
-			double curLinkEndY = (startingNode == StreetLink.START_NODE) ? curLink.getEndY() : curLink.getStartY();
+			//myOSMWayPart curLink = currentMatchedNLink.getStreetLink();
+			double curLinkStartX = 0; // (startingNode == StreetLink.START_NODE) ? curLink.getStartX() : curLink.getEndX();
+			double curLinkStartY = 0; // (startingNode == StreetLink.START_NODE) ? curLink.getStartY() : curLink.getEndY();
+			double curLinkEndX = 0; // (startingNode == StreetLink.START_NODE) ? curLink.getEndX() : curLink.getStartX();
+			double curLinkEndY = 0; // (startingNode == StreetLink.START_NODE) ? curLink.getEndY() : curLink.getStartY();
 			
 			double curLinkVecX = curLinkEndX - curLinkStartX;
 			double curLinkVecY = curLinkEndY - curLinkStartY;
@@ -333,6 +239,7 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 		}
 		
 	}
+	*/
 	
 
 //	private void matchGPSNodeToNLink(MatchedNLink matchedNLink,
@@ -362,7 +269,7 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 	
 	private void matchGPSNodeToNLink(MatchedNLink matchedNLink, MatchedGPSNode matchedGPSNode, int nodeIndex) {
 		
-		Logger.print("matching GPS node: " + nodeIndex + "\n" + "----------------------------------------" + "\n");
+		//Logger.print("matching GPS node: " + nodeIndex + "\n" + "----------------------------------------" + "\n");
 		
 		// get matched position on link
 		myOSMWayPart wp = matchedNLink.getStreetLink();
@@ -395,21 +302,28 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 
 	private void animateCurrentLink(MatchedNLink matchedNLink) {
 		
-		Logger.println("\nanimate current link: " + matchedNLink.getRangeStartIndex() + " - " + 
-				matchedNLink.getRangeEndIndex() + "\n");
+		//Logger.println("\nanimate current link: " + matchedNLink.getRangeStartIndex() + " - " + matchedNLink.getRangeEndIndex() + "\n");
 		
 		//animate
 		for (int i=0; i < COLOR_GRADIENT_STEPS; i++){
 			
+			i = COLOR_GRADIENT_STEPS - 1;
+			
 			//sleep this thread due to create an animation
-			try { Thread.sleep(SLEEP_ANIMATION);}
-			catch (InterruptedException e) {;}
+			try { 
+				Thread.sleep(SLEEP_ANIMATION);
+			}
+			catch (InterruptedException e) {
+				;
+			}
 			
 			//moving vector factor
 			double f=i/(double) COLOR_GRADIENT_STEPS;
 			
 			//gradual move matched GPS node from original GPS position to matched position
 			for (int j=matchedNLink.getRangeStartIndex(); j<=matchedNLink.getRangeEndIndex(); j++){
+				
+				j = matchedNLink.getRangeEndIndex();
 				
 				// get matched GPS node
 				MatchedGPSNode matchedGPSNode = reorderedMatchedGPSNodes.get(j);
@@ -490,6 +404,7 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 		return matchGPStoNRouteAlgorithmState;
 	}
 	
+	/*
 	private boolean sleepThread(long milliseconds) {
 		// Thread sleep for animation and refresh painting
 		do {
@@ -503,6 +418,7 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 		// check if algorithm should be continued or shut down
 		return (getMatchGPStoNRouteAlgorithmState() == MATCH_GPS_TO_N_ROUTE_RUNNING) ? true : false;
 	}
+	*/
 	
 	/**
 	 * create a color gradient between startColor and targetColor with given steps
@@ -545,12 +461,14 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 	 * subclass which stores a GPS node position-share of a whole link
 	 * and it's index
 	 */
+	/*
 	private class ShareIndex implements Comparable<ShareIndex> {
 		
 		private double share;
 		private int index;
 		private double matchedX;
 		private double matchedY;
+		
 		
 		ShareIndex(double share, int index, double matchedX, double matchedY) {
 			this.share = share;
@@ -564,11 +482,11 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 		}
 
 
-		/*
+		
 		public void setMatchedX(int matchedX) {
 			this.matchedX = matchedX;
 		}
-		*/
+		
 
 
 
@@ -577,11 +495,11 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 		}
 
 
-		/*
+		
 		public void setMatchedY(int matchedY) {
 			this.matchedY = matchedY;
 		}
-		*/
+		
 
 
 
@@ -589,21 +507,21 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 			return share;
 		}
 
-		/*
+		
 		public void setShare(double share) {
 			this.share = share;
 		}
-		*/
+		
 
 		public int getIndex() {
 			return index;
 		}
 
-		/*
+		
 		public void setIndex(int index) {
 			this.index = index;
 		}
-		*/
+		
 
 		@Override
 		public int compareTo(ShareIndex o) {
@@ -615,6 +533,7 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 			return (diff == 0.0f) ? 0 : (diff > 0.0f) ? 1 : -1;
 		}
 	}
+	*/
 
 	@Override
 	public long getRefTimeStamp() {

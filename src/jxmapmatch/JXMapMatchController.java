@@ -842,7 +842,7 @@ public class JXMapMatchController implements ActionListener,
 		if (jFileSaveNRoute.showSaveDialog()){
 			
 			// get chosen GPS trace file
-			final File nRouteFile = jFileSaveNRoute.getSelectedFile();
+			//final File nRouteFile = jFileSaveNRoute.getSelectedFile();
 			
 			// disable GUI
 			jxMapMatchGUI.enableGUI(false);

@@ -2,14 +2,10 @@ package route;
 
 import java.util.NoSuchElementException;
 import java.util.Vector;
-
 import myOSM.myOSMMap;
 import myOSM.myOSMNode;
 import myOSM.myOSMWayPart;
 import cartesian.Coordinates;
-
-
-import static osm.StreetLink.*;
 
 /**
  * @author Daniel Sathees Elmo
@@ -20,7 +16,12 @@ import static osm.StreetLink.*;
 
 public class SelectedRoute {
 	
-//	private StreetMap streetMap;							// reference to street map
+	public static final int NO_CONNECTION = 0;
+	public static final int START_NODE = 1;
+	public static final int END_NODE = 2;
+	public static final int BOTH_NODE = 3;
+
+	//	private StreetMap streetMap;							// reference to street map
 	private myOSMMap myMap;							// reference to street map
 
 	private myOSMWayPart selectableStreetLink;				// current street link which can be selected

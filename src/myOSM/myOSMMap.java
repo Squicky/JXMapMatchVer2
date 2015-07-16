@@ -6,16 +6,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
+import java.util.TreeSet;
 import java.util.Vector;
-
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
-//import cartesian.Coordinates;
-//import osm.StreetLink;
-//import osm.StreetMap;
 
 public class myOSMMap {
 
@@ -49,7 +45,7 @@ public class myOSMMap {
 	
 	private int parseXML_status = 0;
 	private Map<Integer, Long> nodeIdsOfWay = new HashMap<Integer, Long>();
-	private LinkedList<Long> neededNodesIds = new LinkedList<Long>();
+	private TreeSet<Long> neededNodesIds = new TreeSet<Long>();
 	private boolean isBuildingWay = false;
 	
 	int anzahl_ways = 0;
@@ -486,9 +482,9 @@ public class myOSMMap {
 		//start reading xml data via "stream"
 		try {
 
-			  
 			parser_loop:
 
+				
 			while ( parser.hasNext() ) 
 			{ 
 				abc++;
@@ -514,9 +510,9 @@ public class myOSMMap {
 					}
 				}
 				*/
-				
+
 				boolean Systemoutprint = false;		
-				  				
+	
 				if (Systemoutprint) System.out.println( "Event: " + parser.getEventType() );
 				switch (parser.getEventType()) 
 				{ 
@@ -579,9 +575,9 @@ public class myOSMMap {
 				case XMLStreamConstants.END_ELEMENT:
 					// Save way
 					if (parser.getLocalName()=="way" && (tempWay.wayNotNeeded == false)) {
-						addWay(); 						
+						addWay();
 					}
-					
+
 					//System.out.println( spacer + "END_ELEMENT: " + parser.getLocalName() ); 
 					spacer.delete(spacer.length()-2, spacer.length()); 
 					break; 
@@ -673,10 +669,10 @@ public class myOSMMap {
 	 * Save OSM Way
 	 */
 	public void addWay()
-	{	
-		
+	{
 
-		
+
+
 		anzahl_ways++;
 		if (this.isBuildingWay == true) {
 
