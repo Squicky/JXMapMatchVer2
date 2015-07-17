@@ -96,7 +96,7 @@ public class myOSMMap {
 		}
 		
 		parseXML_status = 0;
-		parseXML();
+		parseXML(true);
 		
 		try {
 			parser = factory.createXMLStreamReader( new FileInputStream( osmFile));
@@ -106,7 +106,7 @@ public class myOSMMap {
 		parseXML_status = 1;
 		nodeIdsOfWay.clear();
 		isBuildingWay = false;
-		parseXML();
+		parseXML(false);
 
 	}
 	
@@ -471,7 +471,7 @@ public class myOSMMap {
 	 * Parses the XML file to a dynamic osmData Datastructure
 	 * @return
 	 */
-	private boolean parseXML(){		
+	private boolean parseXML(boolean showOsmInfo){		
 		anzahl_ways = 0;
 		anzahl_ways_Building = 0;
 		anzahl_ways_Car = 0;
@@ -552,11 +552,11 @@ public class myOSMMap {
 					}
 					else if (parser.getLocalName()=="bounds") {
 						//handle boundary of the XLM file
-						boundsHandler();
+						boundsHandler( showOsmInfo );
 					}
 					else if (parser.getLocalName()=="osm") {
 						//handle general OSM info
-						osmHandler();
+						osmHandler( showOsmInfo );
 					}
 					else if (parser.getLocalName()=="relation") {
 						// stop parsing file, leave while loop, actually we don't this block at the moment
@@ -670,9 +670,6 @@ public class myOSMMap {
 	 */
 	public void addWay()
 	{
-
-
-
 		anzahl_ways++;
 		if (this.isBuildingWay == true) {
 
@@ -716,40 +713,7 @@ public class myOSMMap {
 					tempWay.setWayParts();
 					tempWay.map = this;
 					this.ways.put(this.ways.size(), tempWay);
-					//this.ways.add(tempWay);
-					//this.ways.put(tempWay.id, tempWay);
 				}
-
-				
-				/*
-				if (this.parseXML_status == 0) {
-					for (int i = 0; i < nodeIdsOfWay.size(); i++) {
-						long l = nodeIdsOfWay.get(i);
-						this.neededNodesIds.put(l,l);
-					}
-				} else if (this.parseXML_status == 1) {
-					
-					tempWay.refs = new myOSMNode[nodeIdsOfWay.size()];					
-
-					for (int i = 0; i < nodeIdsOfWay.size(); i++) {
-						long l = nodeIdsOfWay.get(i);
-						
-						myOSMNode n = this.nodes.get(l);
-						
-						if (n == null) {
-							System.out.println("Error: n == null: addWay");
-							System.exit(-1);
-						} else {
-							tempWay.refs[i] = n;
-						}
-					}
-					
-					tempWay.setWayParts();
-					this.ways.put(this.ways.size(), tempWay);
-					//this.ways.add(tempWay);
-					//this.ways.put(tempWay.id, tempWay);
-				}
-				*/
 			}
 		}
 		
@@ -827,7 +791,7 @@ public class myOSMMap {
 	/**
 	 * Handles OSM tag 
 	 */
-	public void osmHandler(){
+	public void osmHandler(boolean showOsmInfo){
 		//read OSM general info
 		for ( int i=0; i < parser.getAttributeCount(); i++){
 			if (parser.getAttributeLocalName(i).equals("version"))
@@ -836,30 +800,37 @@ public class myOSMMap {
 				osmGenerator = parser.getAttributeValue(i);
 		}
 		//print these info
-		System.out.println("Parsing "+osmFile.getName()+"...\nOSM-Version: "+osmVersion+"\nGenerator: "+osmGenerator);
+		if (showOsmInfo) {
+			System.out.println("Parsing "+osmFile.getName()+"...\nOSM-Version: "+osmVersion+"\nGenerator: "+osmGenerator);
+		}
+		
 	}
 
 	/**
 	 * handles boundary tag
 	 */
-	public void boundsHandler(){
-  	  //now we check all Attributes of the bounds
-  	  for ( int i = 0; i < parser.getAttributeCount(); i++ ) {
-  		  if (parser.getAttributeLocalName(i).equals("minlat"))
-  			  osmMinLat = Double.valueOf(parser.getAttributeValue(i));
-  		  else if (parser.getAttributeLocalName(i).equals("maxlat"))
-  			  osmMaxLat = Double.valueOf(parser.getAttributeValue(i));
-  		  else if (parser.getAttributeLocalName(i).equals("minlon"))
-  			  osmMinLon = Double.valueOf(parser.getAttributeValue(i));
-  		  else if (parser.getAttributeLocalName(i).equals("maxlon"))
-  			  osmMaxLon = Double.valueOf(parser.getAttributeValue(i));
-  		  else   
-  			  System.out.println("should never be called: boundsHandler");		    	
-  	  }
+	public void boundsHandler(boolean showOsmInfo){
+		
+  	  	//now we check all Attributes of the bounds
+  	  	for ( int i = 0; i < parser.getAttributeCount(); i++ ) {
+  	  		if (parser.getAttributeLocalName(i).equals("minlat"))
+  	  			osmMinLat = Double.valueOf(parser.getAttributeValue(i));
+  	  		else if (parser.getAttributeLocalName(i).equals("maxlat"))
+  	  			osmMaxLat = Double.valueOf(parser.getAttributeValue(i));
+  	  		else if (parser.getAttributeLocalName(i).equals("minlon"))
+  	  			osmMinLon = Double.valueOf(parser.getAttributeValue(i));
+  	  		else if (parser.getAttributeLocalName(i).equals("maxlon"))
+  	  			osmMaxLon = Double.valueOf(parser.getAttributeValue(i));
+  	  		else   
+  	  			System.out.println("should never be called: boundsHandler");		    	
+  	  	}
   	  
-  	  //print min,max lat/lon of OSM-file
-  	  System.out.println("OSM-file boundary min(Lat/Lon),max(Lat/Lon) : ("+
+  	  	//print min,max lat/lon of OSM-file
+  	  
+  	  	if (showOsmInfo) {
+  	  		System.out.println("OSM-file boundary min(Lat/Lon),max(Lat/Lon) : ("+
   			  			  osmMinLat+", "+osmMinLon+"),("+osmMaxLat+", "+osmMaxLon+")");
+  	  	}  
 	}
 	
     public Vector<myOSMWayPart> getStreetLinksVector() {

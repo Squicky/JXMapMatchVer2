@@ -618,12 +618,13 @@ public class JXMapPainter {
         
         //draw selected N route (Start)
 		for (MatchedNLink matchedNLink : matchedNLinks) {
-			
-			
-			
-			// set Color
-			g.setColor(matchedNLink.getColor());
-			
+
+        	if (matchedNLink.isMatched()) {
+            	g.setColor(Color.black);        		
+        	} else {
+            	g.setColor(Color.white);
+        	}
+
 			// draw line for every link
 			// devide x,y coordinates by 2^(zoom-1) to fit to current zoom
 			g.drawLine((int) (matchedNLink.getStreetLink().getStartX() / zoomFactor),
@@ -632,19 +633,21 @@ public class JXMapPainter {
 					   (int) (matchedNLink.getStreetLink().getEndY() / zoomFactor));
 		}
 		
-		
-		
 		 //draw every GPS node of trace
         for(ReorderedMatchedGPSNode matchedGPSNode : matchedGPSNodes){
-        	
-        	boolean hasIndexChanged = matchedGPSNode.hasIndexChanged();
-        
-        	 // set brush
-            g.setStroke(new BasicStroke(hasIndexChanged ? 2 : 1));
-        	
+
+        	// set brush
+            g.setStroke(new BasicStroke(1));
+
         	//set color
-        	g.setColor(hasIndexChanged ? Color.MAGENTA : matchedGPSNode.getColor());
-        	
+        	//g.setColor(hasIndexChanged ? Color.MAGENTA : matchedGPSNode.getColor());
+
+        	if (matchedGPSNode.isMatched()) {
+            	g.setColor(Color.ORANGE);        		
+        	} else {
+            	g.setColor(Color.RED);
+        	}
+
             // draw rect for every GPS Point
             // devide x,y coordinates by 2^(zoom-1) to fit to current zoom
             g.drawRect((int)(matchedGPSNode.getDrawX()/zoomFactor),

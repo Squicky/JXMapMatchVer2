@@ -40,12 +40,9 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 	Vector<MatchedNLink> matchedNLinks = new Vector<>();
 	
 	private Color unmatchedLinkColor;
-//	private Color matchedLinkColor;
 	private Color unmatchedNodeColor;
-//	private Color matchedNodeColor;
 	
 	private Component drawComponent;
-//	private StatusUpdate statusUpdate;
 	
 	// save current algorithm state here
 	private String matchGPStoNRouteAlgorithmState;
@@ -55,17 +52,12 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 		super();
 		
 		// save references
-//		this.selectedNRoute = selectedNRoute;
-//		this.gpsTrace = gpsTrace;
 		this.refTimeStamp = gpsTrace.getRefTimeStamp();
 		
 		this.unmatchedLinkColor = unmatchedLinkColor;
-//		this.matchedLinkColor = matchedLinkColor;
 		this.unmatchedNodeColor = unmatchedNodeColor;
-//		this.matchedNodeColor = matchedNodeColor;
 		
 		this.drawComponent = drawComponent;
-//		this.statusUpdate = statusUpdate;
 		
 		// wrap selected n route & GPS trace for matching/drawing
 		this.matchedNLinks = wrapSelectedNRoute(selectedNRoute);
@@ -134,7 +126,7 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject{
 			
 			matchGPSNodeToNLink(matchedNLinks.get(IndexOfdisToNearest), matchedGPGNode, IndexOfdisToNearest);
 			
-			animateCurrentLink(matchedNLinks.get(IndexOfdisToNearest));
+			//animateCurrentLink(matchedNLinks.get(IndexOfdisToNearest));
 			
 			// increase node index
 			currentNodeIndex++;
