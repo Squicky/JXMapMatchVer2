@@ -19,7 +19,6 @@ public class myOSMMap {
 	public long count_nodes = 0;
 	
 	public Map<Integer, myOSMWay> ways = new HashMap<Integer, myOSMWay>();
-	public long count_ways = 0;
 	
 	public double osmMinLat;
 	public double osmMaxLat;
@@ -48,9 +47,9 @@ public class myOSMMap {
 	private TreeSet<Long> neededNodesIds = new TreeSet<Long>();
 	private boolean isBuildingWay = false;
 	
-	int anzahl_ways = 0;
-	int anzahl_ways_Building = 0;
-	int anzahl_ways_Car = 0;
+	private int anzahl_ways = 0;
+	private int anzahl_ways_Building = 0;
+	private int anzahl_ways_Car = 0;
 	
 	Map<Long, Map<Integer, myEdge>> edges = new HashMap<Long, Map<Integer, myEdge>>();
 	
@@ -109,96 +108,7 @@ public class myOSMMap {
 		parseXML(false);
 
 	}
-	
-	/*
-	public StreetMap getSteetMap() {
-		
-		StreetMap streetMap = new StreetMap(getNrOfAllWayParts(), nodes.size(), "");
-        
-        //set boundary
-        streetMap.setMinX(Coordinates.getCartesianX(osmMinLon, osmMinLat));
-        streetMap.setMinY(Coordinates.getCartesianY(osmMinLon, osmMinLat));
-        streetMap.setMaxX(Coordinates.getCartesianX(osmMaxLon, osmMaxLat));
-        streetMap.setMaxY(Coordinates.getCartesianY(osmMaxLon, osmMaxLat));
-		
-        myOSMWayPart wp;
-        myOSMWay w;
-        StreetLink sl;
-		for (int i = 0; i < ways.size(); i++) {
-		
-			w = ways.get(i);
-			
-			for (int j = 0; j < w.WayParts.length; j++) {
-				
-				wp = w.WayParts[j];
-				
-				sl = streetMap.addLink(wp.startNode.x, wp.startNode.y, wp.endNode.x, wp.endNode.y, wp.parentWay.id, wp.startNode.id, wp.endNode.id);
-				
-				if (sl != null) {
 
-					wp.streetLink = sl;
-					
-					if (wp.isBackDirection) {
-						sl.myWayPartBackDirection = wp;
-						
-						if (sl.myWayPart == null) {
-							sl.myWayPart = null;
-						}
-					} else {
-						sl.myWayPart = wp;
-					}
-					
-					if (58926 == sl.ObjID) {
-						System.out.print(sl.ObjID + " " + sl.myid + " ");
-						if (sl.myWayPart == null) {
-							System.out.print("  0  ");
-						} else {
-							System.out.print(sl.myWayPart.ObjID + " ");
-						}
-						
-						if (sl.myWayPartBackDirection == null) {
-							System.out.println("  0  " + wp.ObjID + " " + wp.parentWay.id);
-						} else {
-							System.out.println(sl.myWayPartBackDirection.ObjID + " " + wp.ObjID + " " + wp.parentWay.id);
-						}
-					}
-					
-					if (wp.isBackDirection) {
-						if (wp.streetLink.myWayPartBackDirection != wp) {
-							System.out.println("Error: getSteetMap");
-//							System.exit(-1);							
-						}
-						
-						if (wp.startNode.id != wp.streetLink.endNodeId || wp.endNode.id != wp.streetLink.startNodeId) {
-							System.out.println("Error: getSteetMap");
-//							System.exit(-1);
-						}
-					} else {
-						
-						if (wp.streetLink.myWayPart != wp) {
-							System.out.println("Error: getSteetMap");
-//							System.exit(-1);														
-						}
-						
-						if (wp.startNode.id != wp.streetLink.startNodeId || wp.endNode.id != wp.streetLink.endNodeId) {
-							System.out.println("Error: getSteetMap");
-//							System.exit(-1);
-						}
-					}
-					
-					
-				} else {
-					sl = streetMap.addLink(wp.startNode.x, wp.startNode.y, wp.endNode.x, wp.endNode.y, wp.parentWay.id, wp.startNode.id, wp.endNode.id);					
-				}
-				
-			}
-			
-		}
-        
-        return streetMap;
-	}
-	*/
-	
 	public myDataset getDatasetUp (long Timestamp) {
 		
 		Timestamp = Timestamp * 1000000000L;
@@ -213,7 +123,7 @@ public class myOSMMap {
 		
 		return null;
 	}
-	
+
 	public myDataset getDatasetDown (long Timestamp) {
 		
 		Timestamp = Timestamp * 1000000000L;
@@ -239,232 +149,18 @@ public class myOSMMap {
 		
 		return z;
 	}
-	
-	/*
-	public void linkToStreetMap(StreetMap sm) {
 
-		for (int i=0; i < ways.size(); i++) {
-			
-			myOSMWay w = ways.get(i);
-    		
-			for (int j=0; j < w.WayParts.length; j++) {
-				
-				myOSMWayPart wp = w.WayParts[j];
-				
-//				for (int k=0; k < sm.getNrOfLinks(); k++) {
-					
-					//StreetLink sl = sm.getLinks()[k];
-				//StreetLink sl = sm.getStreetLink(wp.startNode.id, wp.endNode.id, wp.parentWay.id);
-			
-					
-					if (sl == null || wp == null) {
-						System.out.println("Error: linkToStreetMap: (sl == null || wp == null)");
-						System.exit(-1);
-					} else {
-						
-						if (sl.myid == wp.parentWay.id) {
-							if (wp.isBackDirection == false) {
-//								sl.myWayPart = wp;
-//								wp.streetLink = sl;
-							} else {
-//								sl.myWayPartBackDirection = wp;
-//								wp.streetLink = sl;
-//								wp.streetLink.myWayPartBackDirection = wp;
-							}
-						}
-					}
-					
-					
-					
-					if (sl.myid == wp.parentWay.id) {
-						if (
-								sl.getStartX() == wp.startNode.x && 
-								sl.getStartY() == wp.startNode.y && 
-								sl.getEndX() == wp.endNode.x && 
-								sl.getEndY() == wp.endNode.y && 
-								sl.startNodeId == wp.startNode.id && 
-								sl.endNodeId == wp.endNode.id 
-								&& wp.isBackDirection == false
-							)
-						{
-							if (wp.streetLink == null && sl.myWayPart == null)
-							{
-								sl.myWayPart = wp;
-								wp.streetLink = sl;
-							}
-							else {
-								System.out.println("Warrning: linkToStreetMap");
-							}
-						}
-						
-						if (
-								sl.getStartX() == wp.endNode.x && 
-								sl.getStartY() == wp.endNode.y && 
-								sl.getEndX() == wp.startNode.x && 
-								sl.getEndY() == wp.startNode.y && 
-								sl.startNodeId == wp.endNode.id && 
-								sl.endNodeId == wp.startNode.id 
-								//&& wp.isBackDirection == true
-							)
-						{
-							if (wp.streetLink == null && sl.myWayPartBackDirection == null)
-							{
-								sl.myWayPartBackDirection = wp;
-								wp.streetLink = sl;
-							}
-							else {
-								System.out.println("Warrning: linkToStreetMap");
-							}
-						}
-					}
-					
-//				}
-				
-			}
-		
-		}
-		
-		myOSMWayPart wp = null;
-		myOSMWay w = null;
-		
-		for (int i=0; i < ways.size(); i++) {
-			
-			w = ways.get(i);
-    		
-			for (int j=0; j < w.WayParts.length; j++) {
-				
-				wp = w.WayParts[j];
 
-				if (wp.streetLink == null) {
-					System.out.println("Error: linkToStreetMap");
-					System.exit(-1);
-				} else {
-					
-					if (wp.isBackDirection) {
-						if (wp.streetLink.myWayPartBackDirection != wp) {
-							System.out.println("Error: linkToStreetMap");
-							System.exit(-1);							
-						}
-						
-						if (wp.startNode.id != wp.streetLink.endNodeId || wp.endNode.id != wp.streetLink.startNodeId) {
-							System.out.println("Error: linkToStreetMap");
-							System.exit(-1);
-						}
-					} else {
-						
-						if (wp.streetLink.myWayPart != wp) {
-							System.out.println("Error: linkToStreetMap");
-							System.exit(-1);														
-						}
-						
-						if (wp.startNode.id != wp.streetLink.startNodeId || wp.endNode.id != wp.streetLink.endNodeId) {
-							System.out.println("Error: linkToStreetMap");
-							System.exit(-1);
-						}
-					}
-					
-				}
-			}
-		}
-		
-		//StreetLink sl = null;
-		
-		for (int k=0; k < sm.getNrOfLinks(); k++) {
-			sl = sm.getLinks()[k];
-			
-			if (sl.myWayPart == null) {
-				System.out.println("Error: linkToStreetMap");
-				System.exit(-1);
-			} else {
-				
-				if (sl.myWayPart.streetLink != sl) {
-					System.out.println("Error: linkToStreetMap");
-					System.exit(-1);					
-				}
-				
-				if (sl.myWayPart.parentWay.onyWay == false) {
-					if (sl.myWayPartBackDirection == null ) {
-						System.out.println("Error: linkToStreetMap");
-						System.exit(-1);
-					}
-				} else {
-					if (sl.myWayPartBackDirection != null ) {
-						System.out.println("Error: linkToStreetMap");
-						System.exit(-1);
-					}					
-				}
-				
-				if (sl.myWayPartBackDirection != null ) {				
-					if (sl.myWayPartBackDirection.streetLink != sl) {
-						System.out.println("Error: linkToStreetMap");
-						System.exit(-1);
-					}
-				}
-				
-				if (sl.startNodeId != sl.myWayPart.startNode.id || sl.endNodeId != sl.myWayPart.endNode.id) {
-					System.out.println("Error: linkToStreetMap");
-					System.exit(-1);
-				}
-
-				if (sl.myWayPartBackDirection != null ) {	
-					if (sl.startNodeId != sl.myWayPartBackDirection.endNode.id || sl.endNodeId != sl.myWayPartBackDirection.startNode.id) {
-						System.out.println("Error: linkToStreetMap");
-						System.exit(-1);
-					}
-				}
-
-			}
-		}
-		
-	}
-	*/
-		
 	public void removeUnusedNotesAndWaysAndSetWayParts() {
-		
+
 		for(int i = (ways.size() - 1); i >= 0 ; i--) {
-				ways.get(i).setCountAndXYOfNotes();
+			ways.get(i).setCountAndXYOfNotes();
 		}
-		
-		/*
-		for(int i = 0; i < ways.size(); i++) {
-			ways.get(i).set_meansOfTransport();
-		}
-		
-		for(int i = (ways.size() - 1); i >= 0 ; i--) {
-			
-			if (ways.get(i).getMeansOfTransportPermission(myOSMWay.CAR)) {
-				ways.get(i).setCountAndXYOfNotes();
-				ways.get(i).setWayParts();
-			}
-			else {
-				ways.remove(i);
-			}			
-		}
-		*/
-		
-		/*
-		for (int i = nodes.size() -1; i >= 0; i--) {
-			if (nodes.get(i).countIsEndOfWay == 0 && nodes.get(i).countIsInnerNoteofWay == 0 && nodes.get(i).countIsStartOfWay == 0) {
-				nodes.remove(i);
-			}
-		}
-		*/
 
 	}
 	
 	public myOSMNode getNode(long nodeID) {
-			return nodes.get(nodeID);
-		
-		/*
-		for (myOSMNode note : nodes) {
-			if (note.id == nodeID) {
-				return note;
-			}
-		}
-		
-		
-		return null;
-		*/
+		return nodes.get(nodeID);
 	}
 	
 	/**
@@ -475,121 +171,102 @@ public class myOSMMap {
 		anzahl_ways = 0;
 		anzahl_ways_Building = 0;
 		anzahl_ways_Car = 0;
-		
 
-		long abc = 0;
-		
+		long index_loop = 0;
+
 		//start reading xml data via "stream"
 		try {
 
 			parser_loop:
 
-				
 			while ( parser.hasNext() ) 
 			{ 
-				abc++;
-				
-//				abc = ;
-				if ((abc % 1000000) == 0) {
-					System.out.println((new GregorianCalendar()).getTime().toString() + " | " + abc + " | n: " + count_nodes + " | w: " + count_ways);
-				}
+				index_loop++;
 
-
-				/*
-				if (abc == 4966213) {
-					System.out.print((new GregorianCalendar()).getTime().toString() + " | " + abc );
-					System.out.println(" |n: " + count_nodes + " | w: " + count_ways);
+				if ((index_loop % 1000000) == 0) {
+					System.out.print((new GregorianCalendar()).getTime().toString() + " | " + index_loop);
+					System.out.println( " | nodes: " + count_nodes + " | ways: " + anzahl_ways + " | w-building: " + anzahl_ways_Building + " | w-cars: " + anzahl_ways_Car );
 				}
-				*/
-				
-
-				/*
-				if (abc > 25570000) {
-					if ((abc % 100) == 0) {
-						System.out.println((new GregorianCalendar()).getTime().toString() + " | " + abc);
-					}
-				}
-				*/
 
 				boolean Systemoutprint = false;		
-	
+
 				if (Systemoutprint) System.out.println( "Event: " + parser.getEventType() );
 				switch (parser.getEventType()) 
 				{ 
-				case XMLStreamConstants.START_DOCUMENT: 
-					if (Systemoutprint) System.out.println( "START_DOCUMENT: " + parser.getVersion() ); 
-					break; 
+					case XMLStreamConstants.START_DOCUMENT: 
+						if (Systemoutprint) System.out.println( "START_DOCUMENT: " + parser.getVersion() ); 
+						break; 
 
-				case XMLStreamConstants.END_DOCUMENT: 
-					if (Systemoutprint) System.out.println( "END_DOCUMENT: " ); 
-					parser.close(); 
-					break; 
-
-				case XMLStreamConstants.NAMESPACE: 
-					if (Systemoutprint) System.out.println( "NAMESPACE: " + parser.getNamespaceURI() ); 
-					break; 
-
-				case XMLStreamConstants.START_ELEMENT: 
-					spacer.append( "  " ); 
-					if (Systemoutprint) System.out.println( /*spacer + */ "START_ELEMENT: " + parser.getLocalName() + "\n" ); 
-
-					if ( parser.getLocalName()=="node") {
-						//handle nodes
-						nodeHandler();
-					}
-					else if (parser.getLocalName()=="way") {
-						//handle ways
-						wayHandler();
-						if (Systemoutprint) System.out.println("Way!\n");
-					}
-					else if (parser.getLocalName()=="nd") {
-						//handle node references in ways
-						referenceHandler();
-					}
-					else if (parser.getLocalName()=="tag" ) {
-						//handle tags in ways
-						tagHandler();
-					}
-					else if (parser.getLocalName()=="bounds") {
-						//handle boundary of the XLM file
-						boundsHandler( showOsmInfo );
-					}
-					else if (parser.getLocalName()=="osm") {
-						//handle general OSM info
-						osmHandler( showOsmInfo );
-					}
-					else if (parser.getLocalName()=="relation") {
-						// stop parsing file, leave while loop, actually we don't this block at the moment
-						parser.close();
-						break parser_loop;
-					}
-					break; 
-
-				case XMLStreamConstants.CHARACTERS: 
-					if ( ! parser.isWhiteSpace() ){ 
-						//System.out.println( spacer + "  CHARACTERS: " + parser.getText() );
-						;
-					}
-					break; 
-
-				case XMLStreamConstants.END_ELEMENT:
-					// Save way
-					if (parser.getLocalName()=="way" && (tempWay.wayNotNeeded == false)) {
-						addWay();
-					}
-
-					//System.out.println( spacer + "END_ELEMENT: " + parser.getLocalName() ); 
-					spacer.delete(spacer.length()-2, spacer.length()); 
-					break; 
-
-				default: 
-					break; 
-				} 
+					case XMLStreamConstants.END_DOCUMENT: 
+						if (Systemoutprint) System.out.println( "END_DOCUMENT: " ); 
+						parser.close(); 
+						break; 
+	
+					case XMLStreamConstants.NAMESPACE: 
+						if (Systemoutprint) System.out.println( "NAMESPACE: " + parser.getNamespaceURI() ); 
+						break; 
+	
+					case XMLStreamConstants.START_ELEMENT: 
+						spacer.append( "  " ); 
+						if (Systemoutprint) System.out.println( /*spacer + */ "START_ELEMENT: " + parser.getLocalName() + "\n" ); 
+	
+						if ( parser.getLocalName()=="node") {
+							//handle nodes
+							nodeHandler();
+						}
+						else if (parser.getLocalName()=="way") {
+							//handle ways
+							wayHandler();
+							if (Systemoutprint) System.out.println("Way!\n");
+						}
+						else if (parser.getLocalName()=="nd") {
+							//handle node references in ways
+							referenceHandler();
+						}
+						else if (parser.getLocalName()=="tag" ) {
+							//handle tags in ways
+							tagHandler();
+						}
+						else if (parser.getLocalName()=="bounds") {
+							//handle boundary of the XLM file
+							boundsHandler( showOsmInfo );
+						}
+						else if (parser.getLocalName()=="osm") {
+							//handle general OSM info
+							osmHandler( showOsmInfo );
+						}
+						else if (parser.getLocalName()=="relation") {
+							// stop parsing file, leave while loop, actually we don't this block at the moment
+							parser.close();
+							break parser_loop;
+						}
+						break; 
+	
+					case XMLStreamConstants.CHARACTERS: 
+						if ( ! parser.isWhiteSpace() ){ 
+							//System.out.println( spacer + "  CHARACTERS: " + parser.getText() );
+							;
+						}
+						break; 
+	
+					case XMLStreamConstants.END_ELEMENT:
+						// Save way
+						if (parser.getLocalName()=="way" && (tempWay.wayNotNeeded == false)) {
+							addWay();
+						}
+	
+						//System.out.println( spacer + "END_ELEMENT: " + parser.getLocalName() ); 
+						spacer.delete(spacer.length()-2, spacer.length()); 
+						break; 
+	
+					default: 
+						break; 
+				}
 
 				parser.next(); 
 			}
 		} catch (Exception e) {
-			System.err.println("Error parsing XML File: \n" + e.toString() + "\n" + abc);
+			System.err.println("Error parsing XML File: \n" + e.toString() + "\n" + index_loop);
 			return false;
 		} 
 		return true;
@@ -598,10 +275,10 @@ public class myOSMMap {
 	/**
 	 * Handles OSM Nodes
 	 */
-	public void nodeHandler(){
-		
+	public void nodeHandler() {
+
 		myOSMNode node = new myOSMNode();
-	
+
 		//read node data
 		for ( int i = 0; i < parser.getAttributeCount(); i++ ) {
 	    	  if (parser.getAttributeLocalName(i)=="id")
@@ -611,7 +288,7 @@ public class myOSMMap {
 	    	  else if (parser.getAttributeLocalName(i)=="lon")
 	    		  node.lon = Double.valueOf(parser.getAttributeValue(i)).doubleValue();
 	    }
-		
+
 		if (this.parseXML_status == 1) {
 			if (this.neededNodesIds.contains(node.id)) {
 				//nodes.add(note);
@@ -620,34 +297,31 @@ public class myOSMMap {
 		}
 		count_nodes++;
 	}
-	
+
 	/**
 	 * Handles OSM ways
 	 */
-	public void wayHandler(){
-  	  	
+	public void wayHandler() {
+
 		tempWay = new myOSMWay(this);
 		nodeIdsOfWay.clear();
 		this.isBuildingWay = false;
-		
+
   	  	//now we check all Attributes of the way element
   	  	for ( int i = 0; i < parser.getAttributeCount(); i++ ) {
 
   	  		if (parser.getAttributeLocalName(i).equals("id")) {
-  	  	
+
   	  	  		tempWay.id = Long.valueOf(parser.getAttributeValue(i));
-  	  			
+
   	  		}
 
   	  	}
-  	  	
+ 
 	}
-	
-	
-	
-	
-	
-	
+
+
+
 	/**
 	 * Handles XML References
 	 */
@@ -664,13 +338,14 @@ public class myOSMMap {
 			}
 		}
 	}
-	
+
 	/**
 	 * Save OSM Way
 	 */
 	public void addWay()
 	{
 		anzahl_ways++;
+		
 		if (this.isBuildingWay == true) {
 
 			anzahl_ways_Building++;
@@ -716,8 +391,6 @@ public class myOSMMap {
 				}
 			}
 		}
-		
-		count_ways++;
 
 		tempWay = new myOSMWay(this);
 		this.isBuildingWay = false;

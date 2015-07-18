@@ -84,7 +84,7 @@ public class MatchedRange {
 		if (rangeEndIndex == -1) {
 			rangeEndIndex++;
 			rangeEndIndex--;
-		}	
+		}
 		
 		return rangeEndIndex;
 	}
@@ -98,6 +98,9 @@ public class MatchedRange {
 	 * @return
 	 */
 	public int getRangeSize() {
-		return Math.abs(rangeEndIndex - rangeStartIndex);
+		if (rangeEndIndex == -1) {
+			return 0;
+		}
+		return Math.abs(rangeEndIndex - rangeStartIndex + 1);
 	}
 }

@@ -7,6 +7,9 @@ import myOSM.myOSMWayPart;
 
 public class MatchedNLink {
 	
+	public static int objCount = 0;
+	public int objID = 0;
+	
 	private myOSMWayPart streetLink;
 	private MatchedRange matchedRange;		// reference to matched range
 	
@@ -28,6 +31,9 @@ public class MatchedNLink {
 		this.streetLink = streetLink;
 		this.matchedRange = matchedRange;
 		this.color = color;
+		
+		this.objID = objCount;
+		objCount++;
 	}
 	
 	public MatchedNLink(myOSMWayPart streetLink, Color color) {
@@ -46,7 +52,7 @@ public class MatchedNLink {
 		return matchedRange.getMatched();
 	}
 
-	public void setMatched(boolean matched) {
+	public void setMatched(boolean matched) {		
 		this.matchedRange.setMatched(matched);
 	}
 	

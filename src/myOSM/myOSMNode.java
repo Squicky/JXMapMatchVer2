@@ -1,8 +1,10 @@
 package myOSM;
 
+import java.awt.geom.Point2D;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
+
 import cartesian.Coordinates;
 
 public class myOSMNode {
@@ -13,7 +15,6 @@ public class myOSMNode {
 	public double lat = -1;
 
 	public double x = -1;
-	
 	public double y = -1;
 	
 	public int countIsStartOfWay = 0;
@@ -36,11 +37,10 @@ public class myOSMNode {
     }
 	
 	public void setXY() {
-
-		
 		if (lon != -1 && lat != -1) {
-			x = Coordinates.getCartesianX(lon, lat);
-			y = Coordinates.getCartesianY(lon, lat);			
+			Point2D p = Coordinates.getCartesianXY(lon, lat);
+			x = p.getX();
+			y = p.getY();			
 		}
 	}
 	

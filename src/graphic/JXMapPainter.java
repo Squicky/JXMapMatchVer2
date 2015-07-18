@@ -283,11 +283,15 @@ public class JXMapPainter {
         
         g.setColor(Color.BLACK);
        
-        for (int i=0; i < lastWayParts.length; i++ ){
+        for (int i=lastWayParts.length-1; 0 <= i; i-- ){
         	
         	//if (i == cc) 
         	{
         		myOSMWayPart wp = lastWayParts[i];
+        		
+        		if (i == 0) {
+        			g.setColor(Color.RED);
+        		}
         		
         		g.drawLine((int) (wp.startNode.x / zoomFactor),
 						(int) (wp.startNode.y / zoomFactor),
@@ -643,7 +647,7 @@ public class JXMapPainter {
         	//g.setColor(hasIndexChanged ? Color.MAGENTA : matchedGPSNode.getColor());
 
         	if (matchedGPSNode.isMatched()) {
-            	g.setColor(Color.ORANGE);        		
+            	g.setColor(Color.GREEN);        		
         	} else {
             	g.setColor(Color.RED);
         	}
