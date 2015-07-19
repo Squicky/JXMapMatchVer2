@@ -2,7 +2,6 @@ package route;
 
 import java.util.LinkedList;
 import java.util.Vector;
-
 import algorithm.MatchedLink;
 import myOSM.myOSMNode;
 import myOSM.myOSMWayPart;
@@ -46,11 +45,12 @@ public class NRoute implements Comparable<NRoute>, Cloneable {
 	private Vector<MatchedLink> nRouteLinks;
 
 	// save score of this route in respect of GPS trace
+	public LinkedList<Double> scoreList = new LinkedList<Double>();
 	private double score;
 	private double previousScore;
 	private int countUpdateScoreNegative = 0;
-
-	public LinkedList<Double> scoreList = new LinkedList<Double>();
+	
+	private double length;	
 
 	// save (optional) reference to previous n route
 	private NRoute previousNRoute;
@@ -71,7 +71,7 @@ public class NRoute implements Comparable<NRoute>, Cloneable {
 		objID = objCount;
 		objCount++;
 
-		history = objID + " " + historyOfParent;
+		//history = objID + " " + historyOfParent;
 
 		// save reference
 		this.gpsTrace = gpsTrace;
@@ -93,18 +93,13 @@ public class NRoute implements Comparable<NRoute>, Cloneable {
 	}
 
 	public double getLength() {
-		double l = 0;
-
-		for (int i = 0; i < nRouteLinks.size(); i++) {
-
-			l = l
-					+ Coordinates.getDistance(nRouteLinks.get(i).getStreetLink().startNode, nRouteLinks.get(i)
-							.getStreetLink().endNode);
-
-		}
-
-		return l;
+		return this.length;
 	}
+	
+	private void addlength(double _length) {
+		this.length += _length;
+	}
+	
 
 	public boolean istGleich(NRoute other) {
 
@@ -156,6 +151,7 @@ public class NRoute implements Comparable<NRoute>, Cloneable {
 		MatchedLink matchedLink = new MatchedLink(myWayPart, minGPSNodeIndex, maxGPSNodeIndex);
 		// add link and range
 		nRouteLinks.add(matchedLink);
+		this.addlength(matchedLink.getStreetLink().length);
 		// update score
 		updateScore(getScoreForLink(matchedLink));
 	}
@@ -440,9 +436,16 @@ public class NRoute implements Comparable<NRoute>, Cloneable {
 
 		// copy properties
 
+		nRouteClone.scoreList.addAll(this.scoreList);
+		nRouteClone.score = this.score;
+		nRouteClone.previousScore = this.previousScore;
+		
+		/*
 		for (int i = 0; i < scoreList.size(); i++) {
 			nRouteClone.updateScore(scoreList.get(i));
 		}
+		*/
+		
 
 		nRouteClone.gpsNodeIndexOffset = this.gpsNodeIndexOffset;
 		nRouteClone.previousNRoute = this.previousNRoute;

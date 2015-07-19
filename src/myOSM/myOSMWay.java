@@ -23,11 +23,8 @@ public class myOSMWay {
 	
 	public long id = -1;
 	
-//	public List<myOSMNode> refs = new LinkedList<myOSMNode>();
 	public myOSMNode[] refs = null;
 	
-	
-//	public List<myOSMWayPart> WayParts = new LinkedList<myOSMWayPart>();
 	public myOSMWayPart[] WayParts = new myOSMWayPart[0];
 
 	public myOSMWayPart[] WayPartsHin = new myOSMWayPart[0];

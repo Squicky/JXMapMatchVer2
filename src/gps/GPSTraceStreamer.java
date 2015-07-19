@@ -582,7 +582,7 @@ public class GPSTraceStreamer {
 			for (int i = 0; i < matchedNLinks.size(); i++) {
 
 				MatchedNLink matchedNLink = matchedNLinks.get(i);
-
+				
 				// calculate virtual TimeStamps for Edges without gps
 				// MatchPoints
 				// calculate TimeStamps from Distance of last and next gps
@@ -593,8 +593,8 @@ public class GPSTraceStreamer {
 
 						myOSMWayPart WayPartBackDirektion = matchedNLink.getStreetLink().WayPartBackDirektion;
 
-						if (WayPartBackDirektion != null && WayPartBackDirektion.CountMatchedGPSNodes == 0) {
-
+						if (WayPartBackDirektion == null || WayPartBackDirektion.CountMatchedGPSNodes == 0) {
+							
 							long lastTimeStamp = -1;
 							MatchedNLink lastMatchedNLink = null;
 							MatchedGPSNode lastMatchedGPSNode = null;
@@ -612,9 +612,17 @@ public class GPSTraceStreamer {
 								}
 							}
 
+							double lastLength = lastMatchedNLink.getStreetLink().length;
+							double lastPercent = 100.0 - lastMatchedGPSNode.matched_percent_in_WayParty;
+							lastPercent = lastPercent / 100.0;
+							
+							lastLength = lastLength * lastPercent;
+							
 							disFromLast += lastMatchedNLink.getStreetLink().length
 									* ((100.0 - lastMatchedGPSNode.matched_percent_in_WayParty) / 100.0);
 
+							disFromLast += matchedNLink.getStreetLink().length * 0.5;
+							
 							long nextTimeStamp = -1;
 							MatchedNLink nextMatchedNLink = null;
 							MatchedGPSNode nextMatchedGPSNode = null;
@@ -627,12 +635,18 @@ public class GPSTraceStreamer {
 									disToNext += matchedNLinks.get(j).getStreetLink().length;
 								} else {
 									nextMatchedNLink = matchedNLinks.get(j);
-									nextMatchedGPSNode = nextMatchedNLink.matchedGPSNodes.lastElement();
+									nextMatchedGPSNode = nextMatchedNLink.matchedGPSNodes.firstElement();
 									nextTimeStamp = nextMatchedGPSNode.getTimestamp();
 									j = matchedNLinks.size();
 								}
 							}
 
+							double nextLength = nextMatchedNLink.getStreetLink().length;
+							double nextPercent = nextMatchedGPSNode.matched_percent_in_WayParty;
+							nextPercent = nextPercent / 100.0;
+							
+							nextLength = nextLength * nextPercent;
+							
 							try {
 								disToNext += nextMatchedNLink.getStreetLink().length
 										* (nextMatchedGPSNode.matched_percent_in_WayParty / 100.0);
@@ -661,7 +675,7 @@ public class GPSTraceStreamer {
 
 							myOSMWayPart wp = matchedNLink.getStreetLink();
 
-							bWriter2.write("calc," + (newTimeStamp + timeStampOffSet));
+							bWriter2.write("Calc," + (newTimeStamp + timeStampOffSet));
 
 							bWriter2.write(",-,-"); // matched lat lon
 							bWriter2.write(",-,-"); // unmatched lat lon

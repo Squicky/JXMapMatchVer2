@@ -2,7 +2,6 @@ package myOSM;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -53,8 +52,8 @@ public class myOSMMap {
 	
 	Map<Long, Map<Integer, myEdge>> edges = new HashMap<Long, Map<Integer, myEdge>>();
 	
-	ArrayList<myDataset> DatasetsUp = new ArrayList<myDataset>();
-	ArrayList<myDataset> DatasetsDown = new ArrayList<myDataset>();
+	Vector<myDataset> DatasetsUp = new Vector<myDataset>(200);
+	Vector<myDataset> DatasetsDown = new Vector<myDataset>(200);
 	
 	public myOSMMap(File _xmlFile, String netFilePath, String DatasetFolderPath) {
 

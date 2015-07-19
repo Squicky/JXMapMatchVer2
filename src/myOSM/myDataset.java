@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
+import java.util.Vector;
 
 public class myDataset {
 
@@ -14,9 +14,9 @@ public class myDataset {
 	public double loss_rate = -1;
 	
 	
-	public static ArrayList<myDataset> loadDatasetsUp(String FilePath) {
+	public static Vector<myDataset> loadDatasetsUp(String FilePath) {
 		
-		ArrayList<myDataset> list = new ArrayList<myDataset>();
+		Vector<myDataset> datasets = new Vector<myDataset>();
 		
 		String line = "";
 		try {
@@ -54,25 +54,25 @@ public class myDataset {
 					
 				}
 				
-				list = loadDatasetsUp(bReader, columnNrDataRate, columnNrDelay, columnNrTimestamp, columnNrLossRate);
+				datasets = loadDatasetsUp(bReader, columnNrDataRate, columnNrDelay, columnNrTimestamp, columnNrLossRate);
 				
 			}
 			
 			bReader.close();
 			
-			return list;
+			return datasets;
 			
 		} catch (Exception e) {			
 			System.out.println("Error: loadGetEdges: \n" + line + "\n" + e.toString());
 		}		
 		
-		return list;
+		return datasets;
 		
 	}
 	
-	public static ArrayList<myDataset> loadDatasetsDown(String FilePath) {
+	public static Vector<myDataset> loadDatasetsDown(String FilePath) {
 		
-		ArrayList<myDataset> list = new ArrayList<myDataset>();
+		Vector<myDataset> datasets = new Vector<myDataset>();
 		
 		String line = "";
 		try {
@@ -110,25 +110,25 @@ public class myDataset {
 					
 				}
 				
-				list = loadDatasetsUp(bReader, columnNrDataRate, columnNrDelay, columnNrTimestamp, columnNrLossRate);
+				datasets = loadDatasetsUp(bReader, columnNrDataRate, columnNrDelay, columnNrTimestamp, columnNrLossRate);
 				
 			}
 			
 			bReader.close();
 			
-			return list;
+			return datasets;
 			
 		} catch (Exception e) {			
 			System.out.println("Error: loadGetEdges: \n" + line + "\n" + e.toString());
 		}		
 		
-		return list;
+		return datasets;
 		
 	}
 	
-	private static ArrayList<myDataset> loadDatasetsUp(BufferedReader bReader, int columnNrDataRate, int columnNrDelay, int columnNrTimestamp, int columnNrLossRate) {
+	private static Vector<myDataset> loadDatasetsUp(BufferedReader bReader, int columnNrDataRate, int columnNrDelay, int columnNrTimestamp, int columnNrLossRate) {
 		
-		ArrayList<myDataset> list = new ArrayList<myDataset>();
+		Vector<myDataset> datasets = new Vector<myDataset>();
 		
 		String line = "";
 		
@@ -165,7 +165,7 @@ public class myDataset {
 					d.loss_rate = -1;
 				}
 				
-				list.add(d);
+				datasets.add(d);
 				
 				line = bReader.readLine();	
 			}		
@@ -173,7 +173,7 @@ public class myDataset {
 			System.out.println("Error: loadGetEdges: \n" + line + "\n" + e.toString());
 		}
 		
-		return list;
+		return datasets;
 	}
 
 }

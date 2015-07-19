@@ -2,11 +2,9 @@ package algorithm;
 
 import interfaces.MatchingGPSObject;
 import interfaces.StatusUpdate;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.util.Vector;
-
 import myOSM.myOSMWayPart;
 import cartesian.Coordinates;
 import gps.GPSNode;
@@ -82,7 +80,7 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject {
 		this.useReorder = reorder;
 		this.useProject = project;
 
-		int MaxCountCheckNext = 7;
+		int MaxCountCheckNext = 20;
 
 		double bestDistanceofAllGPSNode = Double.MAX_VALUE;
 		int bestCountCheckNext = 1;
@@ -111,12 +109,7 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject {
 			}			
 			
 			for (MatchedGPSNode matchedGPSNode : reorderedMatchedGPSNodes) {
-				
-				if (currentNodeIndex == 69) {
-					currentNodeIndex++;
-					currentNodeIndex--;
-				}
-				
+
 				currentMatchedNLink = matchedNLinks.get(currentNLinkIndex);
 				nearestMatchedNLink = currentMatchedNLink;
 				
@@ -181,12 +174,6 @@ public class MatchGPStoNRouteAlgorithm implements MatchingGPSObject {
 				*/
 
 				if (statusSearchBestCountCheckNext == 1) {
-					
-					if (matchedNLinks.get(IndexOfdisToNearest).getStreetLink().parentWay.id == 1061301) {
-						currentNLinkIndex++;
-						currentNLinkIndex--;
-					}
-					
 					matchGPSNodeToNLink(nearestMatchedNLink, matchedGPSNode, currentNodeIndex);					
 				}
 

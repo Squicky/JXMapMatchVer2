@@ -8,7 +8,6 @@ import myOSM.myOSMMap;
 import myOSM.myOSMNode;
 import myOSM.myOSMWay;
 import myOSM.myOSMWayPart;
-
 import org.jdesktop.swingx.*;
 import algorithm.MatchedGPSNode;
 import algorithm.MatchedLink;
@@ -281,6 +280,10 @@ public class JXMapPainter {
 	
         }
         
+        for (int i=0; i < nRoutes.size(); i++ ){
+        	lastWayParts[i] = nRoutes.get(i).getNRouteLinks().lastElement().getStreetLink();
+        }
+        
         g.setColor(Color.BLACK);
        
         for (int i=lastWayParts.length-1; 0 <= i; i-- ){
@@ -289,7 +292,8 @@ public class JXMapPainter {
         	{
         		myOSMWayPart wp = lastWayParts[i];
         		
-        		if (i == 0) {
+        		if (i == 0) 
+        		{
         			g.setColor(Color.RED);
         		}
         		
@@ -300,8 +304,11 @@ public class JXMapPainter {
         	}
        
         }
-       
-		
+
+        if (cc < nRoutes.size()) {
+        	//System.out.println(cc + "/" + nRoutes.size() + " nRoute objID: " + nRoutes.get(cc).objID);        	
+        }
+        
         if (nRoutes.size() > 0) {
     		cc++;
     		cc = cc % nRoutes.size();        	
